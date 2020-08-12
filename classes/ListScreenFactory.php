@@ -2,19 +2,35 @@
 
 namespace AC;
 
-/**
- * @deprecated 4.0
- */
-class ListScreenFactory {
+use AC\Type\ListScreenId;
+use LogicException;
 
-	public static function create( $key, $id = null ) {
-		$list_screen = ListScreenTypes::instance()->get_list_screen_by_key( $key );
+class ListScreenFactory implements ListScreenFactoryInterface {
 
-		if ( $list_screen ) {
-			return clone $list_screen;
+	/**
+	 * @var ListScreenFactoryInterface[]
+	 */
+	private $factories;
+
+	/**
+	 * @param ListScreenFactoryInterface $factory
+	 */
+	public function add_factory( ListScreenFactoryInterface $factory ) {
+		$this->factories[] = $factory;
+	}
+
+	public function create( $key, ListScreenId $id ) {
+		foreach ( array_reverse( $this->factories ) as $factory ) {
+			$list_screen = $factory->create( $key, $id );
+
+			if ( ! $list_screen ) {
+				continue;
+			}
+
+			return $list_screen;
 		}
 
-		return null;
+		return new LogicException( 'Unsuported List Screen.' );
 	}
 
 }

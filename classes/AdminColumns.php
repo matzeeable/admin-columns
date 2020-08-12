@@ -9,6 +9,7 @@ use AC\Asset\Script;
 use AC\Asset\Style;
 use AC\Controller;
 use AC\Deprecated;
+use AC\ListScreenFactory;
 use AC\ListScreenRepository\Database;
 use AC\ListScreenRepository\Storage;
 use AC\Screen\QuickEdit;
@@ -26,6 +27,11 @@ class AdminColumns extends Plugin {
 	 * @var Storage
 	 */
 	private $storage;
+
+	/**
+	 * @var ListScreenFactory
+	 */
+	private $list_screen_factory;
 
 	/**
 	 * @since 2.5
@@ -49,6 +55,11 @@ class AdminColumns extends Plugin {
 				true
 			),
 		] );
+
+		$this->list_screen_factory = new ListScreenFactory();
+		$this->list_screen_factory->add_factory(
+			new ListScreenFactory\ListScreenFactory()
+		);
 
 		$location = new Absolute(
 			$this->get_url(),
@@ -100,6 +111,13 @@ class AdminColumns extends Plugin {
 	 */
 	public function get_storage() {
 		return $this->storage;
+	}
+
+	/**
+	 * @return ListScreenFactory
+	 */
+	public function get_list_screen_factory() {
+		return $this->list_screen_factory;
 	}
 
 	protected function get_file() {
