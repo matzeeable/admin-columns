@@ -9,7 +9,6 @@ use AC\Asset\Script;
 use AC\Asset\Style;
 use AC\Controller;
 use AC\Deprecated;
-use AC\ListScreenFactory;
 use AC\ListScreenRepository\Database;
 use AC\ListScreenRepository\Storage;
 use AC\Screen\QuickEdit;
@@ -48,18 +47,18 @@ class AdminColumns extends Plugin {
 	}
 
 	private function __construct() {
-		$this->storage = new Storage();
-		$this->storage->set_repositories( [
-			'acp-database' => new ListScreenRepository\Storage\ListScreenRepository(
-				new Database( ListScreenTypes::instance() ),
-				true
-			),
-		] );
-
 		$this->list_screen_factory = new ListScreenFactory();
 		$this->list_screen_factory->add_factory(
 			new ListScreenFactory\ListScreenFactory()
 		);
+
+		$this->storage = new Storage();
+		$this->storage->set_repositories( [
+			'acp-database' => new ListScreenRepository\Storage\ListScreenRepository(
+				new Database( $this->list_screen_factory ),
+				true
+			),
+		] );
 
 		$location = new Absolute(
 			$this->get_url(),
@@ -73,7 +72,7 @@ class AdminColumns extends Plugin {
 			new Ajax\NumberFormat( new Request() ),
 			new Deprecated\Hooks,
 			new ListScreens(),
-			new Screen,
+			new Screen( $this->list_screen_factory ),
 			new Settings\General,
 			new ThirdParty\ACF,
 			new ThirdParty\NinjaForms,

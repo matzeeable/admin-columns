@@ -3,7 +3,7 @@
 namespace AC;
 
 use AC\Type\ListScreenId;
-use LogicException;
+use WP_Screen;
 
 class ListScreenFactory implements ListScreenFactoryInterface {
 
@@ -30,7 +30,21 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 			return $list_screen;
 		}
 
-		return new LogicException( 'Unsuported List Screen.' );
+		return null;
+	}
+
+	public function create_by_screen( WP_Screen $wp_screen, ListScreenId $id ) {
+		foreach ( array_reverse( $this->factories ) as $factory ) {
+			$list_screen = $factory->create_by_screen( $wp_screen, $id );
+
+			if ( ! $list_screen ) {
+				continue;
+			}
+
+			return $list_screen;
+		}
+
+		return null;
 	}
 
 }

@@ -5,8 +5,8 @@ namespace AC\ListScreenRepository;
 use AC\Exception\MissingListScreenIdException;
 use AC\ListScreen;
 use AC\ListScreenCollection;
+use AC\ListScreenFactoryInterface;
 use AC\ListScreenRepositoryWritable;
-use AC\ListScreenTypes;
 use AC\Type\ListScreenId;
 use DateTime;
 use LogicException;
@@ -16,12 +16,12 @@ final class Database implements ListScreenRepositoryWritable {
 	const TABLE = 'admin_columns';
 
 	/**
-	 * @var ListScreenTypes
+	 * @var ListScreenFactoryInterface
 	 */
-	private $list_screen_types;
+	private $list_screen_factory;
 
-	public function __construct( ListScreenTypes $list_screen_types ) {
-		$this->list_screen_types = $list_screen_types;
+	public function __construct( ListScreenFactoryInterface $list_screen_factory ) {
+		$this->list_screen_factory = $list_screen_factory;
 	}
 
 	/**
@@ -197,16 +197,15 @@ final class Database implements ListScreenRepositoryWritable {
 	}
 
 	/**
-	 * @param $data
+	 * @param object $data
 	 *
 	 * @return ListScreen
 	 */
 	private function create_list_screen( $data ) {
-		$list_screen = $this->list_screen_types->get_list_screen_by_key( $data->list_key );
+		$list_screen = $this->list_screen_factory->create( $data->list_key, new ListScreenId( $data->list_id ) );
 
 		if ( $list_screen ) {
 			$list_screen->set_title( $data->title )
-			            ->set_layout_id( $data->list_id )
 			            ->set_updated( DateTime::createFromFormat( 'Y-m-d H:i:s', $data->date_modified ) );
 
 			if ( $data->settings ) {

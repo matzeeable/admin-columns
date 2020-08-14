@@ -8,12 +8,14 @@ use WP_Media_List_Table;
 
 class Media extends AC\ListScreenPost {
 
+	const NAME = 'wp-media';
+
 	public function __construct() {
 		parent::__construct( 'attachment' );
 
 		$this->set_screen_id( 'upload' )
 		     ->set_screen_base( 'upload' )
-		     ->set_key( 'wp-media' )
+		     ->set_key( self::NAME )
 		     ->set_group( 'media' )
 		     ->set_label( __( 'Media' ) );
 	}

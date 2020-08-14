@@ -12,13 +12,15 @@ use WP_Comments_List_Table;
  */
 class Comment extends AC\ListScreenWP {
 
+	const NAME = 'wp-comments';
+
 	public function __construct() {
 
 		$this->set_label( __( 'Comments' ) )
 		     ->set_singular_label( __( 'Comment' ) )
 		     ->set_meta_type( 'comment' )
 		     ->set_screen_base( 'edit-comments' )
-		     ->set_key( 'wp-comments' )
+		     ->set_key( self::NAME )
 		     ->set_screen_id( 'edit-comments' )
 		     ->set_group( 'comment' );
 	}

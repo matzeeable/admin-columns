@@ -2,6 +2,7 @@
 
 namespace AC;
 
+use AC\Type\ListScreenId;
 use WP_Screen;
 
 class Screen implements Registrable {
@@ -10,6 +11,15 @@ class Screen implements Registrable {
 	 * @var WP_Screen
 	 */
 	protected $screen;
+
+	/**
+	 * @var ListScreenFactoryInterface
+	 */
+	protected $list_screen_factory;
+
+	public function __construct( ListScreenFactoryInterface $list_screen_factory ) {
+		$this->list_screen_factory = $list_screen_factory;
+	}
 
 	public function register() {
 		add_action( 'current_screen', [ $this, 'init' ] );
@@ -83,13 +93,19 @@ class Screen implements Registrable {
 	 * @return string|null
 	 */
 	public function get_list_screen() {
-		foreach ( ListScreenTypes::instance()->get_list_screens() as $list_screen ) {
-			if ( $list_screen->is_current_screen( $this->screen ) ) {
-				return $list_screen->get_key();
-			}
-		}
+		$list_screen = $this->list_screen_factory->create_by_screen( $this->screen, ListScreenId::generate() );
 
-		return null;
+		return $list_screen
+			? $list_screen->get_key()
+			: null;
+		// TODO
+//		foreach ( ListScreenTypes::instance()->get_list_screens() as $list_screen ) {
+//			if ( $list_screen->is_current_screen( $this->screen ) ) {
+//				return $list_screen->get_key();
+//			}
+//		}
+//
+//		return null;
 	}
 
 	/**
