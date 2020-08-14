@@ -36,21 +36,23 @@ class Menu {
 		return $menu->render();
 	}
 
-	private function get_network_list_screens() {
-		return ListScreenTypes::instance()->get_list_screens( [ 'network_only' => true ] );
-	}
-
-	private function get_site_list_screens() {
-		return ListScreenTypes::instance()->get_list_screens( [ 'site_only' => true ] );
-	}
+	// todo
+//	private function get_network_list_screens() {
+//		return ListScreenTypes::instance()->get_list_screens( [ 'network_only' => true ] );
+//	}
+//
+//	private function get_site_list_screens() {
+//		return ListScreenTypes::instance()->get_list_screens( [ 'site_only' => true ] );
+//	}
 
 	/**
 	 * @return array
 	 */
 	private function get_grouped_list_screens() {
 
-		$list_screens = ( new ListScreenTypeRepository() )->find_all();
+		$list_screens = ( new ListScreenTypeRepository() )->find_all( [ 'is_network' => $this->is_network ] );
 
+		// todo
 //		$list_screens = $this->is_network
 //			? $this->get_network_list_screens()
 //			: $this->get_site_list_screens();

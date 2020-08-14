@@ -7,7 +7,6 @@ use AC\Asset\Location;
 use AC\Asset\Script;
 use AC\DefaultColumnsRepository;
 use AC\ListScreen;
-use AC\ListScreenTypes;
 
 class Columns extends Script {
 
@@ -40,11 +39,12 @@ class Columns extends Script {
 	}
 
 	private function get_list_screens() {
+		return ( new AC\ListScreenTypeRepository() )->find_all( [ 'is_network' => is_network_admin() ] );
 
 		// TODO: use ListScreenTypeRepository
-		return is_network_admin()
-			? ListScreenTypes::instance()->get_list_screens( [ 'network_only' => true ] )
-			: ListScreenTypes::instance()->get_list_screens( [ 'site_only' => true ] );
+		//		return is_network_admin()
+		//			? ListScreenTypes::instance()->get_list_screens( [ 'network_only' => true ] )
+		//			: ListScreenTypes::instance()->get_list_screens( [ 'site_only' => true ] );
 	}
 
 	public function register() {

@@ -123,8 +123,7 @@ class Help extends Page implements AC\Asset\Enqueueables {
 	}
 
 	public function render() {
-		// Force cache refresh
-		$this->hooks->get_count( true );
+		$this->hooks->update_count( true );
 
 		ob_start();
 		?>

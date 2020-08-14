@@ -6,6 +6,7 @@ use AC\Entity\ListScreenType;
 use AC\ListScreen\Comment;
 use AC\ListScreen\Media;
 use AC\ListScreen\User;
+use LogicException;
 
 class ListScreenTypeRepository {
 
@@ -15,19 +16,35 @@ class ListScreenTypeRepository {
 	 * @return ListScreenType[]
 	 */
 	public function find_all( array $args = [] ) {
+		// TODO: warning when called before init hook
+		if ( ! did_action( 'init' ) ) {
+			throw new LogicException( 'Called before init action.' );
+		}
+
 		$items = $this->get_items();
 
-		$defaults = [
-			'is_network' => false,
-		];
-
-		$args = array_merge( $defaults, $args );
-
-		$items = true === $args['is_network']
-			? array_filter( $items, [ $this, 'is_network' ] )
-			: array_filter( $items, [ $this, 'is_non_network' ] );
+		if ( isset( $args['is_network'] ) ) {
+			$items = true === $args['is_network']
+				? array_filter( $items, [ $this, 'is_network' ] )
+				: array_filter( $items, [ $this, 'is_non_network' ] );
+		}
 
 		return $items;
+	}
+
+	/**
+	 * @param string $key
+	 *
+	 * @return ListScreenType|null
+	 */
+	public function find( $key ) {
+		foreach ( $this->get_items() as $item ) {
+			if ( $key === $item->get_key() ) {
+				return $item;
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -48,6 +65,9 @@ class ListScreenTypeRepository {
 		return ! $this->is_network( $list_screen_type );
 	}
 
+	/**
+	 * @return ListScreenType[]
+	 */
 	private function get_items() {
 		$items = [];
 
@@ -55,10 +75,7 @@ class ListScreenTypeRepository {
 			$items[] = new ListScreenType(
 				$post_type->name,
 				$post_type->labels->name,
-
-				// todo: insert Group object
-				// todo: move var to Group::Name const
-				'post'
+				ListScreenGroups::POST_TYPE
 			);
 		}
 
@@ -66,24 +83,24 @@ class ListScreenTypeRepository {
 			$items[] = new ListScreenType(
 				Media::NAME,
 				__( 'Media' ),
-				'media'
+				ListScreenGroups::MEDIA
 			);
 		}
 
 		$items[] = new ListScreenType(
 			User::NAME,
 			__( 'Users' ),
-			'user'
+			ListScreenGroups::USER
 		);
 
 		$items[] = new ListScreenType(
 			Comment::NAME,
 			__( 'Comments' ),
-			'comment'
+			ListScreenGroups::COMMENT
 		);
 
 		// todo: container that can sort them by Label/Group etc.
-		return $items;
+		return apply_filters( 'ac/list_screen_types', $items );
 	}
 
 	/**

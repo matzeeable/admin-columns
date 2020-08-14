@@ -4,23 +4,49 @@ namespace AC\Deprecated;
 
 use AC\Deprecated\Hook\Action;
 use AC\Deprecated\Hook\Filter;
-use AC\ListScreenTypes;
-use AC\Transient;
+use AC\ListScreenFactory;
+use AC\ListScreenTypeRepository;
+use AC\Registrable;
+use AC\Type\ListScreenId;
 
-class Hooks {
+class Hooks implements Registrable {
 
 	/**
-	 * @parsam bool $force_update
+	 * @var ListScreenTypeRepository
+	 */
+	private $list_screen_type_repository;
+
+	/**
+	 * @var ListScreenFactory
+	 */
+	private $list_screen_factory;
+
+	/**
+	 * @var HookCount
+	 */
+	private $hook_count;
+
+	public function __construct( ListScreenTypeRepository $list_screen_type_repository, ListScreenFactory $list_screen_factory ) {
+		$this->list_screen_type_repository = $list_screen_type_repository;
+		$this->list_screen_factory = $list_screen_factory;
+		$this->hook_count = new HookCount();
+	}
+
+	public function register() {
+		add_action( 'init', [ $this, 'update_count' ] );
+	}
+
+	public function update_count( $force = false ) {
+		if ( $this->hook_count->is_expired() || $force ) {
+			$this->hook_count->save( $this->get_deprecated_count(), WEEK_IN_SECONDS );
+		}
+	}
+
+	/**
 	 * @return int
 	 */
-	public function get_count( $force_update = false ) {
-		$cache = new Transient( 'ac-deprecated-message-count' );
-
-		if ( $cache->is_expired() || (bool) $force_update ) {
-			$cache->save( $this->get_deprecated_count(), WEEK_IN_SECONDS );
-		}
-
-		return (int) $cache->get();
+	public function get_count() {
+		return $this->hook_count->get();
 	}
 
 	/**
@@ -92,11 +118,24 @@ class Hooks {
 	 */
 	private function get_columns() {
 		$columns = [];
-		foreach ( ListScreenTypes::instance()->get_list_screens() as $list_screen ) {
+
+		foreach ( $this->list_screen_type_repository->find_all() as $item ) {
+			$list_screen = $this->list_screen_factory->create( $item->get_key(), ListScreenId::generate() );
+
+			if ( ! $list_screen ) {
+				continue;
+			}
+
 			foreach ( $list_screen->get_column_types() as $column ) {
 				$columns[ $column->get_type() ] = $column->get_type();
 			}
 		}
+		// TODO
+		//		foreach ( ListScreenTypes::instance()->get_list_screens() as $list_screen ) {
+		//			foreach ( $list_screen->get_column_types() as $column ) {
+		//				$columns[ $column->get_type() ] = $column->get_type();
+		//			}
+		//		}
 
 		return $columns;
 	}
@@ -105,7 +144,7 @@ class Hooks {
 	 * @return Action[]
 	 */
 	private function get_actions() {
-		$hooks = [
+		return [
 			new Action( 'cac/admin_head', '3.0', 'cac-admin_head' ),
 			new Action( 'cac/loaded', '3.0', 'cac-loaded' ),
 			new Action( 'cac/inline-edit/after_ajax_column_save', '3.0', 'cacinline-editafter_ajax_column_save' ),
@@ -120,8 +159,6 @@ class Hooks {
 			new Action( 'cac/settings/after_menu', '3.0' ),
 			new Action( 'ac/settings/general', '3.4' ),
 		];
-
-		return $hooks;
 	}
 
 	/**

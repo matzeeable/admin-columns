@@ -92,6 +92,7 @@ class Screen implements Registrable {
 	/**
 	 * @return string|null
 	 */
+	// TODO: remove?
 	public function get_list_screen() {
 		$list_screen = $this->list_screen_factory->create_by_screen( $this->screen, ListScreenId::generate() );
 

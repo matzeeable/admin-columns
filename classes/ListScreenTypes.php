@@ -32,6 +32,7 @@ class ListScreenTypes {
 		return $this;
 	}
 
+	// TODO: remove
 	public function get_list_screens( array $args = [] ) {
 		$list_screens = $this->list_screens;
 

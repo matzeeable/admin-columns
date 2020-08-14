@@ -23,9 +23,21 @@ class AdminFactory {
 	 */
 	protected $location;
 
-	public function __construct( Storage $storage, Location\Absolute $location ) {
+	/**
+	 * @var ListScreenFactory
+	 */
+	private $list_screen_factory;
+
+	/**
+	 * @var Hooks
+	 */
+	private $hooks;
+
+	public function __construct( Storage $storage, Location\Absolute $location, ListScreenFactory $list_screen_factory, Hooks $hooks ) {
 		$this->storage = $storage;
 		$this->location = $location;
+		$this->list_screen_factory = $list_screen_factory;
+		$this->hooks = $hooks;
 	}
 
 	/**
@@ -35,7 +47,8 @@ class AdminFactory {
 		$list_screen_controller = new ListScreenRequest(
 			new Request(),
 			$this->storage,
-			new Preferences\Site( 'settings' )
+			new Preferences\Site( 'settings' ),
+			$this->list_screen_factory
 		);
 
 		return new Page\Columns(
@@ -72,9 +85,8 @@ class AdminFactory {
 		      ->add( $this->create_settings_page() )
 		      ->add( new Page\Addons( $this->location, new Integrations() ) );
 
-		$hooks = new Hooks();
-		if ( $hooks->get_count() > 0 ) {
-			$pages->add( new Page\Help( new Hooks(), $this->location ) );
+		if ( $this->hooks->get_count() > 0 ) {
+			$pages->add( new Page\Help( $this->hooks, $this->location ) );
 		}
 
 		return $pages;

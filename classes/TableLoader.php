@@ -30,11 +30,23 @@ class TableLoader implements Registrable {
 	 */
 	private $preference;
 
-	public function __construct( Storage $storage, PermissionChecker $permission_checker, Absolute $location, Preference $preference ) {
+	/**
+	 * @var ListScreenFactory
+	 */
+	private $list_screen_factory;
+
+	public function __construct(
+		Storage $storage,
+		PermissionChecker $permission_checker,
+		Absolute $location,
+		Preference $preference,
+		ListScreenFactory $list_screen_factory
+	) {
 		$this->storage = $storage;
 		$this->permission_checker = $permission_checker;
 		$this->location = $location;
 		$this->preference = $preference;
+		$this->list_screen_factory = $list_screen_factory;
 	}
 
 	public function register() {
@@ -47,6 +59,8 @@ class TableLoader implements Registrable {
 		if ( ! $key ) {
 			return;
 		}
+
+		// TODO: use Storage and/or ListScreenFactory
 
 		// Requested
 		$list_id = ListScreenId::is_valid_id( filter_input( INPUT_GET, 'layout' ) )
@@ -108,6 +122,7 @@ class TableLoader implements Registrable {
 		}
 
 		// No available list screen found.
+		// TODO: only exists because we need the default columns from the list screen
 		return ListScreenTypes::instance()->get_list_screen_by_key( $key );
 	}
 

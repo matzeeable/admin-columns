@@ -485,6 +485,7 @@ abstract class ListScreen {
 	/**
 	 * @return Column[]
 	 */
+	// TODO: remove
 	public function get_column_types() {
 		if ( null === $this->column_types ) {
 			$this->set_column_types();

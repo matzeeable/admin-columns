@@ -3,7 +3,9 @@
 namespace AC\Controller;
 
 use AC\ListScreen;
+use AC\ListScreenFactory;
 use AC\ListScreenRepository\Storage;
+use AC\ListScreenTypeRepository;
 use AC\ListScreenTypes;
 use AC\Preferences;
 use AC\Request;
@@ -23,11 +25,25 @@ class ListScreenRequest {
 	/** @var bool */
 	private $is_network;
 
-	public function __construct( Request $request, Storage $storage, Preferences $preference, $is_network = false ) {
+	/**
+	 * @var ListScreenTypeRepository
+	 */
+	private $list_screen_type_repository;
+
+	/**
+	 * @var ListScreenFactory
+	 */
+	private $list_screen_factory;
+
+	public function __construct( Request $request, Storage $storage, Preferences $preference, ListScreenFactory $list_screen_factory, $is_network = false ) {
 		$this->request = $request;
 		$this->storage = $storage;
 		$this->preference = $preference;
 		$this->is_network = (bool) $is_network;
+
+		// TODO: inject
+		$this->list_screen_type_repository = new ListScreenTypeRepository();
+		$this->list_screen_factory = $list_screen_factory;
 	}
 
 	/**
@@ -36,7 +52,9 @@ class ListScreenRequest {
 	 * @return bool
 	 */
 	private function exists_list_screen( $list_key ) {
-		return null !== ListScreenTypes::instance()->get_list_screen_by_key( $list_key, $this->is_network );
+		$list_screen = $this->list_screen_type_repository->find( $list_key );
+
+		return $list_screen && $list_screen->is_network() === $this->is_network;
 	}
 
 	/**
@@ -144,26 +162,30 @@ class ListScreenRequest {
 	}
 
 	private function create_list_screen( $key ) {
-		$list_screen = ListScreenTypes::instance()->get_list_screen_by_key( $key );
-
-		if ( ! $list_screen ) {
-			return null;
-		}
-
-		return $list_screen->set_layout_id( ListScreenId::generate()->get_id() );
+		return $this->list_screen_factory->create( $key, ListScreenId::generate() );
+		//		$list_screen = ListScreenTypes::instance()->get_list_screen_by_key( $key );
+		//
+		//		if ( ! $list_screen ) {
+		//			return null;
+		//		}
+		//
+		//		return $list_screen->set_layout_id( ListScreenId::generate()->get_id() );
 	}
 
 	/**
 	 * @return string
 	 */
 	private function get_first_available_list_screen_key() {
-		if ( $this->is_network ) {
-			$list_screens = ListScreenTypes::instance()->get_list_screens( [ 'network_only' => true ] );
-		} else {
-			$list_screens = ListScreenTypes::instance()->get_list_screens( [ 'site_only' => true ] );
-		}
+		$types = $this->list_screen_type_repository->find_all( [ 'is_network' => $this->is_network ] );
 
-		return current( $list_screens )->get_key();
+		// TODO: remove
+//		if ( $this->is_network ) {
+//			$list_screens = ListScreenTypes::instance()->get_list_screens( [ 'network_only' => true ] );
+//		} else {
+//			$list_screens = ListScreenTypes::instance()->get_list_screens( [ 'site_only' => true ] );
+//		}
+
+		return current( $types )->get_key();
 	}
 
 }
