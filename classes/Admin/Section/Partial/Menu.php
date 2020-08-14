@@ -4,6 +4,7 @@ namespace AC\Admin\Section\Partial;
 
 use AC\Controller\ListScreenRequest;
 use AC\ListScreenGroups;
+use AC\ListScreenTypeRepository;
 use AC\ListScreenTypes;
 use AC\View;
 
@@ -48,9 +49,11 @@ class Menu {
 	 */
 	private function get_grouped_list_screens() {
 
-		$list_screens = $this->is_network
-			? $this->get_network_list_screens()
-			: $this->get_site_list_screens();
+		$list_screens = ( new ListScreenTypeRepository() )->find_all();
+
+//		$list_screens = $this->is_network
+//			? $this->get_network_list_screens()
+//			: $this->get_site_list_screens();
 
 		$list_screens_grouped = [];
 		foreach ( $list_screens as $list_screen ) {

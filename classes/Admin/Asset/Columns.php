@@ -40,6 +40,8 @@ class Columns extends Script {
 	}
 
 	private function get_list_screens() {
+
+		// TODO: use ListScreenTypeRepository
 		return is_network_admin()
 			? ListScreenTypes::instance()->get_list_screens( [ 'network_only' => true ] )
 			: ListScreenTypes::instance()->get_list_screens( [ 'site_only' => true ] );

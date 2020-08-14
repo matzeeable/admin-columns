@@ -2,6 +2,7 @@
 
 namespace AC;
 
+// todo: remove
 class ListScreens implements Registrable {
 
 	public function register() {

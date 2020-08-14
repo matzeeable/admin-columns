@@ -71,7 +71,9 @@ class AdminColumns extends Plugin {
 			$this->admin,
 			new Ajax\NumberFormat( new Request() ),
 			new Deprecated\Hooks,
+			// TODO: remove
 			new ListScreens(),
+
 			new Screen( $this->list_screen_factory ),
 			new Settings\General,
 			new ThirdParty\ACF,
