@@ -2,6 +2,9 @@
 
 namespace AC;
 
+use AC\Type\ListScreenId;
+use AC\Type\ListScreenKey;
+use AC\Type\TableId;
 use WP_Post;
 
 abstract class ListScreenPost extends ListScreen {
@@ -14,9 +17,16 @@ abstract class ListScreenPost extends ListScreen {
 	/**
 	 * @param string $post_type
 	 */
-	public function __construct( $post_type ) {
+	public function __construct( $post_type, ListScreenKey $key, TableId $table_id, $label = null, ListScreenId $id = null ) {
+		parent::__construct(
+			$key,
+			new MetaType( MetaType::POST ),
+			$table_id,
+			$label,
+			$id
+		);
+
 		$this->post_type = $post_type;
-		$this->meta_type = new MetaType( MetaType::POST );
 	}
 
 	/**
@@ -38,12 +48,14 @@ abstract class ListScreenPost extends ListScreen {
 	/**
 	 * @param string $var
 	 *
-	 * @return string|false
+	 * @return string|null
 	 */
 	protected function get_post_type_label_var( $var ) {
-		$post_type_object = get_post_type_object( $this->get_post_type() );
+		$labels = get_post_type_labels( get_post_type_object( $this->get_post_type() ) );
 
-		return $post_type_object && isset( $post_type_object->labels->{$var} ) ? $post_type_object->labels->{$var} : false;
+		return isset( $labels->{$var} )
+			? $labels->{$var}
+			: null;
 	}
 
 	/**
@@ -52,10 +64,6 @@ abstract class ListScreenPost extends ListScreen {
 	protected function register_column_types() {
 		$this->register_column_type( new Column\CustomField );
 		$this->register_column_type( new Column\Actions );
-	}
-
-	public function get_table_url() {
-		return add_query_arg( [ 'post_type' => $this->get_post_type() ], admin_url( 'edit.php' ) );
 	}
 
 	/**

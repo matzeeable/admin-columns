@@ -125,7 +125,7 @@ class TableLoader implements Registrable {
 
 		// No available list screen found.
 		// TODO: only exists because we need the default columns from the list screen
-		return ListScreenTypes::instance()->get_list_screen_by_key( $key );
+		return $this->list_screen_factory->create( $key );
 	}
 
 }

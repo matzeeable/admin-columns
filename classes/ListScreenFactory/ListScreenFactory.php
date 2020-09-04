@@ -50,7 +50,6 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 					: null;
 			default :
 				return null;
-
 		}
 	}
 

@@ -227,13 +227,15 @@ final class Database implements ListScreenRepositoryWritable {
 		}
 
 		$list_screen->set_id( new ListScreenId( $data->list_id ) );
+		$list_screen->set_updated( DateTime::createFromFormat( 'Y-m-d H:i:s', $data->date_modified ) );
 
-		$list_screen->set_title( $data->title )
-		            ->set_updated( DateTime::createFromFormat( 'Y-m-d H:i:s', $data->date_modified ) );
+		$settings = $data->settings
+			? unserialize( $data->settings )
+			: [];
 
-		if ( $data->settings ) {
-			$list_screen->set_preferences( unserialize( $data->settings ) );
-		}
+		$settings['title'] = $data->title;
+
+		$list_screen->set_preferences( $settings );
 
 		if ( $data->columns ) {
 			foreach ( unserialize( $data->columns ) as $column_name => $column_data ) {

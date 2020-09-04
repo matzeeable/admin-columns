@@ -63,8 +63,15 @@ class Save {
 			$list_screen->add_column( $this->column_factory->create( $column_data, $list_screen ) );
 		}
 
-		$list_screen->set_title( ! empty( $formdata['title'] ) ? $formdata['title'] : $list_screen->get_label() )
-		            ->set_preferences( ! empty( $formdata['settings'] ) ? $formdata['settings'] : [] );
+		$settings = isset( $formdata['settings'] ) && $formdata['settings']
+			? $formdata['settings']
+			: [];
+
+		$settings['title'] = isset( $formdata['title'] ) && $formdata['title']
+			? $formdata['title']
+			: $list_screen->get_label();
+
+		$list_screen->set_preferences( $settings );
 
 		$this->storage->save( $list_screen );
 
@@ -77,7 +84,7 @@ class Save {
 					__( 'Settings for %s updated successfully.', 'codepress-admin-columns' ),
 					sprintf( '<strong>%s</strong>', esc_html( $list_screen->get_title() ) )
 				),
-				ac_helper()->html->link( $list_screen->get_screen_link(), sprintf( __( 'View %s screen', 'codepress-admin-columns' ), $list_screen->get_label() ) )
+				sprintf( '<a href="%s">%s</a>', $list_screen->get_screen_link(), sprintf( __( 'View %s screen', 'codepress-admin-columns' ), $list_screen->get_label() ) )
 			)
 		);
 	}

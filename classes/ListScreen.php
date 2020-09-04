@@ -3,6 +3,8 @@
 namespace AC;
 
 use AC\Type\ListScreenId;
+use AC\Type\ListScreenKey;
+use AC\Type\TableId;
 use DateTime;
 use ReflectionClass;
 use ReflectionException;
@@ -12,7 +14,7 @@ use WP_Screen;
  * List Screen
  * @since 2.0
  */
-abstract class ListScreen {
+abstract class ListScreen implements Registrable {
 
 	/**
 	 * @deprecated 4.0
@@ -25,15 +27,14 @@ abstract class ListScreen {
 	private $id;
 
 	/**
-	 * Unique Identifier for List Screen.
-	 * @var string
+	 * @var ListScreenKey
 	 */
 	protected $key;
 
 	/**
 	 * @var string
 	 */
-	private $label;
+	protected $label;
 
 	/**
 	 * @var MetaType
@@ -44,12 +45,6 @@ abstract class ListScreen {
 	 * @var string
 	 */
 	private $singular_label;
-
-	/**
-	 * @var string
-	 */
-	// TODO: remove
-	private $group;
 
 	/**
 	 * @var Column[]
@@ -63,18 +58,15 @@ abstract class ListScreen {
 	// TODO
 	private $column_types;
 
-	/** @var string */
-	private $title;
-
 	/**
 	 * @var DateTime
 	 */
 	private $updated;
 
 	/**
-	 * @var string
+	 * @var TableId
 	 */
-	protected $heading_hook;
+	protected $table_id;
 
 	/**
 	 * @var array ListScreen settings data
@@ -87,9 +79,24 @@ abstract class ListScreen {
 	private $read_only = false;
 
 	/**
-	 * @var bool
+	 * @param ListScreenKey $key
+	 * @param MetaType      $meta_type
+	 * @param TableId       $table_id
+	 * @param string        $label
 	 */
-	private $network_only = false;
+	public function __construct(
+		ListScreenKey $key,
+		MetaType $meta_type,
+		TableId $table_id,
+		$label = null,
+		ListScreenId $id = null
+	) {
+		$this->key = $key;
+		$this->meta_type = $meta_type;
+		$this->table_id = $table_id;
+		$this->label = $label;
+		$this->id = $id;
+	}
 
 	/**
 	 * @return bool
@@ -106,10 +113,9 @@ abstract class ListScreen {
 	}
 
 	/**
-	 * Contains the hook that contains the manage_value callback
 	 * @return void
 	 */
-	abstract public function set_manage_value_callback();
+	abstract public function register();
 
 	/**
 	 * Register column types
@@ -127,31 +133,20 @@ abstract class ListScreen {
 	/**
 	 * @return string
 	 */
-	abstract public function get_table_url();
+	abstract public function get_url();
 
 	/**
 	 * @return string
 	 */
 	public function get_key() {
-		return $this->key;
+		return $this->key->get_value();
 	}
 
 	/**
-	 * @return string
+	 * @return TableId
 	 */
-	public function get_heading_hook() {
-		return $this->heading_hook;
-	}
-
-	/**
-	 * @param string $key
-	 *
-	 * @return self
-	 */
-	protected function set_key( $key ) {
-		$this->key = $key;
-
-		return $this;
+	public function get_table_id() {
+		return $this->table_id;
 	}
 
 	/**
@@ -164,24 +159,15 @@ abstract class ListScreen {
 	/**
 	 * @return string
 	 */
+	// TODO: what to do when empty?
 	public function get_label() {
 		return $this->label;
 	}
 
 	/**
-	 * @param string $label
-	 *
-	 * @return self
-	 */
-	protected function set_label( $label ) {
-		$this->label = $label;
-
-		return $this;
-	}
-
-	/**
 	 * @return string
 	 */
+	// TODO: set Labels object?
 	public function get_singular_label() {
 		return null !== $this->singular_label ? $this->singular_label : $this->label;
 	}
@@ -205,50 +191,11 @@ abstract class ListScreen {
 	}
 
 	/**
-	 * @param string $meta_type
-	 *
-	 * @return self
-	 */
-	protected function set_meta_type( $meta_type ) {
-		$this->meta_type = new MetaType( $meta_type );
-
-		return $this;
-	}
-
-	/**
 	 * @return string
 	 */
-	public function get_group() {
-		return $this->group;
-	}
-
-	/**
-	 * @param string $group
-	 *
-	 * @return self
-	 */
-	public function set_group( $group ) {
-		$this->group = $group;
-
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
+	// TODO: deprecated
 	public function get_title() {
-		return $this->title;
-	}
-
-	/**
-	 * @param string $title
-	 *
-	 * @return $this
-	 */
-	public function set_title( $title ) {
-		$this->title = $title;
-
-		return $this;
+		return $this->get_preference( 'title' );
 	}
 
 	public function set_id( ListScreenId $id ) {
@@ -283,20 +230,6 @@ abstract class ListScreen {
 	}
 
 	/**
-	 * Settings can not be overwritten
-	 */
-	public function is_network_only() {
-		return $this->network_only;
-	}
-
-	/**
-	 * @param bool $network_only
-	 */
-	public function set_network_only( $network_only ) {
-		$this->network_only = (bool) $network_only;
-	}
-
-	/**
 	 * @param DateTime $updated
 	 *
 	 * @return $this
@@ -319,9 +252,10 @@ abstract class ListScreen {
 	/**
 	 * @return string
 	 */
+	// TODO: move to Columns page
 	public function get_edit_link() {
 		return add_query_arg( [
-			'list_screen' => $this->key,
+			'list_screen' => $this->key->get_value(),
 			'layout_id'   => $this->id->get_id(),
 		], ac_get_admin_url( 'columns' ) );
 	}
@@ -509,14 +443,16 @@ abstract class ListScreen {
 
 	/**
 	 * @param string $column_name
-	 * @param int $id
-	 * @param null $original_value
+	 * @param int    $id
+	 * @param null   $original_value
 	 *
 	 * @return string
 	 */
 	// TODO: refactor
 	public function get_display_value_by_column_name( $column_name, $id, $original_value = null ) {
 		$column = $this->get_column_by_name( $column_name );
+
+		// TODO: check Renderable interface
 
 		if ( ! $column ) {
 			return $original_value;
@@ -532,8 +468,8 @@ abstract class ListScreen {
 		/**
 		 * Column display value
 		 *
-		 * @param string $value Column display value
-		 * @param int $id Object ID
+		 * @param string $value  Column display value
+		 * @param int    $id     Object ID
 		 * @param Column $column Column object
 		 *
 		 * @since 3.0
@@ -547,7 +483,98 @@ abstract class ListScreen {
 	 * @return string
 	 */
 	public function get_screen_link() {
-		return add_query_arg( [ 'layout' => $this->id->get_id() ], $this->get_table_url() );
+		return add_query_arg( [ 'layout' => $this->id->get_id() ], $this->get_url() );
+	}
+
+	/**
+	 * @param string $key
+	 *
+	 * @return self
+	 * @deprecated NEWVERSION
+	 */
+	protected function set_key( $key ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 * @deprecated NEWVERSION
+	 */
+	public function get_group() {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return '';
+	}
+
+	/**
+	 * @param string $group
+	 *
+	 * @return self
+	 * @deprecated NEWVERSION
+	 */
+	public function set_group( $group ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return $this;
+	}
+
+	/**
+	 * @param string $meta_type
+	 *
+	 * @return self
+	 * @deprecated NEWVERSION
+	 */
+	protected function set_meta_type( $meta_type ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		$this->meta_type = new MetaType( $meta_type );
+
+		return $this;
+	}
+
+	/**
+	 * @param string $title
+	 *
+	 * @return $this
+	 * @deprecated NEWVERSION
+	 */
+	public function set_title( $title ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return $this;
+	}
+
+	/**
+	 * @param string $label
+	 *
+	 * @return self
+	 * @deprecated NEWVERSION
+	 */
+	protected function set_label( $label ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 * @deprecated NEWVERSION
+	 */
+	public function is_network_only() {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return false;
+	}
+
+	/**
+	 * @param bool $network_only
+	 *
+	 * @deprecated NEWVERSION
+	 */
+	public function set_network_only( $network_only ) {
+		_deprecated_function( __METHOD__, 'NEWVERSIO' );
 	}
 
 	/**
@@ -586,6 +613,15 @@ abstract class ListScreen {
 		_deprecated_function( __METHOD__, '4.0' );
 
 		return false;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_screen_id() {
+		_deprecated_function( __METHOD__, 'NEWVERSION', 'AC\ListScreen::table_id::get_screen_id()' );
+
+		return $this->table_id->get_screen_id();
 	}
 
 	/**
@@ -761,7 +797,6 @@ abstract class ListScreen {
 	 *
 	 * @return string
 	 * @deprecated NEWVERSION
-	 *
 	 */
 	public function get_single_row( $id ) {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
@@ -811,16 +846,6 @@ abstract class ListScreen {
 	}
 
 	/**
-	 * @return string
-	 * @deprecated NEWVERSION
-	 */
-	public function get_screen_id() {
-		_deprecated_function( __METHOD__, 'NEWVERSION' );
-
-		return '';
-	}
-
-	/**
 	 * @param string $screen_id
 	 *
 	 * @return self
@@ -847,7 +872,6 @@ abstract class ListScreen {
 	 *
 	 * @return self
 	 * @deprecated NEWVERSION
-	 *
 	 */
 	protected function set_page( $page ) {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
@@ -861,125 +885,125 @@ abstract class ListScreen {
 	 *
 	 * @return bool
 	 */
-//	private function is_original_column( $type ) {
-//		$column = $this->get_column_by_type( $type );
-//
-//		if ( ! $column ) {
-//			return false;
-//		}
-//
-//		return $column->is_original();
-//	}
+	//	private function is_original_column( $type ) {
+	//		$column = $this->get_column_by_type( $type );
+	//
+	//		if ( ! $column ) {
+	//			return false;
+	//		}
+	//
+	//		return $column->is_original();
+	//	}
 
 	/**
 	 * @since 3.0
 	 */
-//	private function _set_columns() {
-//		foreach ( $this->get_settings() as $name => $data ) {
-//			$data['name'] = $name;
-//			$column = $this->create_column( $data );
-//
-//			if ( $column ) {
-//				$this->register_column( $column );
-//			}
-//		}
+	//	private function _set_columns() {
+	//		foreach ( $this->get_settings() as $name => $data ) {
+	//			$data['name'] = $name;
+	//			$column = $this->create_column( $data );
+	//
+	//			if ( $column ) {
+	//				$this->register_column( $column );
+	//			}
+	//		}
 
 	// Nothing stored. Use WP default columns.
-//		if ( null === $this->columns ) {
-//			foreach ( $this->get_original_columns() as $type => $label ) {
-//				if ( $column = $this->create_column( [ 'type' => $type, 'original' => true ] ) ) {
-//					$this->register_column( $column );
-//				}
-//			}
-//		}
+	//		if ( null === $this->columns ) {
+	//			foreach ( $this->get_original_columns() as $type => $label ) {
+	//				if ( $column = $this->create_column( [ 'type' => $type, 'original' => true ] ) ) {
+	//					$this->register_column( $column );
+	//				}
+	//			}
+	//		}
 
-//		if ( null === $this->columns ) {
-//			$this->columns = [];
-//		}
-//	}
+	//		if ( null === $this->columns ) {
+	//			$this->columns = [];
+	//		}
+	//	}
 
 	/**
 	 * @param array $settings Column options
 	 *
 	 * @return Column|false
 	 */
-//	public function create_column( array $settings ) {
-//		if ( ! isset( $settings['type'] ) ) {
-//			return false;
-//		}
-//
-//		$class = $this->get_class_by_type( $settings['type'] );
-//
-//		if ( ! $class ) {
-//			return false;
-//		}
-//
-//		/* @var Column $column */
-//		$column = new $class();
-//		$column->set_list_screen( $this )
-//		       ->set_type( $settings['type'] );
-//
-//		if ( isset( $settings['name'] ) ) {
-//			$column->set_name( $settings['name'] );
-//		}
-//
-//		// Mark as original
-//		if ( $this->is_original_column( $settings['type'] ) ) {
-//			$column->set_original( true );
-//			$column->set_name( $settings['type'] );
-//		}
-//
-//		$column->set_options( $settings );
-//
-//		do_action( 'ac/list_screen/column_created', $column, $this );
-//
-//		return $column;
-//	}
+	//	public function create_column( array $settings ) {
+	//		if ( ! isset( $settings['type'] ) ) {
+	//			return false;
+	//		}
+	//
+	//		$class = $this->get_class_by_type( $settings['type'] );
+	//
+	//		if ( ! $class ) {
+	//			return false;
+	//		}
+	//
+	//		/* @var Column $column */
+	//		$column = new $class();
+	//		$column->set_list_screen( $this )
+	//		       ->set_type( $settings['type'] );
+	//
+	//		if ( isset( $settings['name'] ) ) {
+	//			$column->set_name( $settings['name'] );
+	//		}
+	//
+	//		// Mark as original
+	//		if ( $this->is_original_column( $settings['type'] ) ) {
+	//			$column->set_original( true );
+	//			$column->set_name( $settings['type'] );
+	//		}
+	//
+	//		$column->set_options( $settings );
+	//
+	//		do_action( 'ac/list_screen/column_created', $column, $this );
+	//
+	//		return $column;
+	//	}
 
 	/**
 	 * @param string $type
 	 *
 	 * @return false|Column
 	 */
-//	public function get_column_by_type( $type ) {
-//		$column_types = $this->get_column_types();
-//
-//		if ( ! isset( $column_types[ $type ] ) ) {
-//			return false;
-//		}
-//
-//		return $column_types[ $type ];
-//	}
+	//	public function get_column_by_type( $type ) {
+	//		$column_types = $this->get_column_types();
+	//
+	//		if ( ! isset( $column_types[ $type ] ) ) {
+	//			return false;
+	//		}
+	//
+	//		return $column_types[ $type ];
+	//	}
 
 	/**
 	 * @param string $type
 	 *
 	 * @return false|string
 	 */
-//	public function get_class_by_type( $type ) {
-//		$column = $this->get_column_by_type( $type );
-//
-//		if ( ! $column ) {
-//			return false;
-//		}
-//
-//		return get_class( $column );
-//	}
+	//	public function get_class_by_type( $type ) {
+	//		$column = $this->get_column_by_type( $type );
+	//
+	//		if ( ! $column ) {
+	//			return false;
+	//		}
+	//
+	//		return get_class( $column );
+	//	}
 
 	/**
 	 * @param string $type
 	 *
 	 * @return string Label
 	 */
-//	public function get_original_label( $type ) {
-//		$columns = $this->get_original_columns();
-//
-//		if ( ! isset( $columns[ $type ] ) ) {
-//			return false;
-//		}
-//
-//		return $columns[ $type ];
-//	}
+	//	public function get_original_label( $type ) {
+	//		$columns = $this->get_original_columns();
+	//
+	//		if ( ! isset( $columns[ $type ] ) ) {
+	//			return false;
+	//		}
+	//
+	//		return $columns[ $type ];
+	//	}
 
 	/**
 	 * @return array

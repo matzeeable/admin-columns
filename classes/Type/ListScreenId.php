@@ -22,6 +22,11 @@ final class ListScreenId {
 		$this->id = $id;
 	}
 
+	/**
+	 * @param string $id
+	 *
+	 * @return bool
+	 */
 	public static function is_valid_id( $id ) {
 		return is_string( $id ) && $id !== '';
 	}

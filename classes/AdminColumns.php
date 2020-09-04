@@ -81,7 +81,7 @@ class AdminColumns extends Plugin {
 			new ThirdParty\NinjaForms,
 			new ThirdParty\WooCommerce,
 			new ThirdParty\WPML,
-			new Controller\DefaultColumns( new Request(), new DefaultColumnsRepository() ),
+			new Controller\DefaultColumns( new Request(), new DefaultColumnsRepository(), $this->list_screen_factory ),
 			new QuickEdit( $this->storage, new Table\Preference() ),
 			new Capabilities\Manage(),
 			new Controller\AjaxColumnRequest( $this->storage, $column_factory, $this->list_screen_factory, new Request() ),
@@ -302,7 +302,7 @@ class AdminColumns extends Plugin {
 	public function get_post_types() {
 		_deprecated_function( __METHOD__, '4.1' );
 
-		return ( new ListScreens )->get_post_types();
+		return [];
 	}
 
 	/**

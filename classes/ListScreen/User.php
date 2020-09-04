@@ -4,6 +4,10 @@ namespace AC\ListScreen;
 
 use AC;
 use AC\ListScreen;
+use AC\MetaType;
+use AC\Type\ListScreenId;
+use AC\Type\ListScreenKey;
+use AC\Type\TableId;
 use ReflectionException;
 use WP_User;
 use WP_Users_List_Table;
@@ -12,28 +16,24 @@ class User extends ListScreen {
 
 	const NAME = 'wp-users';
 
-	public function __construct() {
-
-		$this->set_label( __( 'Users' ) )
-		     ->set_singular_label( __( 'User' ) )
-		     ->set_key( self::NAME )
-		     ->set_group( 'user' );
-
-		$this->meta_type = new AC\MetaType( AC\MetaType::USER );
-		$this->heading_hook = 'manage_users_columns';
+	public function __construct( ListScreenId $id = null ) {
+		parent::__construct(
+			new ListScreenKey( self::NAME ),
+			new MetaType( MetaType::USER ),
+			new TableId( 'users', 'users' ),
+			__( 'Users' ),
+			$id
+		);
 	}
 
-	/**
-	 * @see set_manage_value_callback()
-	 */
-	public function set_manage_value_callback() {
+	public function register() {
 		add_filter( 'manage_users_custom_column', [ $this, 'manage_value' ], 100, 3 );
 	}
 
 	/**
 	 * @param string $value
 	 * @param string $column_name
-	 * @param int $user_id
+	 * @param int    $user_id
 	 *
 	 * @return string
 	 * @since 2.0.2
@@ -51,7 +51,7 @@ class User extends ListScreen {
 		return get_userdata( $id );
 	}
 
-	public function get_table_url() {
+	public function get_url() {
 		return admin_url( 'users.php' );
 	}
 
@@ -70,7 +70,7 @@ class User extends ListScreen {
 	 *
 	 * @return string HTML
 	 * @deprecated NEWVERSION
-	 * @since 3.0
+	 * @since      3.0
 	 */
 	public function get_single_row( $id ) {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
@@ -85,7 +85,7 @@ class User extends ListScreen {
 	public function get_list_table() {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
-		return ( new AC\ListTableFactory() )->create_user_table( $this->get_screen_id() );
+		return ( new AC\ListTableFactory() )->create_user_table( $this->table_id->get_screen_id() );
 	}
 
 }

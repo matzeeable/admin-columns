@@ -4,6 +4,10 @@ namespace AC\ListScreen;
 
 use AC;
 use AC\ListScreen;
+use AC\MetaType;
+use AC\Type\ListScreenId;
+use AC\Type\ListScreenKey;
+use AC\Type\TableId;
 use ReflectionException;
 use WP_Comment;
 use WP_Comments_List_Table;
@@ -15,15 +19,14 @@ class Comment extends ListScreen {
 
 	const NAME = 'wp-comments';
 
-	public function __construct() {
-
-		$this->set_label( __( 'Comments' ) )
-		     ->set_singular_label( __( 'Comment' ) )
-		     ->set_key( self::NAME )
-		     ->set_group( 'comment' );
-
-		$this->meta_type = new AC\MetaType( AC\MetaType::COMMENT );
-		$this->heading_hook = 'manage_edit-comments_columns';
+	public function __construct( ListScreenId $id = null ) {
+		parent::__construct(
+			new ListScreenKey( self::NAME ),
+			new MetaType( MetaType::COMMENT ),
+			new TableId( 'edit', 'edit-comments' ),
+			__( 'Comments' ),
+			$id
+		);
 	}
 
 	/**
@@ -35,23 +38,14 @@ class Comment extends ListScreen {
 		return get_comment( $id );
 	}
 
-	public function set_manage_value_callback() {
-		add_action( 'manage_comments_custom_column', [ $this, 'manage_value' ], 100, 2 );
+	public function register() {
+		add_action( 'manage_comments_custom_column', function ( $column_name, $id ) {
+			echo $this->get_display_value_by_column_name( $column_name, $id );
+		}, 100, 2 );
 	}
 
-	/**
-	 * @since 3.5
-	 */
 	public function get_table_attr_id() {
 		return '#the-comment-list';
-	}
-
-	/**
-	 * @param string $column_name
-	 * @param int $id
-	 */
-	public function manage_value( $column_name, $id ) {
-		echo $this->get_display_value_by_column_name( $column_name, $id );
 	}
 
 	/**
@@ -64,7 +58,7 @@ class Comment extends ListScreen {
 		$this->register_column_types_from_dir( 'AC\Column\Comment' );
 	}
 
-	public function get_table_url() {
+	public function get_url() {
 		return admin_url( 'comments.php' );
 	}
 
@@ -75,7 +69,7 @@ class Comment extends ListScreen {
 	public function get_list_table() {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
-		return ( new AC\ListTableFactory() )->create_comment_table( $this->get_screen_id() );
+		return ( new AC\ListTableFactory() )->create_comment_table( $this->table_id->get_screen_id() );
 	}
 
 }

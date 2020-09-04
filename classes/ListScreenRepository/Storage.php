@@ -125,7 +125,8 @@ final class Storage implements ListScreenRepositoryWritable {
 				$match = $repository->get_rules()->match( [
 					Rule::ID    => $list_screen->has_id() ? $list_screen->get_id() : null,
 					Rule::TYPE  => $list_screen->get_key(),
-					Rule::GROUP => $list_screen->get_group(),
+					// TODO
+					Rule::GROUP => '', //$list_screen->get_group(),
 				] );
 			}
 

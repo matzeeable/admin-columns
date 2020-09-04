@@ -5,6 +5,7 @@ namespace AC\Controller;
 use AC;
 use AC\DefaultColumnsRepository;
 use AC\ListScreen;
+use AC\ListScreenFactory;
 use AC\Registrable;
 use AC\Request;
 
@@ -19,12 +20,22 @@ class DefaultColumns implements Registrable {
 	/** @var Request */
 	private $request;
 
-	/** @var DefaultColumns */
+	/** @var DefaultColumnsRepository */
 	private $default_columns;
 
-	public function __construct( Request $request, DefaultColumnsRepository $default_columns ) {
+	/**
+	 * @var ListScreenFactory
+	 */
+	private $list_screen_factory;
+
+	public function __construct(
+		Request $request,
+		DefaultColumnsRepository $default_columns,
+		ListScreenFactory $list_screen_factory
+	) {
 		$this->request = $request;
 		$this->default_columns = $default_columns;
+		$this->list_screen_factory = $list_screen_factory;
 	}
 
 	public function register() {
@@ -40,7 +51,7 @@ class DefaultColumns implements Registrable {
 			return;
 		}
 
-		$this->list_screen = AC\ListScreenTypes::instance()->get_list_screen_by_key( $this->request->get( self::LISTSCREEN_KEY ) );
+		$this->list_screen = $this->list_screen_factory->create( $this->request->get( self::LISTSCREEN_KEY ) );
 
 		if ( null === $this->list_screen ) {
 			return;
@@ -50,7 +61,7 @@ class DefaultColumns implements Registrable {
 		$this->default_columns->update( $this->list_screen->get_key(), [] );
 
 		// Our custom columns are set at priority 200. Before they are added we need to store the default column headings.
-		add_filter( $this->list_screen->get_heading_hookname(), [ $this, 'save_headings' ], 199 );
+		add_filter( "manage_{$this->list_screen->get_table_id()->get_screen_id()}_columns", [ $this, 'save_headings' ], 199 );
 
 		// no render needed
 		ob_start();

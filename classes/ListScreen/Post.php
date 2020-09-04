@@ -4,25 +4,33 @@ namespace AC\ListScreen;
 
 use AC\ListScreenPost;
 use AC\ListTableFactory;
+use AC\Type\ListScreenId;
+use AC\Type\ListScreenKey;
+use AC\Type\TableId;
 use ReflectionException;
 use WP_Posts_List_Table;
 
 class Post extends ListScreenPost {
 
-	public function __construct( $post_type ) {
-		parent::__construct( $post_type );
-
-		$this->set_group( 'post' )
-		     ->set_key( $post_type );
-
-		$this->heading_hook = "manage_edit-{$post_type}_columns";
+	public function __construct( $post_type, ListScreenId $id = null ) {
+		parent::__construct(
+			$post_type,
+			new ListScreenKey( $post_type ),
+			new TableId( 'edit', 'edit-' . $post_type ),
+			null,
+			$id
+		);
 	}
 
 	/**
 	 * @see WP_Posts_List_Table::column_default
 	 */
-	public function set_manage_value_callback() {
+	public function register() {
 		add_action( "manage_{$this->post_type}_posts_custom_column", [ $this, 'manage_value' ], 100, 2 );
+	}
+
+	public function get_url() {
+		return add_query_arg( [ 'post_type' => $this->get_post_type() ], admin_url( 'edit.php' ) );
 	}
 
 	/**
@@ -65,7 +73,7 @@ class Post extends ListScreenPost {
 	protected function get_list_table() {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
-		return ( new ListTableFactory() )->create_post_table( $this->get_screen_id() );
+		return ( new ListTableFactory() )->create_post_table( $this->table_id->get_screen_id() );
 	}
 
 }

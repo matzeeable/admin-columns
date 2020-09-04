@@ -3,6 +3,9 @@
 namespace AC\ListScreen;
 
 use AC;
+use AC\Type\ListScreenId;
+use AC\Type\ListScreenKey;
+use AC\Type\TableId;
 use ReflectionException;
 use WP_Media_List_Table;
 
@@ -10,21 +13,21 @@ class Media extends AC\ListScreenPost {
 
 	const NAME = 'wp-media';
 
-	public function __construct() {
-		parent::__construct( 'attachment' );
-
-		$this->set_key( self::NAME )
-		     ->set_group( 'media' )
-		     ->set_label( __( 'Media' ) );
-
-		$this->heading_hook = 'manage_upload_columns';
+	public function __construct( ListScreenId $id = null ) {
+		parent::__construct(
+			'attachment',
+			new ListScreenKey( self::NAME ),
+			new TableId( 'upload', 'upload' ),
+			__( 'Media' ),
+			$id
+		);
 	}
 
-	public function set_manage_value_callback() {
+	public function register() {
 		add_action( 'manage_media_custom_column', [ $this, 'manage_value' ], 100, 2 );
 	}
 
-	public function get_table_url() {
+	public function get_url() {
 		return add_query_arg( [ 'mode' => 'list' ], admin_url( 'upload.php' ) );
 	}
 
@@ -54,7 +57,7 @@ class Media extends AC\ListScreenPost {
 	public function get_list_table() {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
-		return ( new AC\ListTableFactory() )->create_media_table( $this->get_screen_id() );
+		return ( new AC\ListTableFactory() )->create_media_table( $this->table_id->get_screen_id() );
 	}
 
 	/**

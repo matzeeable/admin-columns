@@ -5,7 +5,6 @@ namespace AC\Admin\Section\Partial;
 use AC\Controller\ListScreenRequest;
 use AC\ListScreenGroups;
 use AC\ListScreenTypeRepository;
-use AC\ListScreenTypes;
 use AC\View;
 
 class Menu {
