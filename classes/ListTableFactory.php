@@ -3,14 +3,38 @@
 namespace AC;
 
 use WP_Comments_List_Table;
+use WP_List_Table;
 use WP_Media_List_Table;
 use WP_MS_Sites_List_Table;
 use WP_MS_Users_List_Table;
 use WP_Posts_List_Table;
+use WP_Screen;
 use WP_Terms_List_Table;
 use WP_Users_List_Table;
 
 class ListTableFactory {
+
+	/**
+	 * @param WP_Screen $screen
+	 *
+	 * @return WP_List_Table
+	 */
+	public function create_by_screen( WP_Screen $screen  ) {
+		switch( $screen->base ) {
+
+			// TODO
+			case 'edit' :
+				return $this->create_post_table( $screen );
+			case 'edit' :
+				return $this->create_post_table( $screen );
+			case 'edit' :
+				return $this->create_post_table( $screen );
+			case 'edit' :
+				return $this->create_post_table( $screen );
+			case 'edit' :
+				return $this->create_post_table( $screen );
+		}
+	}
 
 	/**
 	 * @param string $screen_id

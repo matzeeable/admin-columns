@@ -23,7 +23,7 @@ class ScreenController implements Registrable {
 
 	public function register() {
 		// Headings
-		add_filter( $this->list_screen->get_heading_hookname(), [ $this, 'add_headings' ], 200 );
+		add_filter( $this->list_screen->get_heading_hook(), [ $this, 'add_headings' ], 200 );
 
 		// Values
 		$this->list_screen->set_manage_value_callback();

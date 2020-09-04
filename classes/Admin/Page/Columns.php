@@ -18,6 +18,7 @@ use AC\Column;
 use AC\Controller\ListScreenRequest;
 use AC\DefaultColumnsRepository;
 use AC\ListScreen;
+use AC\ListScreenFactory;
 use AC\ListScreenRepository\Storage;
 use AC\Message;
 use AC\Type\ListScreenId;
@@ -52,12 +53,18 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 	 */
 	private $storage;
 
+	/**
+	 * @var ListScreenFactory
+	 */
+	private $list_screen_factory;
+
 	public function __construct(
 		ListScreenRequest $controller,
 		Location\Absolute $location,
 		DefaultColumnsRepository $default_columns,
 		Menu $menu,
-		Storage $storage
+		Storage $storage,
+		ListScreenFactory $list_screen_factory
 	) {
 		parent::__construct( self::NAME, __( 'Admin Columns', 'codepress-admin-columns' ) );
 
@@ -66,6 +73,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 		$this->default_columns = $default_columns;
 		$this->menu = $menu;
 		$this->storage = $storage;
+		$this->list_screen_factory = $list_screen_factory;
 	}
 
 	public function show_read_only_notice( ListScreen $list_screen ) {
@@ -89,7 +97,8 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 				'ac-admin-page-columns',
 				$this->location->with_suffix( 'assets/js/admin-page-columns.js' ),
 				$this->default_columns,
-				$this->controller->get_list_screen()
+				$this->controller->get_list_screen(),
+				$this->list_screen_factory
 			),
 			new Style( 'ac-admin-page-columns-css', $this->location->with_suffix( 'assets/css/admin-page-columns.css' ) ),
 			new Style( 'ac-select2' ),

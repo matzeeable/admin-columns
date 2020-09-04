@@ -88,6 +88,9 @@ final class Screen implements Registrable {
 	 * @since 2.5.5
 	 */
 	public function set_primary_column( $default ) {
+		if ( ! $this->list_screen->has_columns() ) {
+			return $default;
+		}
 
 		if ( ! $this->list_screen->get_column_by_name( $default ) ) {
 			$default = key( $this->list_screen->get_columns() );
@@ -242,8 +245,10 @@ final class Screen implements Registrable {
 		do_action( 'ac/table_scripts', $this->list_screen, $this );
 
 		// Column specific scripts
-		foreach ( $this->list_screen->get_columns() as $column ) {
-			$column->scripts();
+		if ( $this->list_screen->has_columns() ) {
+			foreach ( $this->list_screen->get_columns() as $column ) {
+				$column->scripts();
+			}
 		}
 	}
 
@@ -265,8 +270,10 @@ final class Screen implements Registrable {
 	 */
 	private function get_column_types_mapping() {
 		$types = [];
-		foreach ( $this->list_screen->get_columns() as $column ) {
-			$types[ $column->get_name() ] = $column->get_type();
+		if ( $this->list_screen->has_columns() ) {
+			foreach ( $this->list_screen->get_columns() as $column ) {
+				$types[ $column->get_name() ] = $column->get_type();
+			}
 		}
 
 		return $types;

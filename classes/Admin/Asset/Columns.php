@@ -7,6 +7,7 @@ use AC\Asset\Location;
 use AC\Asset\Script;
 use AC\DefaultColumnsRepository;
 use AC\ListScreen;
+use AC\ListScreenFactory;
 
 class Columns extends Script {
 
@@ -20,11 +21,17 @@ class Columns extends Script {
 	 */
 	private $list_screen;
 
+	/**
+	 * @var ListScreenFactory
+	 */
+	private $list_screen_factory;
+
 	public function __construct(
 		$handle,
 		Location $location,
 		DefaultColumnsRepository $default_columns,
-		ListScreen $list_screen
+		ListScreen $list_screen,
+		ListScreenFactory $list_screen_factory
 	) {
 		parent::__construct( $handle, $location, [
 			'jquery',
@@ -36,15 +43,11 @@ class Columns extends Script {
 
 		$this->default_columns = $default_columns;
 		$this->list_screen = $list_screen;
+		$this->list_screen_factory = $list_screen_factory;
 	}
 
 	private function get_list_screens() {
 		return ( new AC\ListScreenTypeRepository() )->find_all( [ 'is_network' => is_network_admin() ] );
-
-		// TODO: use ListScreenTypeRepository
-		//		return is_network_admin()
-		//			? ListScreenTypes::instance()->get_list_screens( [ 'network_only' => true ] )
-		//			: ListScreenTypes::instance()->get_list_screens( [ 'site_only' => true ] );
 	}
 
 	public function register() {
@@ -75,15 +78,14 @@ class Columns extends Script {
 				continue;
 			}
 
-			// TODO: how can we get the list table url?
-			$table_url = ''; //$list_screen->get_screen_link();
+			$list_screen_link = $this->list_screen_factory->create( $list_screen->get_key() )->get_screen_link();
 
-			if ( ! $table_url ) {
+			if ( ! $list_screen_link ) {
 				continue;
 			}
 
 			$params['uninitialized_list_screens'][ $list_screen->get_key() ] = [
-				'screen_link' => add_query_arg( [ 'save-default-headings' => '1', 'list_screen' => $list_screen->get_key() ], $table_url ),
+				'screen_link' => add_query_arg( [ 'save-default-headings' => '1', 'list_screen' => $list_screen->get_key() ], $list_screen_link ),
 				'label'       => $list_screen->get_label(),
 			];
 		}

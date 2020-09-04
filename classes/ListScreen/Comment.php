@@ -3,6 +3,7 @@
 namespace AC\ListScreen;
 
 use AC;
+use AC\ListScreen;
 use ReflectionException;
 use WP_Comment;
 use WP_Comments_List_Table;
@@ -10,7 +11,7 @@ use WP_Comments_List_Table;
 /**
  * @since 2.0
  */
-class Comment extends AC\ListScreenWP {
+class Comment extends ListScreen {
 
 	const NAME = 'wp-comments';
 
@@ -18,11 +19,11 @@ class Comment extends AC\ListScreenWP {
 
 		$this->set_label( __( 'Comments' ) )
 		     ->set_singular_label( __( 'Comment' ) )
-		     ->set_meta_type( 'comment' )
-		     ->set_screen_base( 'edit-comments' )
 		     ->set_key( self::NAME )
-		     ->set_screen_id( 'edit-comments' )
 		     ->set_group( 'comment' );
+
+		$this->meta_type = new AC\MetaType( AC\MetaType::COMMENT );
+		$this->heading_hook = 'manage_edit-comments_columns';
 	}
 
 	/**
@@ -32,21 +33,6 @@ class Comment extends AC\ListScreenWP {
 	 */
 	protected function get_object( $id ) {
 		return get_comment( $id );
-	}
-
-	/**
-	 * @return WP_Comments_List_Table
-	 */
-	public function get_list_table() {
-		require_once( ABSPATH . 'wp-admin/includes/class-wp-comments-list-table.php' );
-
-		$table = new WP_Comments_List_Table( [ 'screen' => $this->get_screen_id() ] );
-
-		// Since 4.4 the `floated_admin_avatar` filter is added in the constructor of the `\WP_Comments_List_Table` class.
-		// Here we remove the filter from the constructor.
-		remove_filter( 'comment_author', [ $table, 'floated_admin_avatar' ], 10 );
-
-		return $table;
 	}
 
 	public function set_manage_value_callback() {
@@ -62,7 +48,7 @@ class Comment extends AC\ListScreenWP {
 
 	/**
 	 * @param string $column_name
-	 * @param int    $id
+	 * @param int $id
 	 */
 	public function manage_value( $column_name, $id ) {
 		echo $this->get_display_value_by_column_name( $column_name, $id );
@@ -76,6 +62,20 @@ class Comment extends AC\ListScreenWP {
 		$this->register_column_type( new AC\Column\CustomField );
 		$this->register_column_type( new AC\Column\Actions );
 		$this->register_column_types_from_dir( 'AC\Column\Comment' );
+	}
+
+	public function get_table_url() {
+		return admin_url( 'comments.php' );
+	}
+
+	/**
+	 * @return WP_Comments_List_Table
+	 * @deprecated NEWVERSION
+	 */
+	public function get_list_table() {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return ( new AC\ListTableFactory() )->create_comment_table( $this->get_screen_id() );
 	}
 
 }

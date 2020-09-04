@@ -236,9 +236,6 @@ final class Database implements ListScreenRepositoryWritable {
 		}
 
 		if ( $data->columns ) {
-
-			$columns = [];
-
 			foreach ( unserialize( $data->columns ) as $column_name => $column_data ) {
 				$column = $this->column_factory->create( $column_data + [ 'name' => $column_name ], $list_screen );
 
@@ -246,10 +243,8 @@ final class Database implements ListScreenRepositoryWritable {
 					continue;
 				}
 
-				$columns[] = $column;
+				$list_screen->add_column( $column );
 			}
-
-			$list_screen->set_columns( $columns );
 		}
 
 		return $list_screen;

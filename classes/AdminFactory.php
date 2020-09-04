@@ -63,7 +63,8 @@ class AdminFactory {
 			$this->location,
 			new DefaultColumnsRepository(),
 			new Section\Partial\Menu( $list_screen_controller, false ),
-			$this->storage
+			$this->storage,
+			$this->list_screen_factory
 		);
 	}
 

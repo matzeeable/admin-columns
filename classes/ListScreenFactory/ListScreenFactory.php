@@ -37,7 +37,7 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 					? $this->create( $wp_screen->post_type )
 					: null;
 			case 'users' :
-				return 'users' === $wp_screen->id
+				return 'users' === $wp_screen->id && 'delete' !== filter_input( INPUT_GET, 'action' )
 					? $this->create( ListScreen\User::NAME )
 					: null;
 			case 'upload' :

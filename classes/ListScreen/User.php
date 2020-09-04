@@ -3,11 +3,12 @@
 namespace AC\ListScreen;
 
 use AC;
+use AC\ListScreen;
 use ReflectionException;
 use WP_User;
 use WP_Users_List_Table;
 
-class User extends AC\ListScreenWP {
+class User extends ListScreen {
 
 	const NAME = 'wp-users';
 
@@ -15,11 +16,11 @@ class User extends AC\ListScreenWP {
 
 		$this->set_label( __( 'Users' ) )
 		     ->set_singular_label( __( 'User' ) )
-		     ->set_meta_type( AC\MetaType::USER )
-		     ->set_screen_base( 'users' )
-		     ->set_screen_id( 'users' )
 		     ->set_key( self::NAME )
 		     ->set_group( 'user' );
+
+		$this->meta_type = new AC\MetaType( AC\MetaType::USER );
+		$this->heading_hook = 'manage_users_columns';
 	}
 
 	/**
@@ -30,28 +31,9 @@ class User extends AC\ListScreenWP {
 	}
 
 	/**
-	 * @return WP_Users_List_Table
-	 */
-	public function get_list_table() {
-		require_once( ABSPATH . 'wp-admin/includes/class-wp-users-list-table.php' );
-
-		return new WP_Users_List_Table( [ 'screen' => $this->get_screen_id() ] );
-	}
-
-	/**
-	 * @param $wp_screen
-	 *
-	 * @return bool
-	 * @since 2.4.10
-	 */
-	public function is_current_screen( $wp_screen ) {
-		return parent::is_current_screen( $wp_screen ) && 'delete' !== filter_input( INPUT_GET, 'action' );
-	}
-
-	/**
 	 * @param string $value
 	 * @param string $column_name
-	 * @param int    $user_id
+	 * @param int $user_id
 	 *
 	 * @return string
 	 * @since 2.0.2
@@ -69,14 +51,8 @@ class User extends AC\ListScreenWP {
 		return get_userdata( $id );
 	}
 
-	/**
-	 * @param int $id
-	 *
-	 * @return string HTML
-	 * @since 3.0
-	 */
-	public function get_single_row( $id ) {
-		return $this->get_list_table()->single_row( $this->get_object( $id ) );
+	public function get_table_url() {
+		return admin_url( 'users.php' );
 	}
 
 	/**
@@ -87,6 +63,29 @@ class User extends AC\ListScreenWP {
 		$this->register_column_type( new AC\Column\Actions );
 
 		$this->register_column_types_from_dir( 'AC\Column\User' );
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return string HTML
+	 * @deprecated NEWVERSION
+	 * @since 3.0
+	 */
+	public function get_single_row( $id ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return $this->get_list_table()->single_row( $this->get_object( $id ) );
+	}
+
+	/**
+	 * @return WP_Users_List_Table
+	 * @deprecated NEWVERSION
+	 */
+	public function get_list_table() {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return ( new AC\ListTableFactory() )->create_user_table( $this->get_screen_id() );
 	}
 
 }

@@ -6,6 +6,7 @@ use AC\Type\ListScreenId;
 use DateTime;
 use ReflectionClass;
 use ReflectionException;
+use WP_Screen;
 
 /**
  * List Screen
@@ -25,74 +26,55 @@ abstract class ListScreen {
 
 	/**
 	 * Unique Identifier for List Screen.
-	 * @since 2.0
 	 * @var string
 	 */
-	private $key;
+	protected $key;
 
 	/**
-	 * @since 2.0
 	 * @var string
 	 */
 	private $label;
 
 	/**
-	 * @since 2.3.5
+	 * @var MetaType
+	 */
+	protected $meta_type;
+
+	/**
 	 * @var string
 	 */
 	private $singular_label;
 
 	/**
-	 * Meta type of list screen; post, user, comment. Mostly used for fetching meta data.
-	 * @since 3.0
-	 * @var string
-	 */
-	private $meta_type;
-
-	/**
-	 * Page menu slug. Applies only when a menu page is used.
-	 * @since 2.4.10
-	 * @var string
-	 */
-	// TODO: remove
-	private $page;
-
-	/**
-	 * Group slug. Used for menu.
 	 * @var string
 	 */
 	// TODO: remove
 	private $group;
 
 	/**
-	 * Name of the base PHP file (without extension).
-	 * @see   \WP_Screen::base
-	 * @since 2.0
-	 * @var string
-	 */
-	// TODO: remove
-	private $screen_base;
-
-	/**
-	 * The unique ID of the screen.
-	 * @see   \WP_Screen::id
-	 * @since 2.5
-	 * @var string
-	 */
-	// TODO: remove
-	private $screen_id;
-
-	/**
-	 * @since 2.0.1
 	 * @var Column[]
 	 */
+	// TODO: use a ColumnCollection
 	private $columns;
 
 	/**
-	 * @since 2.2
 	 * @var Column[]
 	 */
+	// TODO
 	private $column_types;
+
+	/** @var string */
+	private $title;
+
+	/**
+	 * @var DateTime
+	 */
+	private $updated;
+
+	/**
+	 * @var string
+	 */
+	protected $heading_hook;
 
 	/**
 	 * @var array ListScreen settings data
@@ -108,14 +90,6 @@ abstract class ListScreen {
 	 * @var bool
 	 */
 	private $network_only = false;
-
-	/** @var string */
-	private $title;
-
-	/**
-	 * @var DateTime
-	 */
-	private $updated;
 
 	/**
 	 * @return bool
@@ -144,17 +118,29 @@ abstract class ListScreen {
 	abstract protected function register_column_types();
 
 	/**
+	 * @param int $id
+	 *
+	 * @return object
+	 */
+	abstract protected function get_object( $id );
+
+	/**
 	 * @return string
 	 */
-	public function get_heading_hookname() {
-		return 'manage_' . $this->get_screen_id() . '_columns';
-	}
+	abstract public function get_table_url();
 
 	/**
 	 * @return string
 	 */
 	public function get_key() {
 		return $this->key;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_heading_hook() {
+		return $this->heading_hook;
 	}
 
 	/**
@@ -215,7 +201,7 @@ abstract class ListScreen {
 	 * @return string
 	 */
 	public function get_meta_type() {
-		return $this->meta_type;
+		return $this->meta_type->get();
 	}
 
 	/**
@@ -224,61 +210,7 @@ abstract class ListScreen {
 	 * @return self
 	 */
 	protected function set_meta_type( $meta_type ) {
-		$this->meta_type = $meta_type;
-
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function get_screen_base() {
-		return $this->screen_base;
-	}
-
-	/**
-	 * @param string $screen_base
-	 *
-	 * @return self
-	 */
-	protected function set_screen_base( $screen_base ) {
-		$this->screen_base = $screen_base;
-
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function get_screen_id() {
-		return $this->screen_id;
-	}
-
-	/**
-	 * @param string $screen_id
-	 *
-	 * @return self
-	 */
-	protected function set_screen_id( $screen_id ) {
-		$this->screen_id = $screen_id;
-
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function get_page() {
-		return $this->page;
-	}
-
-	/**
-	 * @param string $page
-	 *
-	 * @return self
-	 */
-	protected function set_page( $page ) {
-		$this->page = $page;
+		$this->meta_type = new MetaType( $meta_type );
 
 		return $this;
 	}
@@ -333,16 +265,6 @@ abstract class ListScreen {
 	}
 
 	/**
-	 * @param $wp_screen
-	 *
-	 * @return boolean
-	 * @since 2.0.3
-	 */
-	public function is_current_screen( $wp_screen ) {
-		return $wp_screen && $wp_screen->id === $this->get_screen_id() && $wp_screen->base === $this->get_screen_base();
-	}
-
-	/**
 	 * Settings can not be overwritten
 	 */
 	public function is_read_only() {
@@ -392,24 +314,6 @@ abstract class ListScreen {
 		return $this->updated
 			? $this->updated
 			: new DateTime();
-	}
-
-	/**
-	 * @return string
-	 */
-	protected function get_admin_url() {
-		return admin_url( $this->get_screen_base() . '.php' );
-	}
-
-	/**
-	 * @return string
-	 */
-	// TODO: move to ListScreenType
-	public function get_screen_link() {
-		return add_query_arg( [
-			'page'   => $this->get_page(),
-			'layout' => $this->id->get_id(),
-		], $this->get_admin_url() );
 	}
 
 	/**
@@ -546,7 +450,7 @@ abstract class ListScreen {
 	}
 
 	/**
-	 * @param string $namespace Namespace from the current path
+	 * @param string $namespace
 	 *
 	 * @throws ReflectionException
 	 */
@@ -563,9 +467,7 @@ abstract class ListScreen {
 	}
 
 	/**
-	 * @param string $column_name Column name
-	 *
-	 * @since 3.0
+	 * @param string $column_name
 	 */
 	public function deregister_column( $column_name ) {
 		unset( $this->columns[ $column_name ] );
@@ -639,6 +541,13 @@ abstract class ListScreen {
 		$value = apply_filters( 'ac/column/value', $value, $id, $column );
 
 		return $value;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_screen_link() {
+		return add_query_arg( [ 'layout' => $this->id->get_id() ], $this->get_table_url() );
 	}
 
 	/**
@@ -807,7 +716,146 @@ abstract class ListScreen {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 	}
 
-	// TODO: remove or make deprecated
+	/**
+	 * @return string
+	 * @deprecated 3.1
+	 */
+	public function get_list_table_class() {
+		_deprecated_function( __METHOD__, '3.1' );
+
+		return '';
+	}
+
+	/**
+	 * @param string $list_table_class
+	 *
+	 * @deprecated 3.1
+	 */
+	public function set_list_table_class( $list_table_class ) {
+		_deprecated_function( __METHOD__, '3.1' );
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return object
+	 * @deprecated 3.1.2
+	 */
+	protected function get_object_by_id( $id ) {
+		_deprecated_function( __METHOD__, '3.1.4', 'AC\ListScreenWP::get_object()' );
+
+		return $this->get_object( $id );
+	}
+
+	/**
+	 * @return array [ $column_name => [ $orderby, $order ], ... ]
+	 */
+	public function get_default_sortable_columns() {
+		_deprecated_function( __METHOD__, '4.0' );
+
+		return [];
+	}
+
+	/**
+	 * @param int $id
+	 *
+	 * @return string
+	 * @deprecated NEWVERSION
+	 *
+	 */
+	public function get_single_row( $id ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return '';
+	}
+
+	/**
+	 * @deprecated NEWVERSION
+	 */
+	protected function get_list_table() {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+	}
+
+	/**
+	 * @param WP_Screen $wp_screen
+	 *
+	 * @return boolean
+	 * @deprecated NEWVERSION
+	 */
+	public function is_current_screen( WP_Screen $wp_screen ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return false;
+	}
+
+	/**
+	 * @return string
+	 * @deprecated NEWVERSION
+	 */
+	public function get_screen_base() {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return '';
+	}
+
+	/**
+	 * @param string $screen_base
+	 *
+	 * @return self
+	 * @deprecated NEWVERSION
+	 */
+	protected function set_screen_base( $screen_base ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 * @deprecated NEWVERSION
+	 */
+	public function get_screen_id() {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return '';
+	}
+
+	/**
+	 * @param string $screen_id
+	 *
+	 * @return self
+	 * @deprecated NEWVERSION
+	 */
+	protected function set_screen_id( $screen_id ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 * @deprecated NEWVERSION
+	 */
+	public function get_page() {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return '';
+	}
+
+	/**
+	 * @param string $page
+	 *
+	 * @return self
+	 * @deprecated NEWVERSION
+	 *
+	 */
+	protected function set_page( $page ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return $this;
+	}
+
+	// TODO: remove. make 'public' deprecated.
 	/**
 	 * @param string $type Column type
 	 *

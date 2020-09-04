@@ -3,6 +3,7 @@
 namespace AC\Controller\ListScreen;
 
 use AC\ColumnFactory;
+use AC\ListScreenFactory;
 use AC\ListScreenRepository\Storage;
 use AC\Request;
 use AC\Type\ListScreenId;
@@ -19,9 +20,15 @@ class Save {
 	 */
 	private $column_factory;
 
-	public function __construct( Storage $storage, ColumnFactory $column_factory ) {
+	/**
+	 * @var ListScreenFactory
+	 */
+	private $list_screen_factory;
+
+	public function __construct( Storage $storage, ColumnFactory $column_factory, ListScreenFactory $list_screen_factory ) {
 		$this->storage = $storage;
 		$this->column_factory = $column_factory;
+		$this->list_screen_factory = $list_screen_factory;
 	}
 
 	public function request( Request $request ) {
@@ -35,8 +42,7 @@ class Save {
 			wp_send_json_error( [ 'message' => 'Invalid list Id' ] );
 		}
 
-		// TODO: let the repo handle this
-		$list_screen = AC()->get_list_screen_factory()->create( $formdata['list_screen'] );
+		$list_screen = $this->list_screen_factory->create( $formdata['list_screen'] );
 
 		if ( ! $list_screen ) {
 			wp_send_json_error( [ 'message' => 'List screen not found' ] );

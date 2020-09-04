@@ -4,19 +4,19 @@ namespace AC;
 
 use WP_Post;
 
-abstract class ListScreenPost extends ListScreenWP {
+abstract class ListScreenPost extends ListScreen {
 
 	/**
 	 * @var string Post type
 	 */
-	private $post_type;
+	protected $post_type;
 
 	/**
 	 * @param string $post_type
 	 */
 	public function __construct( $post_type ) {
-		$this->set_post_type( $post_type )
-		     ->set_meta_type( MetaType::POST );
+		$this->post_type = $post_type;
+		$this->meta_type = new MetaType( MetaType::POST );
 	}
 
 	/**
@@ -24,17 +24,6 @@ abstract class ListScreenPost extends ListScreenWP {
 	 */
 	public function get_post_type() {
 		return $this->post_type;
-	}
-
-	/**
-	 * @param string $post_type
-	 *
-	 * @return self
-	 */
-	protected function set_post_type( $post_type ) {
-		$this->post_type = (string) $post_type;
-
-		return $this;
 	}
 
 	/**
@@ -63,6 +52,23 @@ abstract class ListScreenPost extends ListScreenWP {
 	protected function register_column_types() {
 		$this->register_column_type( new Column\CustomField );
 		$this->register_column_type( new Column\Actions );
+	}
+
+	public function get_table_url() {
+		return add_query_arg( [ 'post_type' => $this->get_post_type() ], admin_url( 'edit.php' ) );
+	}
+
+	/**
+	 * @param string $post_type
+	 *
+	 * @return self
+	 */
+	protected function set_post_type( $post_type ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		$this->post_type = $post_type;
+
+		return $this;
 	}
 
 }
