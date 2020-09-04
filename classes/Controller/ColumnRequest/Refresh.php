@@ -19,7 +19,7 @@ class Refresh extends AC\Controller\ColumnRequest {
 
 		$settings['name'] = $name;
 
-		return $list_screen->create_column( $settings );
+		return $this->column_factory->create( $settings, $list_screen );
 	}
 
 }

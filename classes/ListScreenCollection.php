@@ -17,11 +17,11 @@ final class ListScreenCollection implements Iterator, Countable {
 	}
 
 	public function add( ListScreen $list_screen ) {
-		$this->data[ $list_screen->get_layout_id() ] = $list_screen;
+		$this->data[ $list_screen->get_id()->get_id() ] = $list_screen;
 	}
 
 	public function remove( ListScreen $list_screen ) {
-		unset( $this->data[ $list_screen->get_layout_id() ] );
+		unset( $this->data[ $list_screen->get_id()->get_id() ] );
 	}
 
 	public function rewind() {
@@ -66,7 +66,7 @@ final class ListScreenCollection implements Iterator, Countable {
 	 * @return bool
 	 */
 	public function contains( ListScreen $list_screen ) {
-		return isset( $this->data[ $list_screen->get_layout_id() ] );
+		return isset( $this->data[ $list_screen->get_id()->get_id() ] );
 	}
 
 }

@@ -9,6 +9,15 @@ use AC\View;
 abstract class ColumnRequest {
 
 	/**
+	 * @var AC\ColumnFactory
+	 */
+	protected $column_factory;
+
+	public function __construct( AC\ColumnFactory $column_factory ) {
+		$this->column_factory = $column_factory;
+	}
+
+	/**
 	 * @return AC\Column
 	 */
 	abstract protected function get_column( AC\Request $request, AC\ListScreen $list_screen );
@@ -16,7 +25,8 @@ abstract class ColumnRequest {
 	public function request( AC\Request $request ) {
 		parse_str( $request->get( 'data' ), $formdata );
 
-		$list_screen = AC\ListScreenTypes::instance()->get_list_screen_by_key( $formdata['list_screen'] );
+		// TODO
+		$list_screen = AC()->get_list_screen_factory()->create( $formdata['list_screen'] );
 
 		if ( ! $list_screen ) {
 			wp_die();

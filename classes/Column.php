@@ -117,10 +117,6 @@ class Column {
 	 * @since 2.4.9
 	 */
 	public function get_label() {
-		if ( null === $this->label ) {
-			$this->set_label( $this->get_list_screen()->get_original_label( $this->get_type() ) );
-		}
-
 		return $this->label;
 	}
 
@@ -343,7 +339,7 @@ class Column {
 	 *
 	 * @param mixed $value
 	 * @param mixed $original_value
-	 * @param int   $current Current index of self::$formatters
+	 * @param int $current Current index of self::$formatters
 	 *
 	 * @return mixed
 	 */
@@ -369,12 +365,12 @@ class Column {
 						return $this->get_formatted_value( $value, $original_value, $current );
 					}
 
-					++$current;
+					++ $current;
 				}
 			} elseif ( ( $is_collection && ! $is_value_formatter ) || $is_value_formatter ) {
 				$value = $formatters[ $current ]->format( $value, $original_value );
 
-				return $this->get_formatted_value( $value, $original_value, ++$current );
+				return $this->get_formatted_value( $value, $original_value, ++ $current );
 			}
 		}
 

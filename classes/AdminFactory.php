@@ -33,7 +33,12 @@ class AdminFactory {
 	 */
 	private $hooks;
 
-	public function __construct( Storage $storage, Location\Absolute $location, ListScreenFactory $list_screen_factory, Hooks $hooks ) {
+	public function __construct(
+		Storage $storage,
+		Location\Absolute $location,
+		ListScreenFactory $list_screen_factory,
+		Hooks $hooks
+	) {
 		$this->storage = $storage;
 		$this->location = $location;
 		$this->list_screen_factory = $list_screen_factory;
@@ -48,14 +53,17 @@ class AdminFactory {
 			new Request(),
 			$this->storage,
 			new Preferences\Site( 'settings' ),
-			$this->list_screen_factory
+			$this->list_screen_factory,
+			// TODO: DI
+			new ListScreenTypeRepository()
 		);
 
 		return new Page\Columns(
 			$list_screen_controller,
 			$this->location,
 			new DefaultColumnsRepository(),
-			new Section\Partial\Menu( $list_screen_controller, false )
+			new Section\Partial\Menu( $list_screen_controller, false ),
+			$this->storage
 		);
 	}
 
@@ -96,12 +104,10 @@ class AdminFactory {
 	 * @return Admin
 	 */
 	public function create() {
-		$pages = $this->get_pages();
-
 		return new Admin(
 			'options-general.php',
 			'admin_menu',
-			$pages,
+			$this->get_pages(),
 			$this->location
 		);
 	}

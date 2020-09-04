@@ -18,7 +18,9 @@ use AC\Column;
 use AC\Controller\ListScreenRequest;
 use AC\DefaultColumnsRepository;
 use AC\ListScreen;
+use AC\ListScreenRepository\Storage;
 use AC\Message;
+use AC\Type\ListScreenId;
 use AC\View;
 
 class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOptions {
@@ -45,11 +47,17 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 	 */
 	private $menu;
 
+	/**
+	 * @var Storage
+	 */
+	private $storage;
+
 	public function __construct(
 		ListScreenRequest $controller,
 		Location\Absolute $location,
 		DefaultColumnsRepository $default_columns,
-		Menu $menu
+		Menu $menu,
+		Storage $storage
 	) {
 		parent::__construct( self::NAME, __( 'Admin Columns', 'codepress-admin-columns' ) );
 
@@ -57,6 +65,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 		$this->location = $location;
 		$this->default_columns = $default_columns;
 		$this->menu = $menu;
+		$this->storage = $storage;
 	}
 
 	public function show_read_only_notice( ListScreen $list_screen ) {
@@ -135,7 +144,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 
 		$classes = [];
 
-		if ( $list_screen->get_settings() ) {
+		if ( $list_screen->has_id() && $this->storage->exists( $list_screen->get_id() ) ) {
 			$classes[] = 'stored';
 		}
 
@@ -150,17 +159,17 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 		ob_start();
 		?>
 
-		<div class="ac-admin <?= esc_attr( implode( ' ', $classes ) ); ?>" data-type="<?= esc_attr( $list_screen->get_key() ); ?>">
-			<div class="ac-admin__header">
+        <div class="ac-admin <?= esc_attr( implode( ' ', $classes ) ); ?>" data-type="<?= esc_attr( $list_screen->get_key() ); ?>">
+            <div class="ac-admin__header">
 
 				<?= $this->menu->render(); ?>
 
 				<?php do_action( 'ac/settings/after_title', $list_screen ); ?>
 
-			</div>
-			<div class="ac-admin__wrap">
+            </div>
+            <div class="ac-admin__wrap">
 
-				<div class="ac-admin__sidebar">
+                <div class="ac-admin__sidebar">
 					<?php if ( ! $list_screen->is_read_only() ) : ?>
 
 						<?php
@@ -181,7 +190,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 							'label_main'                  => $label_main,
 							'label_second'                => $label_second,
 							'list_screen_key'             => $list_screen->get_key(),
-							'list_screen_id'              => $list_screen->get_layout_id(),
+							'list_screen_id'              => $list_screen->get_id()->get_id(),
 							'delete_confirmation_message' => $delete_confirmation_message,
 						] );
 
@@ -201,13 +210,13 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 
 					<?= ( new View() )->set_template( 'admin/side-support' ); ?>
 
-				</div>
+                </div>
 
-				<div class="ac-admin__main">
+                <div class="ac-admin__main">
 
 					<?= $this->show_read_only_notice( $list_screen ); ?>
 
-					<form method="post" id="listscreen_settings" class="<?= $list_screen->is_read_only() ? '-disabled' : ''; ?>">
+                    <form method="post" id="listscreen_settings" class="<?= $list_screen->is_read_only() ? '-disabled' : ''; ?>">
 						<?php
 
 						$classes = [];
@@ -224,12 +233,18 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 							$classes[] = 'show-column-type';
 						}
 
+						$repo = new DefaultColumnsRepository();
+
+						$columns = $list_screen->has_columns()
+							? $list_screen->get_columns()
+							: $repo->find_all( $list_screen );
+
 						$columns = new View( [
 							'class'          => implode( ' ', $classes ),
 							'list_screen'    => $list_screen->get_key(),
-							'list_screen_id' => $list_screen->get_layout_id(),
+							'list_screen_id' => $list_screen->has_id() ? $list_screen->get_id()->get_id() : ListScreenId::generate()->get_id(),
 							'title'          => $list_screen->get_title(),
-							'columns'        => $list_screen->get_columns(),
+							'columns'        => $columns,
 							'show_actions'   => ! $list_screen->is_read_only(),
 							'show_clear_all' => apply_filters( 'ac/enable_clear_columns_button', false ),
 						] );
@@ -241,19 +256,19 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 						do_action( 'ac/settings/after_columns', $list_screen );
 
 						?>
-					</form>
+                    </form>
 
-				</div>
+                </div>
 
-			</div>
+            </div>
 
-			<div id="add-new-column-template">
+            <div id="add-new-column-template">
 				<?= $this->render_column_template( $list_screen ); ?>
-			</div>
+            </div>
 
-		</div>
+        </div>
 
-		<div class="clear"></div>
+        <div class="clear"></div>
 
 		<?php
 
@@ -266,7 +281,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 
 	/**
 	 * @param array $column_types
-	 * @param bool  $group
+	 * @param bool $group
 	 *
 	 * @return Column|false
 	 */

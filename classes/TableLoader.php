@@ -54,11 +54,13 @@ class TableLoader implements Registrable {
 	}
 
 	public function init( Screen $screen ) {
-		$key = $screen->get_list_screen();
+		$list_screen = $this->list_screen_factory->create_by_screen( $screen->get_screen() );
 
-		if ( ! $key ) {
+		if ( ! $list_screen ) {
 			return;
 		}
+
+		$key = $list_screen->get_key();
 
 		// TODO: use Storage and/or ListScreenFactory
 

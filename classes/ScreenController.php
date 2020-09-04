@@ -52,7 +52,7 @@ class ScreenController implements Registrable {
 		}
 
 		// Nothing stored. Show default columns on screen.
-		if ( ! $this->list_screen->get_settings() ) {
+		if ( ! $this->list_screen->has_columns() ) {
 			return $columns;
 		}
 

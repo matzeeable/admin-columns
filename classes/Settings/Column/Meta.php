@@ -51,7 +51,7 @@ abstract class Meta extends Column {
 	 * @return string
 	 */
 	protected function get_cache_key() {
-		return $this->column->get_list_screen()->get_storage_key();
+		return $this->column->get_list_screen()->get_key();
 	}
 
 	/**

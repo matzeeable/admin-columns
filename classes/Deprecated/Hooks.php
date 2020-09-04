@@ -7,7 +7,6 @@ use AC\Deprecated\Hook\Filter;
 use AC\ListScreenFactory;
 use AC\ListScreenTypeRepository;
 use AC\Registrable;
-use AC\Type\ListScreenId;
 
 class Hooks implements Registrable {
 
@@ -120,7 +119,7 @@ class Hooks implements Registrable {
 		$columns = [];
 
 		foreach ( $this->list_screen_type_repository->find_all() as $item ) {
-			$list_screen = $this->list_screen_factory->create( $item->get_key(), ListScreenId::generate() );
+			$list_screen = $this->list_screen_factory->create( $item->get_key() );
 
 			if ( ! $list_screen ) {
 				continue;
@@ -130,12 +129,6 @@ class Hooks implements Registrable {
 				$columns[ $column->get_type() ] = $column->get_type();
 			}
 		}
-		// TODO
-		//		foreach ( ListScreenTypes::instance()->get_list_screens() as $list_screen ) {
-		//			foreach ( $list_screen->get_column_types() as $column ) {
-		//				$columns[ $column->get_type() ] = $column->get_type();
-		//			}
-		//		}
 
 		return $columns;
 	}

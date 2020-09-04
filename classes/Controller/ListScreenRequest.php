@@ -6,7 +6,6 @@ use AC\ListScreen;
 use AC\ListScreenFactory;
 use AC\ListScreenRepository\Storage;
 use AC\ListScreenTypeRepository;
-use AC\ListScreenTypes;
 use AC\Preferences;
 use AC\Request;
 use AC\Type\ListScreenId;
@@ -35,15 +34,20 @@ class ListScreenRequest {
 	 */
 	private $list_screen_factory;
 
-	public function __construct( Request $request, Storage $storage, Preferences $preference, ListScreenFactory $list_screen_factory, $is_network = false ) {
+	public function __construct(
+		Request $request,
+		Storage $storage,
+		Preferences $preference,
+		ListScreenFactory $list_screen_factory,
+		ListScreenTypeRepository $list_screen_type_repository,
+		$is_network = false
+	) {
 		$this->request = $request;
 		$this->storage = $storage;
 		$this->preference = $preference;
-		$this->is_network = (bool) $is_network;
-
-		// TODO: inject
-		$this->list_screen_type_repository = new ListScreenTypeRepository();
 		$this->list_screen_factory = $list_screen_factory;
+		$this->list_screen_type_repository = $list_screen_type_repository;
+		$this->is_network = (bool) $is_network;
 	}
 
 	/**
@@ -75,6 +79,7 @@ class ListScreenRequest {
 	/**
 	 * @return ListScreen
 	 */
+	// TODO: refactor. routing from the DB should be in a separate class.
 	public function get_list_screen() {
 
 		// Requested list ID
@@ -86,7 +91,7 @@ class ListScreenRequest {
 			$list_screen = $this->storage->find( $list_id );
 
 			if ( $list_screen && $this->exists_list_screen( $list_screen->get_key() ) ) {
-				$this->preference->set( 'list_id', $list_screen->get_layout_id() );
+				$this->preference->set( 'list_id', $list_screen->get_id()->get_id() );
 				$this->preference->set( 'list_key', $list_screen->get_key() );
 
 				return $list_screen;
@@ -102,7 +107,7 @@ class ListScreenRequest {
 			$list_screen = $this->get_first_available_list_screen( $list_key );
 
 			if ( $list_screen ) {
-				$this->preference->set( 'list_id', $list_screen->get_layout_id() );
+				$this->preference->set( 'list_id', $list_screen->get_id()->get_id() );
 
 				return $list_screen;
 			}
@@ -135,7 +140,7 @@ class ListScreenRequest {
 			$list_screen = $this->get_first_available_list_screen( $list_key );
 
 			if ( $list_screen ) {
-				$this->preference->set( 'list_id', $list_screen->get_layout_id() );
+				$this->preference->set( 'list_id', $list_screen->get_id()->get_id() );
 
 				return $list_screen;
 			}
@@ -152,7 +157,7 @@ class ListScreenRequest {
 		$list_screen = $this->get_first_available_list_screen( $list_key );
 
 		if ( $list_screen ) {
-			$this->preference->set( 'list_id', $list_screen->get_layout_id() );
+			$this->preference->set( 'list_id', $list_screen->get_id()->get_id() );
 
 			return $list_screen;
 		}
@@ -162,14 +167,7 @@ class ListScreenRequest {
 	}
 
 	private function create_list_screen( $key ) {
-		return $this->list_screen_factory->create( $key, ListScreenId::generate() );
-		//		$list_screen = ListScreenTypes::instance()->get_list_screen_by_key( $key );
-		//
-		//		if ( ! $list_screen ) {
-		//			return null;
-		//		}
-		//
-		//		return $list_screen->set_layout_id( ListScreenId::generate()->get_id() );
+		return $this->list_screen_factory->create( $key );
 	}
 
 	/**
@@ -177,13 +175,6 @@ class ListScreenRequest {
 	 */
 	private function get_first_available_list_screen_key() {
 		$types = $this->list_screen_type_repository->find_all( [ 'is_network' => $this->is_network ] );
-
-		// TODO: remove
-//		if ( $this->is_network ) {
-//			$list_screens = ListScreenTypes::instance()->get_list_screens( [ 'network_only' => true ] );
-//		} else {
-//			$list_screens = ListScreenTypes::instance()->get_list_screens( [ 'site_only' => true ] );
-//		}
 
 		return current( $types )->get_key();
 	}

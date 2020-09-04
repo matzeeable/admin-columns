@@ -2,6 +2,7 @@
 
 namespace AC\ListScreenRepository;
 
+use AC\ColumnFactory;
 use AC\Exception\MissingListScreenIdException;
 use AC\ListScreen;
 use AC\ListScreenCollection;
@@ -20,8 +21,17 @@ final class Database implements ListScreenRepositoryWritable {
 	 */
 	private $list_screen_factory;
 
-	public function __construct( ListScreenFactoryInterface $list_screen_factory ) {
+	/**
+	 * @var ColumnFactory
+	 */
+	private $column_factory;
+
+	public function __construct(
+		ListScreenFactoryInterface $list_screen_factory,
+		ColumnFactory $column_factory
+	) {
 		$this->list_screen_factory = $list_screen_factory;
+		$this->column_factory = $column_factory;
 	}
 
 	/**
@@ -132,11 +142,19 @@ final class Database implements ListScreenRepositoryWritable {
 			throw MissingListScreenIdException::from_saving_list_screen();
 		}
 
+		$columns = [];
+
+		if ( $list_screen->has_columns() ) {
+			foreach ( $list_screen->get_columns() as $column ) {
+				$columns[] = $column->get_options();
+			}
+		}
+
 		$args = [
-			'list_id'       => $list_screen->get_layout_id(),
+			'list_id'       => $list_screen->get_id()->get_id(),
 			'list_key'      => $list_screen->get_key(),
 			'title'         => $list_screen->get_title(),
-			'columns'       => $list_screen->get_settings() ? serialize( $list_screen->get_settings() ) : null,
+			'columns'       => $columns ? serialize( $columns ) : null,
 			'settings'      => $list_screen->get_preferences() ? serialize( $list_screen->get_preferences() ) : null,
 			'date_modified' => $list_screen->get_updated()->format( 'Y-m-d H:i:s' ),
 		];
@@ -202,19 +220,36 @@ final class Database implements ListScreenRepositoryWritable {
 	 * @return ListScreen
 	 */
 	private function create_list_screen( $data ) {
-		$list_screen = $this->list_screen_factory->create( $data->list_key, new ListScreenId( $data->list_id ) );
+		$list_screen = $this->list_screen_factory->create( $data->list_key );
 
-		if ( $list_screen ) {
-			$list_screen->set_title( $data->title )
-			            ->set_updated( DateTime::createFromFormat( 'Y-m-d H:i:s', $data->date_modified ) );
+		if ( ! $list_screen ) {
+			return null;
+		}
 
-			if ( $data->settings ) {
-				$list_screen->set_preferences( unserialize( $data->settings ) );
+		$list_screen->set_id( new ListScreenId( $data->list_id ) );
+
+		$list_screen->set_title( $data->title )
+		            ->set_updated( DateTime::createFromFormat( 'Y-m-d H:i:s', $data->date_modified ) );
+
+		if ( $data->settings ) {
+			$list_screen->set_preferences( unserialize( $data->settings ) );
+		}
+
+		if ( $data->columns ) {
+
+			$columns = [];
+
+			foreach ( unserialize( $data->columns ) as $column_name => $column_data ) {
+				$column = $this->column_factory->create( $column_data + [ 'name' => $column_name ], $list_screen );
+
+				if ( null === $column ) {
+					continue;
+				}
+
+				$columns[] = $column;
 			}
 
-			if ( $data->columns ) {
-				$list_screen->set_settings( unserialize( $data->columns ) );
-			}
+			$list_screen->set_columns( $columns );
 		}
 
 		return $list_screen;

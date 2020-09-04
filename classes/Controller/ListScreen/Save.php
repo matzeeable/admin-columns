@@ -2,8 +2,8 @@
 
 namespace AC\Controller\ListScreen;
 
+use AC\ColumnFactory;
 use AC\ListScreenRepository\Storage;
-use AC\ListScreenTypes;
 use AC\Request;
 use AC\Type\ListScreenId;
 
@@ -14,8 +14,14 @@ class Save {
 	 */
 	private $storage;
 
-	public function __construct( Storage $storage ) {
+	/**
+	 * @var ColumnFactory
+	 */
+	private $column_factory;
+
+	public function __construct( Storage $storage, ColumnFactory $column_factory ) {
 		$this->storage = $storage;
+		$this->column_factory = $column_factory;
 	}
 
 	public function request( Request $request ) {
@@ -29,25 +35,29 @@ class Save {
 			wp_send_json_error( [ 'message' => 'Invalid list Id' ] );
 		}
 
-		$list_screen = ListScreenTypes::instance()->get_list_screen_by_key( $formdata['list_screen'] );
+		// TODO: let the repo handle this
+		$list_screen = AC()->get_list_screen_factory()->create( $formdata['list_screen'] );
 
 		if ( ! $list_screen ) {
 			wp_send_json_error( [ 'message' => 'List screen not found' ] );
 		}
 
-		$column_data = [];
+		$list_screen->set_id( new ListScreenId( $formdata['list_screen_id'] ) );
 
-		foreach ( $this->maybe_encode_urls( $formdata['columns'] ) as $column_name => $settings ) {
-			if ( 0 === strpos( $column_name, '_new_column_' ) ) {
-				$column_data[ uniqid() ] = $settings;
-			} else {
-				$column_data[ $column_name ] = $settings;
+		foreach ( $formdata['columns'] as $column_name => $column_data ) {
+
+			if ( isset( $column_data['label'] ) ) {
+				$column_data['label'] = ac_convert_site_url( $column_data['label'] );
 			}
+
+			$column_data['name'] = false === strpos( $column_name, '_new_column_' )
+				? $column_name
+				: uniqid();
+
+			$list_screen->add_column( $this->column_factory->create( $column_data, $list_screen ) );
 		}
 
 		$list_screen->set_title( ! empty( $formdata['title'] ) ? $formdata['title'] : $list_screen->get_label() )
-		            ->set_settings( $column_data )
-		            ->set_layout_id( $formdata['list_screen_id'] )
 		            ->set_preferences( ! empty( $formdata['settings'] ) ? $formdata['settings'] : [] );
 
 		$this->storage->save( $list_screen );
@@ -64,16 +74,6 @@ class Save {
 				ac_helper()->html->link( $list_screen->get_screen_link(), sprintf( __( 'View %s screen', 'codepress-admin-columns' ), $list_screen->get_label() ) )
 			)
 		);
-	}
-
-	private function maybe_encode_urls( array $columndata ) {
-		foreach ( $columndata as $name => $data ) {
-			if ( isset( $data['label'] ) ) {
-				$columndata[ $name ]['label'] = ac_convert_site_url( $data['label'] );
-			}
-		}
-
-		return $columndata;
 	}
 
 }

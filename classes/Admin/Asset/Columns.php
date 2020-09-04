@@ -57,7 +57,7 @@ class Columns extends Script {
 		$params = [
 			'_ajax_nonce'                => wp_create_nonce( AC\Ajax\Handler::NONCE_ACTION ),
 			'list_screen'                => $this->list_screen->get_key(),
-			'layout'                     => $this->list_screen->get_layout_id(),
+			'layout'                     => $this->list_screen->get_id()->get_id(),
 			'original_columns'           => [],
 			'uninitialized_list_screens' => [],
 			'i18n'                       => [
@@ -75,8 +75,15 @@ class Columns extends Script {
 				continue;
 			}
 
+			// TODO: how can we get the list table url?
+			$table_url = ''; //$list_screen->get_screen_link();
+
+			if ( ! $table_url ) {
+				continue;
+			}
+
 			$params['uninitialized_list_screens'][ $list_screen->get_key() ] = [
-				'screen_link' => add_query_arg( [ 'save-default-headings' => '1', 'list_screen' => $list_screen->get_key() ], $list_screen->get_screen_link() ),
+				'screen_link' => add_query_arg( [ 'save-default-headings' => '1', 'list_screen' => $list_screen->get_key() ], $table_url ),
 				'label'       => $list_screen->get_label(),
 			];
 		}

@@ -27,7 +27,7 @@ class ManualOrder implements Sort {
 		$layouts = [];
 
 		foreach ( $list_screens as $list_screen ) {
-			$layouts[ $list_screen->get_layout_id() ] = $list_screen;
+			$layouts[ $list_screen->get_id()->get_id() ] = $list_screen;
 		}
 
 		$ordered = new ListScreenCollection();

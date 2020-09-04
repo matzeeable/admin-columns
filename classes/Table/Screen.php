@@ -45,7 +45,7 @@ final class Screen implements Registrable {
 		$controller = new AC\ScreenController( $this->list_screen );
 		$controller->register();
 
-		$render = new TableFormView( $this->list_screen->get_meta_type(), sprintf( '<input type="hidden" name="layout" value="%s">', $this->list_screen->get_layout_id() ) );
+		$render = new TableFormView( $this->list_screen->get_meta_type(), sprintf( '<input type="hidden" name="layout" value="%s">', $this->list_screen->get_id()->get_id() ) );
 		$render->register();
 
 		add_action( 'admin_enqueue_scripts', [ $this, 'admin_scripts' ] );
@@ -67,7 +67,7 @@ final class Screen implements Registrable {
 
 	/**
 	 * @param Button $button
-	 * @param int    $priority
+	 * @param int $priority
 	 *
 	 * @return bool
 	 */
@@ -123,7 +123,7 @@ final class Screen implements Registrable {
 	/**
 	 * Add a download link to the table screen
 	 *
-	 * @param array   $actions
+	 * @param array $actions
 	 * @param WP_Post $post
 	 *
 	 * @return array
@@ -141,7 +141,7 @@ final class Screen implements Registrable {
 	/**
 	 * Sets the inline data when the title columns is not present on a AC\ListScreen_Post screen
 	 *
-	 * @param array   $actions
+	 * @param array $actions
 	 * @param WP_Post $post
 	 *
 	 * @return array
@@ -227,7 +227,7 @@ final class Screen implements Registrable {
 
 		wp_localize_script( 'ac-table', 'AC', [
 				'list_screen'  => $this->list_screen->get_key(),
-				'layout'       => $this->list_screen->get_layout_id(),
+				'layout'       => $this->list_screen->get_id()->get_id(),
 				'column_types' => $this->get_column_types_mapping(),
 				'ajax_nonce'   => wp_create_nonce( 'ac-ajax' ),
 				'table_id'     => $this->list_screen->get_table_attr_id(),
@@ -293,7 +293,7 @@ final class Screen implements Registrable {
 	 * Applies the width setting to the table headers
 	 */
 	private function display_width_styles() {
-		if ( ! $this->list_screen->get_settings() ) {
+		if ( ! $this->list_screen->has_columns() ) {
 			return;
 		}
 
@@ -318,11 +318,11 @@ final class Screen implements Registrable {
 
 		?>
 
-		<style>
-			@media screen and (min-width: 783px) {
-			<?php echo $css_column_width; ?>
-			}
-		</style>
+        <style>
+            @media screen and (min-width: 783px) {
+            <?php echo $css_column_width; ?>
+            }
+        </style>
 
 		<?php
 	}
@@ -366,12 +366,12 @@ final class Screen implements Registrable {
 	 */
 	public function render_actions() {
 		?>
-		<div id="ac-table-actions" class="ac-table-actions">
+        <div id="ac-table-actions" class="ac-table-actions">
 
 			<?php $this->render_buttons(); ?>
 
 			<?php do_action( 'ac/table/actions', $this ); ?>
-		</div>
+        </div>
 		<?php
 	}
 
@@ -380,13 +380,13 @@ final class Screen implements Registrable {
 			return;
 		}
 		?>
-		<div class="ac-table-actions-buttons">
+        <div class="ac-table-actions-buttons">
 			<?php
 			foreach ( $this->get_buttons() as $button ) {
 				$button->render();
 			}
 			?>
-		</div>
+        </div>
 		<?php
 	}
 
@@ -410,8 +410,8 @@ final class Screen implements Registrable {
 		ob_start();
 		?>
 
-		<fieldset class='acp-screen-option-prefs'>
-			<legend><?= __( 'Admin Columns', 'codepress-admin-columns' ); ?></legend>
+        <fieldset class='acp-screen-option-prefs'>
+            <legend><?= __( 'Admin Columns', 'codepress-admin-columns' ); ?></legend>
 			<?php
 
 			foreach ( $this->screen_options as $option ) {
@@ -419,7 +419,7 @@ final class Screen implements Registrable {
 			}
 
 			?>
-		</fieldset>
+        </fieldset>
 
 		<?php
 

@@ -4,7 +4,6 @@ namespace AC\Settings\Column;
 
 use AC;
 use AC\Groups;
-use AC\Integration;
 use AC\Settings\Column;
 use AC\View;
 
@@ -76,6 +75,7 @@ class Type extends Column {
 	private function get_grouped_columns() {
 		$columns = [];
 
+		// TODO
 		// get columns and sort them
 		foreach ( $this->column->get_list_screen()->get_column_types() as $column ) {
 

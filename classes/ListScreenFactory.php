@@ -2,7 +2,6 @@
 
 namespace AC;
 
-use AC\Type\ListScreenId;
 use WP_Screen;
 
 class ListScreenFactory implements ListScreenFactoryInterface {
@@ -19,9 +18,9 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 		$this->factories[] = $factory;
 	}
 
-	public function create( $key, ListScreenId $id ) {
+	public function create( $key ) {
 		foreach ( array_reverse( $this->factories ) as $factory ) {
-			$list_screen = $factory->create( $key, $id );
+			$list_screen = $factory->create( $key );
 
 			if ( ! $list_screen ) {
 				continue;
@@ -33,9 +32,9 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 		return null;
 	}
 
-	public function create_by_screen( WP_Screen $wp_screen, ListScreenId $id ) {
+	public function create_by_screen( WP_Screen $wp_screen ) {
 		foreach ( array_reverse( $this->factories ) as $factory ) {
-			$list_screen = $factory->create_by_screen( $wp_screen, $id );
+			$list_screen = $factory->create_by_screen( $wp_screen );
 
 			if ( ! $list_screen ) {
 				continue;

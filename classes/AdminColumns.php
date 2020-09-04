@@ -14,7 +14,6 @@ use AC\ListScreenRepository\Storage;
 use AC\Screen\QuickEdit;
 use AC\Table;
 use AC\ThirdParty;
-use AC\Type\ListScreenId;
 
 class AdminColumns extends Plugin {
 
@@ -53,10 +52,12 @@ class AdminColumns extends Plugin {
 			new ListScreenFactory\ListScreenFactory()
 		);
 
+		$column_factory = new ColumnFactory( new ColumnTypesRepository( new DefaultColumnsRepository() ) );
+
 		$this->storage = new Storage();
 		$this->storage->set_repositories( [
 			'acp-database' => new ListScreenRepository\Storage\ListScreenRepository(
-				new Database( $this->list_screen_factory ),
+				new Database( $this->list_screen_factory, $column_factory ),
 				true
 			),
 		] );
@@ -74,9 +75,6 @@ class AdminColumns extends Plugin {
 			$this->admin,
 			new Ajax\NumberFormat( new Request() ),
 			$hooks,
-			// TODO: remove
-			new ListScreens(),
-
 			new Screen( $this->list_screen_factory ),
 			new Settings\General,
 			new ThirdParty\ACF,
@@ -86,7 +84,7 @@ class AdminColumns extends Plugin {
 			new Controller\DefaultColumns( new Request(), new DefaultColumnsRepository() ),
 			new QuickEdit( $this->storage, new Table\Preference() ),
 			new Capabilities\Manage(),
-			new Controller\AjaxColumnRequest( $this->storage, new Request() ),
+			new Controller\AjaxColumnRequest( $this->storage, $column_factory, new Request() ),
 			new Controller\AjaxRequestCustomFieldKeys(),
 			new Controller\AjaxColumnValue( $this->storage ),
 			new Controller\AjaxScreenOptions( new Preference\ScreenOptions() ),
@@ -199,9 +197,7 @@ class AdminColumns extends Plugin {
 	public function get_list_screen( $key ) {
 		_deprecated_function( __METHOD__, '3.2', 'ListScreenTypes::instance()->get_list_screen_by_key()' );
 
-		return $this->list_screen_factory->create( $key, ListScreenId::generate() );
-		// TODO
-		// return ListScreenTypes::instance()->get_list_screen_by_key( $key );
+		return $this->list_screen_factory->create( $key );
 	}
 
 	/**
@@ -212,11 +208,6 @@ class AdminColumns extends Plugin {
 	 */
 	public function list_screen_exists( $key ) {
 		_deprecated_function( __METHOD__, '3.2' );
-
-		return null !== ( new ListScreenTypeRepository() )->find( $key );
-
-		// TODO
-		//		return ListScreenTypes::instance()->get_list_screen_by_key( $key ) ? true : false;
 	}
 
 	/**
@@ -321,9 +312,7 @@ class AdminColumns extends Plugin {
 	 * @deprecated 4.1
 	 */
 	public function register_list_screen( ListScreen $list_screen ) {
-		_deprecated_function( __METHOD__, '4.1', 'ListScreenTypes::register_list_screen()' );
-
-		ListScreenTypes::instance()->register_list_screen( $list_screen );
+		_deprecated_function( __METHOD__, '4.1' );
 
 		return $this;
 	}

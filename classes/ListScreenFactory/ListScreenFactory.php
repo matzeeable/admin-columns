@@ -4,7 +4,6 @@ namespace AC\ListScreenFactory;
 
 use AC\ListScreen;
 use AC\ListScreenFactoryInterface;
-use AC\Type\ListScreenId;
 use WP_Screen;
 
 class ListScreenFactory implements ListScreenFactoryInterface {
@@ -23,35 +22,31 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 		ListScreen\Comment::NAME => ListScreen\Comment::CLASS,
 	];
 
-	public function create( $key, ListScreenId $id ) {
+	public function create( $key ) {
 		if ( isset( $this->list_screens[ $key ] ) ) {
-			$list_screen = new $this->list_screens[$key]();
-		} else {
-			$list_screen = new $this->default_list_screen( $key );
+			return new $this->list_screens[$key]();
 		}
 
-		return $id
-			? $list_screen->set_layout_id( $id->get_id() )
-			: $list_screen;
+		return new $this->default_list_screen( $key );
 	}
 
-	public function create_by_screen( WP_Screen $wp_screen, ListScreenId $id ) {
+	public function create_by_screen( WP_Screen $wp_screen ) {
 		switch ( $wp_screen->base ) {
 			case 'edit' :
 				return $wp_screen->post_type
-					? $this->create( $wp_screen->post_type, $id )
+					? $this->create( $wp_screen->post_type )
 					: null;
 			case 'users' :
 				return 'users' === $wp_screen->id
-					? $this->create( ListScreen\User::NAME, $id )
+					? $this->create( ListScreen\User::NAME )
 					: null;
 			case 'upload' :
 				return 'upload' === $wp_screen->id
-					? $this->create( ListScreen\Media::NAME, $id )
+					? $this->create( ListScreen\Media::NAME )
 					: null;
 			case 'edit-comments' :
 				return 'edit-comments' === $wp_screen->id
-					? $this->create( ListScreen\Media::NAME, $id )
+					? $this->create( ListScreen\Media::NAME )
 					: null;
 			default :
 				return null;

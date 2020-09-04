@@ -16,7 +16,6 @@ class ListScreenTypeRepository {
 	 * @return ListScreenType[]
 	 */
 	public function find_all( array $args = [] ) {
-		// TODO: warning when called before init hook
 		if ( ! did_action( 'init' ) ) {
 			throw new LogicException( 'Called before init action.' );
 		}
@@ -72,6 +71,7 @@ class ListScreenTypeRepository {
 		$items = [];
 
 		foreach ( $this->get_post_types() as $post_type ) {
+			// TODO: add screen link?
 			$items[] = new ListScreenType(
 				$post_type->name,
 				$post_type->labels->name,
