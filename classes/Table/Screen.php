@@ -196,7 +196,7 @@ final class Screen implements Registrable {
 			return;
 		}
 
-		$edit_link = $this->list_screen->get_edit_link();
+		$edit_link = ac_get_manage_columns_url( $this->list_screen->get_id() );
 
 		if ( ! $edit_link ) {
 			return;

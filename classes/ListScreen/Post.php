@@ -29,7 +29,7 @@ class Post extends ListScreenPost {
 		add_action( "manage_{$this->post_type}_posts_custom_column", [ $this, 'manage_value' ], 100, 2 );
 	}
 
-	public function get_url() {
+	public function get_table_url() {
 		return add_query_arg( [ 'post_type' => $this->get_post_type() ], admin_url( 'edit.php' ) );
 	}
 

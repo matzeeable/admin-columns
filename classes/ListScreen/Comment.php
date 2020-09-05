@@ -58,7 +58,7 @@ class Comment extends ListScreen {
 		$this->register_column_types_from_dir( 'AC\Column\Comment' );
 	}
 
-	public function get_url() {
+	public function get_table_url() {
 		return admin_url( 'comments.php' );
 	}
 

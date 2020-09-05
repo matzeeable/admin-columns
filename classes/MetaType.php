@@ -48,4 +48,8 @@ final class MetaType {
 		}
 	}
 
+	public function __toString() {
+		return $this->get();
+	}
+
 }

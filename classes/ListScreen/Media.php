@@ -27,7 +27,7 @@ class Media extends AC\ListScreenPost {
 		add_action( 'manage_media_custom_column', [ $this, 'manage_value' ], 100, 2 );
 	}
 
-	public function get_url() {
+	public function get_table_url() {
 		return add_query_arg( [ 'mode' => 'list' ], admin_url( 'upload.php' ) );
 	}
 

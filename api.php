@@ -122,6 +122,15 @@ function ac_load_columns( array $data ) {
 	$factory->create()->add( $data );
 }
 
+function ac_get_manage_columns_url( ListScreenId $id ) {
+	return add_query_arg(
+		[
+			'layout_id' => $id->get_id(),
+		],
+		ac_get_admin_url( Admin\Page\Columns::NAME )
+	);
+}
+
 /**
  * @param string|null $slug
  *

@@ -51,7 +51,7 @@ class User extends ListScreen {
 		return get_userdata( $id );
 	}
 
-	public function get_url() {
+	public function get_table_url() {
 		return admin_url( 'users.php' );
 	}
 
