@@ -135,6 +135,7 @@ final class Database implements ListScreenRepositoryWritable {
 	 *
 	 * @return void
 	 */
+	// TODO: maybe accept <object> $data instead of ListScreen
 	public function save( ListScreen $list_screen ) {
 		global $wpdb;
 

@@ -5,10 +5,6 @@ namespace AC;
 use AC\Type\ListScreenId;
 use WP_Screen;
 
-/**
- * List Screen
- * @since 2.0
- */
 abstract class ListScreenLegacy {
 
 	/**
@@ -32,6 +28,35 @@ abstract class ListScreenLegacy {
 	abstract public function register();
 
 	abstract public function add_column( Column $column );
+
+	/**
+	 * @return string
+	 */
+	public function get_screen_link() {
+		_deprecated_function( __METHOD__, 'NEWVERSION', 'AC\ListScreen::get_url()' );
+
+		return $this->get_url();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_singular_label() {
+		_deprecated_function( __METHOD__, 'NEWVERSION', 'AC\ListScreen::get_label()::get_single()' );
+
+		return $this->label->get_single();
+	}
+
+	/**
+	 * @param string $label
+	 *
+	 * @return self
+	 */
+	protected function set_singular_label( $label ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		return $this;
+	}
 
 	/**
 	 * @return string

@@ -4,6 +4,7 @@ namespace AC;
 
 use AC\Type\ListScreenId;
 use AC\Type\ListScreenKey;
+use AC\Type\ListScreenLabel;
 use AC\Type\TableId;
 use DateTime;
 use ReflectionClass;
@@ -14,11 +15,6 @@ use ReflectionException;
  * @since 2.0
  */
 abstract class ListScreen extends ListScreenLegacy implements Registrable {
-
-	/**
-	 * @deprecated 4.0
-	 */
-	const OPTIONS_KEY = 'cpac_options_';
 
 	/**
 	 * @var ListScreenKey
@@ -36,7 +32,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	protected $table_id;
 
 	/**
-	 * @var string
+	 * @var ListScreenLabel
 	 */
 	protected $label;
 
@@ -58,11 +54,6 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	private $updated;
 
 	/**
-	 * @var string
-	 */
-	private $singular_label;
-
-	/**
 	 * @var ListScreenId
 	 */
 	private $id;
@@ -79,15 +70,15 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 
 	/**
 	 * @param ListScreenKey $key
-	 * @param MetaType      $meta_type
-	 * @param TableId       $table_id
-	 * @param string        $label
+	 * @param MetaType $meta_type
+	 * @param TableId $table_id
+	 * @param ListScreenLabel $label
 	 */
 	public function __construct(
 		ListScreenKey $key,
 		MetaType $meta_type,
 		TableId $table_id,
-		$label = null,
+		ListScreenLabel $label = null,
 		ListScreenId $id = null
 	) {
 		$this->key = $key;
@@ -115,6 +106,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	 * Register column types
 	 * @return void
 	 */
+	// TODO: remove?
 	abstract protected function register_column_types();
 
 	/**
@@ -152,30 +144,17 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	}
 
 	/**
-	 * @return string
+	 * @return bool
 	 */
-	// TODO: what to do when empty?
+	public function has_label() {
+		return null !== $this->label;
+	}
+
+	/**
+	 * @return ListScreenLabel
+	 */
 	public function get_label() {
 		return $this->label;
-	}
-
-	/**
-	 * @return string
-	 */
-	// TODO: set Labels object?
-	public function get_singular_label() {
-		return null !== $this->singular_label ? $this->singular_label : $this->label;
-	}
-
-	/**
-	 * @param string $label
-	 *
-	 * @return self
-	 */
-	protected function set_singular_label( $label ) {
-		$this->singular_label = $label;
-
-		return $this;
 	}
 
 	/**
@@ -217,6 +196,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 		$this->read_only = (bool) $read_only;
 	}
 
+	// TODO: remove?
 	public function set_updated( DateTime $updated ) {
 		$this->updated = $updated;
 	}
@@ -386,6 +366,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 		array_map( [ $this, 'add_column' ], $columns );
 	}
 
+	// TODO: rename set_settings()
 	public function set_preferences( array $preferences ) {
 		$this->preferences = $preferences;
 
@@ -415,8 +396,8 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 
 	/**
 	 * @param string $column_name
-	 * @param int    $id
-	 * @param null   $original_value
+	 * @param int $id
+	 * @param null $original_value
 	 *
 	 * @return string
 	 */
@@ -440,8 +421,8 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 		/**
 		 * Column display value
 		 *
-		 * @param string $value  Column display value
-		 * @param int    $id     Object ID
+		 * @param string $value Column display value
+		 * @param int $id Object ID
 		 * @param Column $column Column object
 		 *
 		 * @since 3.0
@@ -453,13 +434,6 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 
 	public function get_url() {
 		return add_query_arg( [ 'layout' => $this->id->get_id() ], $this->get_table_url() );
-	}
-
-	/**
-	 * @return string
-	 */
-	public function get_screen_link() {
-		return add_query_arg( [ 'layout' => $this->id->get_id() ], $this->get_url() );
 	}
 
 }

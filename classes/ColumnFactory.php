@@ -21,7 +21,6 @@ class ColumnFactory {
 	}
 
 	/**
-	 * @param string     $column_name
 	 * @param array      $data
 	 * @param ListScreen $list_screen
 	 *
@@ -34,6 +33,7 @@ class ColumnFactory {
 
 		$type = $data['type'];
 
+		// TODO: is probably a factory
 		$column_types = $this->colummn_types_repository->find( $list_screen );
 
 		if ( ! isset( $column_types[ $type ] ) ) {
