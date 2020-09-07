@@ -18,7 +18,7 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 		$this->factories[] = $factory;
 	}
 
-	// TODO: NEXT
+	// TODO: NEXT. Add data <object>?
 	public function create( $key ) {
 		foreach ( array_reverse( $this->factories ) as $factory ) {
 			$list_screen = $factory->create( $key );
@@ -33,6 +33,7 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 		return null;
 	}
 
+	// TODO: remove
 	public function create_by_screen( WP_Screen $wp_screen ) {
 		foreach ( array_reverse( $this->factories ) as $factory ) {
 			$list_screen = $factory->create_by_screen( $wp_screen );

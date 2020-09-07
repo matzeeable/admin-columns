@@ -5,7 +5,7 @@ namespace AC\ListScreen;
 use AC;
 use AC\ListScreen;
 use AC\MetaType;
-use AC\Type\ListScreenId;
+use AC\Type\ListScreenLabel;
 use AC\Type\Screen;
 use ReflectionException;
 use WP_Comment;
@@ -18,11 +18,11 @@ class Comment extends ListScreen {
 
 	const NAME = 'wp-comments';
 
-	public function __construct( ListScreenId $id = null ) {
+	public function __construct() {
 		parent::__construct(
 			new MetaType( MetaType::COMMENT ),
 			new Screen( 'edit', 'edit-comments', self::NAME ),
-			__( 'Comments' )
+			new ListScreenLabel( __( 'Comment' ), __( 'Comments' ) )
 		);
 	}
 

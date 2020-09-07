@@ -5,7 +5,7 @@ namespace AC\ListScreen;
 use AC;
 use AC\ListScreen;
 use AC\MetaType;
-use AC\Type\ListScreenId;
+use AC\Type\ListScreenLabel;
 use AC\Type\Screen;
 use ReflectionException;
 use WP_User;
@@ -15,12 +15,11 @@ class User extends ListScreen {
 
 	const NAME = 'wp-users';
 
-	public function __construct( ListScreenId $id = null ) {
+	public function __construct() {
 		parent::__construct(
 			new MetaType( MetaType::USER ),
 			new Screen( 'users', 'users', self::NAME ),
-			__( 'Users' ),
-			$id
+			new ListScreenLabel( __( 'User' ), __( 'Users' ) )
 		);
 	}
 

@@ -48,7 +48,7 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 					: null;
 			case 'edit-comments' :
 				return 'edit-comments' === $wp_screen->id
-					? $this->create( ListScreen\Media::NAME )
+					? $this->create( ListScreen\Comment::NAME )
 					: null;
 			default :
 				return null;

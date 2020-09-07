@@ -33,33 +33,33 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	/**
 	 * @var ColumnCollection
 	 */
-	private $columns;
+	protected $columns;
 
 	/**
 	 * @var Column[]
 	 */
 	// TODO
-	private $column_types;
+	protected $column_types;
 
 	/**
 	 * @var DateTime
 	 */
-	private $updated;
+	protected $updated;
 
 	/**
 	 * @var ListScreenId
 	 */
-	private $id;
+	protected $id;
 
 	/**
 	 * @var array
 	 */
-	private $settings;
+	protected $settings;
 
 	/**
 	 * @var bool
 	 */
-	private $read_only = false;
+	protected $read_only = false;
 
 	/**
 	 * @param MetaType $meta_type
@@ -216,7 +216,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	/**
 	 * @return Column[]
 	 */
-	// TODO: refactor
+	// TODO: refactor. obsolete.
 	public function get_column_types() {
 		if ( null === $this->column_types ) {
 			$this->set_column_types();
@@ -352,25 +352,23 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	/**
 	 * @param string $column_name
 	 * @param int $id
-	 * @param null $original_value
+	 * @param null $default
 	 *
 	 * @return string
 	 */
-	// TODO: refactor
-	public function get_display_value_by_column_name( $column_name, $id, $original_value = null ) {
-		$column = $this->get_column_by_name( $column_name );
-
-		// TODO: check Renderable interface
+	// TODO: refactor. unnecessary method.
+	public function get_display_value_by_column_name( $column_name, $id, $default = null ) {
+		$column = $this->columns->get( $column_name );
 
 		if ( ! $column ) {
-			return $original_value;
+			return $default;
 		}
 
+		// TODO: check Renderable interface.
 		$value = $column->get_value( $id );
 
-		// You can overwrite the display value for original columns by making sure get_value() does not return an empty string.
 		if ( $column->is_original() && ac_helper()->string->is_empty( $value ) ) {
-			return $original_value;
+			return $default;
 		}
 
 		/**
