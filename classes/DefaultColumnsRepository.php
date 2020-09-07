@@ -54,7 +54,7 @@ class DefaultColumnsRepository {
 	}
 
 	/**
-	 * @param string $list_screen_key
+	 * @param $list_screen_key
 	 * @param array $columns
 	 *
 	 * @return void
@@ -64,7 +64,7 @@ class DefaultColumnsRepository {
 	}
 
 	/**
-	 * @param string $list_screen_key
+	 * @param $list_screen_key
 	 *
 	 * @return bool
 	 */
@@ -73,7 +73,7 @@ class DefaultColumnsRepository {
 	}
 
 	/**
-	 * @param string $list_screen_key
+	 * @param $list_screen_key
 	 *
 	 * @return array
 	 */
@@ -82,7 +82,7 @@ class DefaultColumnsRepository {
 	}
 
 	/**
-	 * @param string $list_screen_key
+	 * @param $list_screen_key
 	 *
 	 * @return void
 	 */

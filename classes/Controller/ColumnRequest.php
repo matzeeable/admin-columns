@@ -37,7 +37,7 @@ abstract class ColumnRequest {
 		if ( ! $column ) {
 			wp_send_json_error( [
 				'type'  => 'message',
-				'error' => sprintf( __( 'Please visit the %s screen once to load all available columns', 'codepress-admin-columns' ), ac_helper()->html->link( $list_screen->get_screen_link(), $list_screen->get_label() ) ),
+				'error' => sprintf( __( 'Please visit the %s screen once to load all available columns', 'codepress-admin-columns' ), ac_helper()->html->link( $list_screen->get_url(), $list_screen->get_label() ) ),
 			] );
 		}
 

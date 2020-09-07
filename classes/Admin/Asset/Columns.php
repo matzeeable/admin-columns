@@ -78,7 +78,7 @@ class Columns extends Script {
 				continue;
 			}
 
-			$list_screen_link = $this->list_screen_factory->create( $list_screen->get_key() )->get_screen_link();
+			$list_screen_link = $this->list_screen_factory->create( $list_screen->get_key() )->get_url();
 
 			if ( ! $list_screen_link ) {
 				continue;

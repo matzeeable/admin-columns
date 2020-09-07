@@ -1,6 +1,7 @@
 <?php
 
 use AC\Admin;
+use AC\ColumnCollection;
 use AC\EncodedListScreenDataFactory;
 use AC\Helper;
 use AC\ListScreen;
@@ -46,7 +47,7 @@ function ac_get_site_url( $path = '' ) {
  * @param string $path
  * @param string $utm_medium
  * @param string $utm_content
- * @param bool   $utm_campaign
+ * @param bool $utm_campaign
  *
  * @return string
  */
@@ -93,7 +94,7 @@ function ac_helper() {
 
 /**
  * @param array|string $list_screen_keys
- * @param array        $column_data
+ * @param array $column_data
  *
  * @deprecated 4.0.0
  * @since      2.2
@@ -237,19 +238,19 @@ function ac_get_column( $column_name, $list_screen_id ) {
  *
  * @param string $list_screen_id
  *
- * @return AC\Column[]
+ * @return ColumnCollection
  */
 function ac_get_columns( $list_screen_id ) {
 	try {
 		$list_id = new ListScreenId( $list_screen_id );
 	} catch ( Exception $e ) {
-		return [];
+		return new ColumnCollection();
 	}
 
 	$list_screen = AC()->get_storage()->find( $list_id );
 
 	if ( ! $list_screen ) {
-		return [];
+		return new ColumnCollection();
 	}
 
 	return $list_screen->get_columns();
@@ -257,7 +258,7 @@ function ac_get_columns( $list_screen_id ) {
 
 /**
  * @param                   $format
- * @param null              $timestamp
+ * @param null $timestamp
  * @param DateTimeZone|null $timezone
  *
  * @return false|string

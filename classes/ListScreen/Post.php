@@ -5,18 +5,18 @@ namespace AC\ListScreen;
 use AC\ListScreenPost;
 use AC\ListTableFactory;
 use AC\Type\ListScreenId;
-use AC\Type\ListScreenKey;
-use AC\Type\TableId;
+use AC\Type\Screen;
 use ReflectionException;
 use WP_Posts_List_Table;
 
 class Post extends ListScreenPost {
 
+	const NAME = 'POST';
+
 	public function __construct( $post_type, ListScreenId $id = null ) {
 		parent::__construct(
 			$post_type,
-			new ListScreenKey( $post_type ),
-			new TableId( 'edit', 'edit-' . $post_type ),
+			new Screen( 'edit', 'edit-' . $post_type, $post_type ),
 			null,
 			$id
 		);
@@ -73,7 +73,7 @@ class Post extends ListScreenPost {
 	protected function get_list_table() {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
-		return ( new ListTableFactory() )->create_post_table( $this->table_id->get_screen_id() );
+		return ( new ListTableFactory() )->create_post_table( $this->screen->get_id() );
 	}
 
 }

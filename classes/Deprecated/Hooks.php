@@ -2,6 +2,7 @@
 
 namespace AC\Deprecated;
 
+use AC\ColumnTypesRepository;
 use AC\Deprecated\Hook\Action;
 use AC\Deprecated\Hook\Filter;
 use AC\ListScreenFactory;
@@ -21,13 +22,23 @@ class Hooks implements Registrable {
 	private $list_screen_factory;
 
 	/**
+	 * @var ColumnTypesRepository
+	 */
+	private $column_types_repository;
+
+	/**
 	 * @var HookCount
 	 */
 	private $hook_count;
 
-	public function __construct( ListScreenTypeRepository $list_screen_type_repository, ListScreenFactory $list_screen_factory ) {
+	public function __construct(
+		ListScreenTypeRepository $list_screen_type_repository,
+		ListScreenFactory $list_screen_factory,
+		ColumnTypesRepository $column_types_repository
+	) {
 		$this->list_screen_type_repository = $list_screen_type_repository;
 		$this->list_screen_factory = $list_screen_factory;
+		$this->column_types_repository = $column_types_repository;
 		$this->hook_count = new HookCount();
 	}
 
@@ -125,7 +136,7 @@ class Hooks implements Registrable {
 				continue;
 			}
 
-			foreach ( $list_screen->get_column_types() as $column ) {
+			foreach ( $this->column_types_repository->find( $list_screen ) as $column ) {
 				$columns[ $column->get_type() ] = $column->get_type();
 			}
 		}

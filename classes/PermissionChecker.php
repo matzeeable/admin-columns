@@ -12,8 +12,8 @@ class PermissionChecker {
 	 * @return ListScreen|null
 	 */
 	public function is_valid( WP_User $user, ListScreen $list_screen ) {
-		$roles = $list_screen->get_preference( 'roles' );
-		$users = $list_screen->get_preference( 'users' );
+		$roles = $list_screen->get_setting( 'roles' );
+		$users = $list_screen->get_setting( 'users' );
 		$users = is_array( $users ) ? array_map( 'intval', $users ) : [];
 
 		if ( empty( $users ) && empty( $roles ) ) {

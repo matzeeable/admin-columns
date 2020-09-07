@@ -2,9 +2,7 @@
 
 namespace AC;
 
-use AC\Type\ListScreenId;
-use AC\Type\ListScreenKey;
-use AC\Type\TableId;
+use AC\Type\Screen;
 use WP_Post;
 
 abstract class ListScreenPost extends ListScreen {
@@ -14,16 +12,11 @@ abstract class ListScreenPost extends ListScreen {
 	 */
 	protected $post_type;
 
-	/**
-	 * @param string $post_type
-	 */
-	public function __construct( $post_type, ListScreenKey $key, TableId $table_id, $label = null, ListScreenId $id = null ) {
+	public function __construct( $post_type, Screen $screen, $label = null ) {
 		parent::__construct(
-			$key,
 			new MetaType( MetaType::POST ),
-			$table_id,
-			$label,
-			$id
+			$screen,
+			$label
 		);
 
 		$this->post_type = $post_type;

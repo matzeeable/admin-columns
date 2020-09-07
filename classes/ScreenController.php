@@ -22,7 +22,7 @@ class ScreenController implements Registrable {
 	}
 
 	public function register() {
-		add_filter( "manage_{$this->list_screen->get_table_id()->get_screen_id()}_columns", [ $this, 'add_headings' ], 200 );
+		add_filter( "manage_{$this->list_screen->get_screen()->get_id()}_columns", [ $this, 'add_headings' ], 200 );
 
 		$this->list_screen->register();
 

@@ -28,7 +28,7 @@ class ListScreenType {
 	 * @param string $key
 	 * @param string $label
 	 * @param string $group
-	 * @param bool   $network
+	 * @param bool $network
 	 */
 	public function __construct( $key, $label, $group, $network = false ) {
 		$this->key = $key;

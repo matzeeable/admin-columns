@@ -71,7 +71,7 @@ class Save {
 			? $formdata['title']
 			: $list_screen->get_label();
 
-		$list_screen->set_preferences( $settings );
+		$list_screen->set_settings( $settings );
 
 		$this->storage->save( $list_screen );
 
@@ -84,7 +84,7 @@ class Save {
 					__( 'Settings for %s updated successfully.', 'codepress-admin-columns' ),
 					sprintf( '<strong>%s</strong>', esc_html( $list_screen->get_title() ) )
 				),
-				sprintf( '<a href="%s">%s</a>', $list_screen->get_screen_link(), sprintf( __( 'View %s screen', 'codepress-admin-columns' ), $list_screen->get_label() ) )
+				sprintf( '<a href="%s">%s</a>', $list_screen->get_url(), sprintf( __( 'View %s screen', 'codepress-admin-columns' ), $list_screen->get_label() ) )
 			)
 		);
 	}

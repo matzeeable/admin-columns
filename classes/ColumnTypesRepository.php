@@ -42,7 +42,6 @@ class ColumnTypesRepository {
 		/** @var Integration $integration */
 		foreach ( new Integrations() as $integration ) {
 
-			// TODO: remove check?
 			if ( ! $integration->show_placeholder( $list_screen ) ) {
 				continue;
 			}

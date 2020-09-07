@@ -134,7 +134,7 @@ class ListScreenRequest {
 		$list_key = $this->preference->get( 'list_key' );
 
 		// Load first available ID
-		if ( $list_key && $this->exists_list_screen( $list_key ) ) {
+		if ( $list_key && is_string( $list_key ) && $this->exists_list_screen( $list_key ) ) {
 			$this->preference->set( 'list_key', $list_key );
 
 			$list_screen = $this->get_first_available_list_screen( $list_key );

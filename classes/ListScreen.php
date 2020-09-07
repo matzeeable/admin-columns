@@ -3,9 +3,8 @@
 namespace AC;
 
 use AC\Type\ListScreenId;
-use AC\Type\ListScreenKey;
 use AC\Type\ListScreenLabel;
-use AC\Type\TableId;
+use AC\Type\Screen;
 use DateTime;
 use ReflectionClass;
 use ReflectionException;
@@ -17,19 +16,14 @@ use ReflectionException;
 abstract class ListScreen extends ListScreenLegacy implements Registrable {
 
 	/**
-	 * @var ListScreenKey
-	 */
-	protected $key;
-
-	/**
 	 * @var MetaType
 	 */
 	protected $meta_type;
 
 	/**
-	 * @var TableId
+	 * @var Screen
 	 */
-	protected $table_id;
+	protected $screen;
 
 	/**
 	 * @var ListScreenLabel
@@ -37,9 +31,8 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	protected $label;
 
 	/**
-	 * @var Column[]
+	 * @var ColumnCollection
 	 */
-	// TODO: use a ColumnCollection
 	private $columns;
 
 	/**
@@ -61,7 +54,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	/**
 	 * @var array
 	 */
-	private $preferences = [];
+	private $settings;
 
 	/**
 	 * @var bool
@@ -69,37 +62,28 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	private $read_only = false;
 
 	/**
-	 * @param ListScreenKey $key
 	 * @param MetaType $meta_type
-	 * @param TableId $table_id
+	 * @param Screen $screen
 	 * @param ListScreenLabel $label
+	 * @param ColumnCollection $columns
+	 * @param array $settings
 	 */
 	public function __construct(
-		ListScreenKey $key,
 		MetaType $meta_type,
-		TableId $table_id,
+		Screen $screen,
 		ListScreenLabel $label = null,
-		ListScreenId $id = null
+		ColumnCollection $columns = null,
+		array $settings = []
 	) {
-		$this->key = $key;
+		if ( null === $columns ) {
+			$columns = new ColumnCollection();
+		}
+
 		$this->meta_type = $meta_type;
-		$this->table_id = $table_id;
+		$this->screen = $screen;
 		$this->label = $label;
-		$this->id = $id;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function has_id() {
-		return null !== $this->id;
-	}
-
-	/**
-	 * @return ListScreenId
-	 */
-	public function get_id() {
-		return $this->id;
+		$this->columns = $columns;
+		$this->settings = $settings;
 	}
 
 	/**
@@ -123,17 +107,28 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	abstract protected function get_table_url();
 
 	/**
-	 * @return string
+	 * @return ListScreenId
 	 */
+	public function get_id() {
+		return $this->id;
+	}
+
 	public function get_key() {
-		return $this->key->get_value();
+		return $this->screen->get_key();
 	}
 
 	/**
-	 * @return TableId
+	 * @return bool
 	 */
-	public function get_table_id() {
-		return $this->table_id;
+	public function has_id() {
+		return null !== $this->id;
+	}
+
+	/**
+	 * @return Screen
+	 */
+	public function get_screen() {
+		return $this->screen;
 	}
 
 	/**
@@ -164,6 +159,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 		return $this->meta_type->get();
 	}
 
+	// TODO: remove public
 	public function set_id( ListScreenId $id ) {
 		$this->id = $id;
 	}
@@ -179,7 +175,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	 * @return string
 	 */
 	public function get_title() {
-		return $this->get_preference( 'title' );
+		return $this->get_setting( 'title' );
 	}
 
 	/**
@@ -196,7 +192,6 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 		$this->read_only = (bool) $read_only;
 	}
 
-	// TODO: remove?
 	public function set_updated( DateTime $updated ) {
 		$this->updated = $updated;
 	}
@@ -211,7 +206,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	}
 
 	/**
-	 * @return Column[]
+	 * @return ColumnCollection
 	 * @since 3.0
 	 */
 	public function get_columns() {
@@ -231,23 +226,13 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	}
 
 	/**
-	 * @param $name
+	 * @param string $name
 	 *
-	 * @return false|Column
+	 * @return Column null
 	 * @since 2.0
 	 */
-	// TODO: move to ColumnCollection
 	public function get_column_by_name( $name ) {
-		$columns = $this->get_columns();
-
-		foreach ( $columns as $column ) {
-			// Do not do a strict comparision. All column names are stored as strings, even integers.
-			if ( $column->get_name() == $name ) {
-				return $column;
-			}
-		}
-
-		return false;
+		return $this->columns->get( $name );
 	}
 
 	/**
@@ -289,40 +274,6 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	private function set_column_types() {
 		$this->column_types = [];
 
-		// Register default columns
-		//		foreach ( $this->get_original_columns() as $type => $label ) {
-		//
-		//			// Ignore the mandatory checkbox column
-		//			if ( 'cb' === $type ) {
-		//				continue;
-		//			}
-		//
-		//			$column = new Column();
-		//
-		//			$column
-		//				->set_type( $type )
-		//				->set_original( true );
-		//
-		//			$this->register_column_type( $column );
-		//		}
-
-		// Placeholder columns
-		// TODO: add placeholders
-		//		foreach ( new Integrations() as $integration ) {
-		//			if ( ! $integration->show_placeholder( $this ) ) {
-		//				continue;
-		//			}
-		//
-		//			$plugin_info = new PluginInformation( $integration->get_basename() );
-		//
-		//			if ( $integration->is_plugin_active() && ! $plugin_info->is_active() ) {
-		//				$column = new Placeholder();
-		//				$column->set_integration( $integration );
-		//
-		//				$this->register_column_type( $column );
-		//			}
-		//		}
-
 		// Load Custom columns
 		$this->register_column_types();
 
@@ -354,44 +305,48 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	/**
 	 * @param string $column_name
 	 */
+	// TODO: deprecate
 	public function deregister_column( $column_name ) {
 		unset( $this->columns[ $column_name ] );
 	}
 
 	public function add_column( Column $column ) {
-		$this->columns[] = $column;
+		$this->columns->add( $column );
 	}
 
-	public function set_columns( array $columns ) {
-		array_map( [ $this, 'add_column' ], $columns );
+	public function set_columns( ColumnCollection $columns ) {
+		$this->columns = $columns;
 	}
 
-	// TODO: rename set_settings()
-	public function set_preferences( array $preferences ) {
-		$this->preferences = $preferences;
-
-		return $this;
+	public function set_settings( array $settings ) {
+		$this->settings = $settings;
 	}
 
 	/**
 	 * @return array
 	 */
-	// TODO: rename get_settings()
-	public function get_preferences() {
-		return $this->preferences;
+	public function get_settings() {
+		return $this->settings;
 	}
 
 	/**
 	 * @param string $key
 	 *
-	 * @return mixed|null
+	 * @return null|mixed
 	 */
-	public function get_preference( $key ) {
-		if ( ! isset( $this->preferences[ $key ] ) ) {
+	public function get_setting( $key ) {
+		if ( ! isset( $this->settings[ $key ] ) ) {
 			return null;
 		}
 
-		return $this->preferences[ $key ];
+		return $this->settings[ $key ];
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_url() {
+		return add_query_arg( [ 'layout' => $this->id->get_id() ], $this->get_table_url() );
 	}
 
 	/**
@@ -430,10 +385,6 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 		$value = apply_filters( 'ac/column/value', $value, $id, $column );
 
 		return $value;
-	}
-
-	public function get_url() {
-		return add_query_arg( [ 'layout' => $this->id->get_id() ], $this->get_table_url() );
 	}
 
 }

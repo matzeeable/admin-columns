@@ -6,8 +6,7 @@ use AC;
 use AC\ListScreen;
 use AC\MetaType;
 use AC\Type\ListScreenId;
-use AC\Type\ListScreenKey;
-use AC\Type\TableId;
+use AC\Type\Screen;
 use ReflectionException;
 use WP_Comment;
 use WP_Comments_List_Table;
@@ -21,11 +20,9 @@ class Comment extends ListScreen {
 
 	public function __construct( ListScreenId $id = null ) {
 		parent::__construct(
-			new ListScreenKey( self::NAME ),
 			new MetaType( MetaType::COMMENT ),
-			new TableId( 'edit', 'edit-comments' ),
-			__( 'Comments' ),
-			$id
+			new Screen( 'edit', 'edit-comments', self::NAME ),
+			__( 'Comments' )
 		);
 	}
 
@@ -69,7 +66,7 @@ class Comment extends ListScreen {
 	public function get_list_table() {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
-		return ( new AC\ListTableFactory() )->create_comment_table( $this->table_id->get_screen_id() );
+		return ( new AC\ListTableFactory() )->create_comment_table( $this->screen->get_id() );
 	}
 
 }

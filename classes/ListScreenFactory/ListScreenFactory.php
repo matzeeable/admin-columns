@@ -22,6 +22,7 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 		ListScreen\Comment::NAME => ListScreen\Comment::CLASS,
 	];
 
+	// TODO: add data
 	public function create( $key ) {
 		if ( isset( $this->list_screens[ $key ] ) ) {
 			return new $this->list_screens[$key]();
@@ -30,6 +31,7 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 		return new $this->default_list_screen( $key );
 	}
 
+	// TODO: remove
 	public function create_by_screen( WP_Screen $wp_screen ) {
 		switch ( $wp_screen->base ) {
 			case 'edit' :

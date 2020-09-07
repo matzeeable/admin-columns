@@ -2,6 +2,7 @@
 
 namespace AC\ListScreenRepository;
 
+use AC\ColumnCollection;
 use AC\ColumnFactory;
 use AC\Exception\MissingListScreenIdException;
 use AC\ListScreen;
@@ -156,7 +157,7 @@ final class Database implements ListScreenRepositoryWritable {
 			'list_key'      => $list_screen->get_key(),
 			'title'         => $list_screen->get_title(),
 			'columns'       => $columns ? serialize( $columns ) : null,
-			'settings'      => $list_screen->get_preferences() ? serialize( $list_screen->get_preferences() ) : null,
+			'settings'      => $list_screen->get_settings() ? serialize( $list_screen->get_settings() ) : null,
 			'date_modified' => $list_screen->get_updated()->format( 'Y-m-d H:i:s' ),
 		];
 
@@ -236,7 +237,9 @@ final class Database implements ListScreenRepositoryWritable {
 
 		$settings['title'] = $data->title;
 
-		$list_screen->set_preferences( $settings );
+		$list_screen->set_settings( $settings );
+
+		$columns = new ColumnCollection();
 
 		if ( $data->columns ) {
 			foreach ( unserialize( $data->columns ) as $column_name => $column_data ) {
@@ -246,9 +249,11 @@ final class Database implements ListScreenRepositoryWritable {
 					continue;
 				}
 
-				$list_screen->add_column( $column );
+				$columns->add( $column );
 			}
 		}
+
+		$list_screen->set_columns( $columns );
 
 		return $list_screen;
 	}

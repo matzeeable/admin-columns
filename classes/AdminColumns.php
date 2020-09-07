@@ -67,9 +67,11 @@ class AdminColumns extends Plugin {
 			$this->get_dir()
 		);
 
-		$hooks = new Deprecated\Hooks( new ListScreenTypeRepository(), $this->list_screen_factory );
+		$column_types_repository = new ColumnTypesRepository( new DefaultColumnsRepository() );
 
-		$this->admin = ( new AdminFactory( $this->storage, $location, $this->list_screen_factory, $hooks ) )->create();
+		$hooks = new Deprecated\Hooks( new ListScreenTypeRepository(), $this->list_screen_factory, $column_types_repository );
+
+		$this->admin = ( new AdminFactory( $this->storage, $location, $this->list_screen_factory, $column_types_repository, $hooks ) )->create();
 
 		$services = [
 			$this->admin,
@@ -84,7 +86,7 @@ class AdminColumns extends Plugin {
 			new Controller\DefaultColumns( new Request(), new DefaultColumnsRepository(), $this->list_screen_factory ),
 			new QuickEdit( $this->storage, new Table\Preference() ),
 			new Capabilities\Manage(),
-			new Controller\AjaxColumnRequest( $this->storage, $column_factory, $this->list_screen_factory, new Request() ),
+			new Controller\AjaxColumnRequest( $this->storage, $column_factory, $this->list_screen_factory, $column_types_repository, new Request() ),
 			new Controller\AjaxRequestCustomFieldKeys(),
 			new Controller\AjaxColumnValue( $this->storage ),
 			new Controller\AjaxScreenOptions( new Preference\ScreenOptions() ),

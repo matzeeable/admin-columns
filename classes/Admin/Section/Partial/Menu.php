@@ -26,7 +26,7 @@ class Menu {
 		$menu = new View( [
 			'items'       => $this->get_grouped_list_screens(),
 			'current'     => $list_screen->get_key(),
-			'screen_link' => $list_screen->get_screen_link(),
+			'screen_link' => $list_screen->get_url(),
 			'class'       => $is_hidden ? 'hidden' : '',
 		] );
 
@@ -35,26 +35,12 @@ class Menu {
 		return $menu->render();
 	}
 
-	// todo
-//	private function get_network_list_screens() {
-//		return ListScreenTypes::instance()->get_list_screens( [ 'network_only' => true ] );
-//	}
-//
-//	private function get_site_list_screens() {
-//		return ListScreenTypes::instance()->get_list_screens( [ 'site_only' => true ] );
-//	}
-
 	/**
 	 * @return array
 	 */
 	private function get_grouped_list_screens() {
 
 		$list_screens = ( new ListScreenTypeRepository() )->find_all( [ 'is_network' => $this->is_network ] );
-
-		// todo
-//		$list_screens = $this->is_network
-//			? $this->get_network_list_screens()
-//			: $this->get_site_list_screens();
 
 		$list_screens_grouped = [];
 		foreach ( $list_screens as $list_screen ) {

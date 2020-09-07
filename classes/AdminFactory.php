@@ -29,6 +29,11 @@ class AdminFactory {
 	private $list_screen_factory;
 
 	/**
+	 * @var ColumnTypesRepository
+	 */
+	private $column_types_repository;
+
+	/**
 	 * @var Hooks
 	 */
 	private $hooks;
@@ -37,11 +42,13 @@ class AdminFactory {
 		Storage $storage,
 		Location\Absolute $location,
 		ListScreenFactory $list_screen_factory,
+		ColumnTypesRepository $column_types_repository,
 		Hooks $hooks
 	) {
 		$this->storage = $storage;
 		$this->location = $location;
 		$this->list_screen_factory = $list_screen_factory;
+		$this->column_types_repository = $column_types_repository;
 		$this->hooks = $hooks;
 	}
 
@@ -64,7 +71,8 @@ class AdminFactory {
 			new DefaultColumnsRepository(),
 			new Section\Partial\Menu( $list_screen_controller, false ),
 			$this->storage,
-			$this->list_screen_factory
+			$this->list_screen_factory,
+			$this->column_types_repository
 		);
 	}
 

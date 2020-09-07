@@ -6,8 +6,7 @@ use AC;
 use AC\ListScreen;
 use AC\MetaType;
 use AC\Type\ListScreenId;
-use AC\Type\ListScreenKey;
-use AC\Type\TableId;
+use AC\Type\Screen;
 use ReflectionException;
 use WP_User;
 use WP_Users_List_Table;
@@ -18,9 +17,8 @@ class User extends ListScreen {
 
 	public function __construct( ListScreenId $id = null ) {
 		parent::__construct(
-			new ListScreenKey( self::NAME ),
 			new MetaType( MetaType::USER ),
-			new TableId( 'users', 'users' ),
+			new Screen( 'users', 'users', self::NAME ),
 			__( 'Users' ),
 			$id
 		);
@@ -33,7 +31,7 @@ class User extends ListScreen {
 	/**
 	 * @param string $value
 	 * @param string $column_name
-	 * @param int    $user_id
+	 * @param int $user_id
 	 *
 	 * @return string
 	 * @since 2.0.2
@@ -85,7 +83,7 @@ class User extends ListScreen {
 	public function get_list_table() {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
-		return ( new AC\ListTableFactory() )->create_user_table( $this->table_id->get_screen_id() );
+		return ( new AC\ListTableFactory() )->create_user_table( $this->screen->get_id() );
 	}
 
 }

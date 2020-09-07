@@ -2,6 +2,7 @@
 
 namespace AC;
 
+use AC\Type;
 use AC\Type\ListScreenId;
 use WP_Screen;
 
@@ -12,15 +13,14 @@ abstract class ListScreenLegacy {
 	 */
 	const OPTIONS_KEY = 'cpac_options_';
 
-	abstract public function get_preference( $var );
-
 	abstract public function get_id();
 
 	abstract public function set_id( ListScreenId $id );
 
-	abstract public function get_key();
-
-	abstract public function get_table_id();
+	/**
+	 * @return Type\Screen
+	 */
+	abstract public function get_screen();
 
 	/**
 	 * @return void
@@ -28,6 +28,12 @@ abstract class ListScreenLegacy {
 	abstract public function register();
 
 	abstract public function add_column( Column $column );
+
+	public function get_preferences() {
+		_deprecated_function( __METHOD__, 'NEWVERSION', 'AC/ListScreen::get_settings()' );
+
+		return $this->get_settings();
+	}
 
 	/**
 	 * @return string
@@ -210,9 +216,9 @@ abstract class ListScreenLegacy {
 	 * @return string
 	 */
 	public function get_screen_id() {
-		_deprecated_function( __METHOD__, 'NEWVERSION', 'AC\ListScreen::table_id::get_screen_id()' );
+		_deprecated_function( __METHOD__, 'NEWVERSION', 'AC\ListScreen::get_screen::get_id()' );
 
-		return $this->get_table_id()->get_screen_id();
+		return $this->get_screen()->get_id();
 	}
 
 	/**
@@ -304,16 +310,6 @@ abstract class ListScreenLegacy {
 	}
 
 	/**
-	 * @return array
-	 * @deprecated NEWVERSION
-	 */
-	public function get_settings() {
-		_deprecated_function( __METHOD__, 'NEWVERSION', 'AC/ListScreen::get_columns()' );
-
-		return [];
-	}
-
-	/**
 	 * @param Column $column
 	 *
 	 * @deprecated NEWVERSION
@@ -364,14 +360,9 @@ abstract class ListScreenLegacy {
 
 	/**
 	 * @param int $id
-	 *
-	 * @return object
-	 * @deprecated 3.1.2
 	 */
 	protected function get_object_by_id( $id ) {
-		_deprecated_function( __METHOD__, '3.1.4', 'AC\ListScreenWP::get_object()' );
-
-		return $this->get_object( $id );
+		_deprecated_function( __METHOD__, '3.1.4' );
 	}
 
 	/**

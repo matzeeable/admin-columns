@@ -3,6 +3,7 @@
 namespace AC\Settings\Column;
 
 use AC;
+use AC\ColumnTypesRepository;
 use AC\Groups;
 use AC\Settings\Column;
 use AC\View;
@@ -13,6 +14,17 @@ class Type extends Column {
 	 * @var string
 	 */
 	private $type;
+
+	/**
+	 * @var ColumnTypesRepository
+	 */
+	private $column_types_repository;
+
+	public function __construct( AC\Column $column ) {
+		parent::__construct( $column );
+
+		$this->column_types_repository = new ColumnTypesRepository( new AC\DefaultColumnsRepository() );
+	}
 
 	protected function define_options() {
 		return [
@@ -75,9 +87,10 @@ class Type extends Column {
 	private function get_grouped_columns() {
 		$columns = [];
 
-		// TODO
-		// get columns and sort them
-		foreach ( $this->column->get_list_screen()->get_column_types() as $column ) {
+		// TODO: test
+		$column_types = $this->column_types_repository->find( $this->column->get_list_screen() );
+
+		foreach ( $column_types as $column ) {
 
 			/**
 			 * @param string $group Group slug
