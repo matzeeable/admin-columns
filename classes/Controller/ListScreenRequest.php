@@ -2,12 +2,14 @@
 
 namespace AC\Controller;
 
+use AC\DefaultColumnsRepository;
 use AC\ListScreen;
 use AC\ListScreenFactory;
 use AC\ListScreenRepository\Storage;
 use AC\ListScreenTypeRepository;
 use AC\Preferences;
 use AC\Request;
+use AC\Type\ListScreenData;
 use AC\Type\ListScreenId;
 
 class ListScreenRequest {
@@ -34,12 +36,18 @@ class ListScreenRequest {
 	 */
 	private $list_screen_factory;
 
+	/**
+	 * @var DefaultColumnsRepository
+	 */
+	private $default_column_repository;
+
 	public function __construct(
 		Request $request,
 		Storage $storage,
 		Preferences $preference,
 		ListScreenFactory $list_screen_factory,
 		ListScreenTypeRepository $list_screen_type_repository,
+		DefaultColumnsRepository $default_column_repository,
 		$is_network = false
 	) {
 		$this->request = $request;
@@ -47,6 +55,7 @@ class ListScreenRequest {
 		$this->preference = $preference;
 		$this->list_screen_factory = $list_screen_factory;
 		$this->list_screen_type_repository = $list_screen_type_repository;
+		$this->default_column_repository = $default_column_repository;
 		$this->is_network = (bool) $is_network;
 	}
 
@@ -167,7 +176,22 @@ class ListScreenRequest {
 	}
 
 	private function create_list_screen( $key ) {
-		return $this->list_screen_factory->create( $key );
+		$columns = [];
+
+		foreach ( $this->default_column_repository->find_all( $key ) as $name => $label ) {
+			$columns[ $name ] = [
+				'title' => $label,
+				'label' => $label,
+				'type'  => $name,
+				'name'  => $name,
+			];
+		}
+
+		return $this->list_screen_factory->create( new ListScreenData( [
+			'key'     => $key,
+			'title'   => 'Default',
+			'columns' => $columns
+		] ) );
 	}
 
 	/**

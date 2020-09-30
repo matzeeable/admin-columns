@@ -2,6 +2,7 @@
 
 namespace AC;
 
+use AC\Type\ListScreenData;
 use WP_Screen;
 
 class ListScreenFactory implements ListScreenFactoryInterface {
@@ -18,10 +19,9 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 		$this->factories[] = $factory;
 	}
 
-	// TODO: NEXT. Add data <object>?
-	public function create( $key ) {
+	public function create( ListScreenData $data ) {
 		foreach ( array_reverse( $this->factories ) as $factory ) {
-			$list_screen = $factory->create( $key );
+			$list_screen = $factory->create( $data );
 
 			if ( ! $list_screen ) {
 				continue;
@@ -33,7 +33,6 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 		return null;
 	}
 
-	// TODO: remove
 	public function create_by_screen( WP_Screen $wp_screen ) {
 		foreach ( array_reverse( $this->factories ) as $factory ) {
 			$list_screen = $factory->create_by_screen( $wp_screen );

@@ -46,7 +46,7 @@ class Columns extends Script {
 		$this->list_screen_factory = $list_screen_factory;
 	}
 
-	private function get_list_screens() {
+	private function get_list_screen_types() {
 		return ( new AC\ListScreenTypeRepository() )->find_all( [ 'is_network' => is_network_admin() ] );
 	}
 
@@ -60,7 +60,7 @@ class Columns extends Script {
 		$params = [
 			'_ajax_nonce'                => wp_create_nonce( AC\Ajax\Handler::NONCE_ACTION ),
 			'list_screen'                => $this->list_screen->get_key(),
-			'layout'                     => $this->list_screen->get_id()->get_id(),
+			'layout'                     => $this->list_screen->has_id() ? $this->list_screen->get_id()->get_id() : null,
 			'original_columns'           => [],
 			'uninitialized_list_screens' => [],
 			'i18n'                       => [
@@ -73,12 +73,15 @@ class Columns extends Script {
 			],
 		];
 
-		foreach ( $this->get_list_screens() as $list_screen ) {
+		foreach ( $this->get_list_screen_types() as $list_screen ) {
 			if ( $this->default_columns->exists( $list_screen->get_key() ) ) {
 				continue;
 			}
 
-			$list_screen_link = $this->list_screen_factory->create( $list_screen->get_key() )->get_url();
+			// TODO: remove factory to retrieve URL
+
+			$list_screen_link = '';
+//			$list_screen_link = $this->list_screen_factory->create( $list_screen->get_key() )->get_url();
 
 			if ( ! $list_screen_link ) {
 				continue;

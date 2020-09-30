@@ -7,6 +7,7 @@ use AC\Exception;
 use AC\ListScreen;
 use AC\ListScreenRepository\Rules;
 use AC\ListScreenRepository\SourceAware;
+use AC\Type\ListScreenData;
 use AC\Type\ListScreenId;
 use LogicException;
 
@@ -118,7 +119,7 @@ class ListScreenRepository implements AC\ListScreenRepositoryWritable, SourceAwa
 	/**
 	 * @inheritDoc
 	 */
-	public function save( ListScreen $list_screen ) {
+	public function save( ListScreenData $list_screen ) {
 		$this->repository->save( $list_screen );
 	}
 

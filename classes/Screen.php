@@ -111,6 +111,7 @@ class Screen implements Registrable {
 	 * @return bool
 	 */
 	public function is_list_screen() {
+		// TODO: check WP_Screen properties. do not use get_list_screen().
 		return null !== $this->get_list_screen();
 	}
 

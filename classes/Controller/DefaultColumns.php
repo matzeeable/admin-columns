@@ -8,6 +8,7 @@ use AC\ListScreen;
 use AC\ListScreenFactory;
 use AC\Registrable;
 use AC\Request;
+use AC\Type\ListScreenData;
 
 class DefaultColumns implements Registrable {
 
@@ -51,17 +52,19 @@ class DefaultColumns implements Registrable {
 			return;
 		}
 
-		$this->list_screen = $this->list_screen_factory->create( $this->request->get( self::LISTSCREEN_KEY ) );
+		$list_screen = ( new ListScreenFactory() )->create( new ListScreenData( [ 'key' => $this->request->get( self::LISTSCREEN_KEY ) ] ) );
 
-		if ( null === $this->list_screen ) {
+		if ( ! $list_screen ) {
 			return;
 		}
 
+		$this->list_screen = $list_screen;
+
 		// Save an empty array in case the hook does not run properly.
-		$this->default_columns->update( $this->list_screen->get_key(), [] );
+		$this->default_columns->update( $list_screen->get_key(), [] );
 
 		// Our custom columns are set at priority 200. Before they are added we need to store the default column headings.
-		add_filter( "manage_{$this->list_screen->get_screen()->get_id()}_columns", [ $this, 'save_headings' ], 199 );
+		add_filter( "manage_{$list_screen->get_screen()->get_id()}_columns", [ $this, 'save_headings' ], 199 );
 
 		// no render needed
 		ob_start();

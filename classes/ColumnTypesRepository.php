@@ -17,6 +17,25 @@ class ColumnTypesRepository {
 		$this->default_column_repository = $default_column_repository;
 	}
 
+	private function get_default_columns( ListScreen $list_screen ) {
+		$columns = [];
+
+		foreach ( $this->default_column_repository->find_all( $list_screen->get_key() ) as $name => $label ) {
+			if ( 'cb' === $name ) {
+				continue;
+			}
+
+			$columns[ $name ] = ( new Column() )
+				->set_original( true )
+				->set_name( $name )
+				->set_type( $name )
+				->set_label( $label )
+				->set_list_screen( $list_screen );
+		}
+
+		return $columns;
+	}
+
 	/**
 	 * @param ListScreen $list_screen
 	 *
@@ -24,7 +43,7 @@ class ColumnTypesRepository {
 	 */
 	public function find( ListScreen $list_screen ) {
 		// TODO: test
-		$column_types = $this->default_column_repository->find_all( $list_screen );
+		$column_types = $this->get_default_columns( $list_screen );
 		$column_types += $this->get_placeholders( $list_screen );
 		$column_types += $list_screen->get_column_types();
 

@@ -207,7 +207,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 							'label_main'                  => $label_main,
 							'label_second'                => $label_second,
 							'list_screen_key'             => $list_screen->get_key(),
-							'list_screen_id'              => $list_screen->get_id()->get_id(),
+							'list_screen_id'              => $list_screen->has_id() ? $list_screen->get_id()->get_id() : null,
 							'delete_confirmation_message' => $delete_confirmation_message,
 						] );
 
@@ -254,7 +254,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 
 						$columns = $list_screen->has_columns()
 							? $list_screen->get_columns()
-							: $repo->find_all( $list_screen );
+							: $repo->find_all( $list_screen->get_key() );
 
 						$columns = new View( [
 							'class'          => implode( ' ', $classes ),

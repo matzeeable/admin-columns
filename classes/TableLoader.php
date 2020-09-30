@@ -54,8 +54,8 @@ class TableLoader implements Registrable {
 	}
 
 	public function init( Screen $screen ) {
-		// TODO Next. How to convert WP_Screen to a valid ListScreen object.
-		// TODO: use ListScreenRepository.
+
+		// TODO: Next use ListScreenRepository. Add WP_Screen parameter to find_all().
 		$list_screen = $this->list_screen_factory->create_by_screen( $screen->get_screen() );
 
 		if ( ! $list_screen ) {

@@ -2,16 +2,17 @@
 
 namespace AC;
 
+use AC\Type\ListScreenData;
 use WP_Screen;
 
 interface ListScreenFactoryInterface {
 
 	/**
-	 * @param string $key
+	 * @param ListScreenData $data
 	 *
 	 * @return ListScreen|null
 	 */
-	public function create( $key );
+	public function create( ListScreenData $data );
 
 	/**
 	 * @param WP_Screen $wp_screen

@@ -4,6 +4,7 @@ namespace AC\Controller;
 
 use AC;
 use AC\Column\Placeholder;
+use AC\Type\ListScreenData;
 use AC\View;
 
 abstract class ColumnRequest {
@@ -25,8 +26,13 @@ abstract class ColumnRequest {
 	public function request( AC\Request $request ) {
 		parse_str( $request->get( 'data' ), $formdata );
 
-		// TODO
-		$list_screen = AC()->get_list_screen_factory()->create( $formdata['list_screen'] );
+		$data = new ListScreenData( [
+			'id'      => $formdata['list_screen_id'],
+			'key'     => $formdata['list_screen'],
+			'columns' => $formdata['columns'],
+		] );
+
+		$list_screen = AC()->get_list_screen_factory()->create( $data );
 
 		if ( ! $list_screen ) {
 			wp_die();

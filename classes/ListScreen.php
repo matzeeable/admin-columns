@@ -261,7 +261,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 
 		$repo = new DefaultColumnsRepository();
 
-		if ( $column->is_original() && ! $repo->find( $this, $column->get_type() ) ) {
+		if ( $column->is_original() && ! $repo->find( $this->get_key(), $column->get_type() ) ) {
 			return;
 		}
 
@@ -346,7 +346,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	 * @return string
 	 */
 	public function get_url() {
-		return add_query_arg( [ 'layout' => $this->id->get_id() ], $this->get_table_url() );
+		return add_query_arg( [ 'layout' => $this->id ? $this->id->get_id() : null ], $this->get_table_url() );
 	}
 
 	/**

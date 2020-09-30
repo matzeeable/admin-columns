@@ -47,16 +47,18 @@ class AdminColumns extends Plugin {
 	}
 
 	private function __construct() {
+		$column_factory = new ColumnFactory( new ColumnTypesRepository( new DefaultColumnsRepository() ) );
+
 		$this->list_screen_factory = new ListScreenFactory();
 		$this->list_screen_factory->add_factory(
-			new ListScreenFactory\ListScreenFactory()
+			new ListScreenFactory\ListScreenFactory( $column_factory )
 		);
-
-		$column_factory = new ColumnFactory( new ColumnTypesRepository( new DefaultColumnsRepository() ) );
 
 		$this->storage = new Storage();
 		$this->storage->set_repositories( [
 			'acp-database' => new ListScreenRepository\Storage\ListScreenRepository(
+
+				// TODO: remove column_factory DI
 				new Database( $this->list_screen_factory, $column_factory ),
 				true
 			),
@@ -192,14 +194,11 @@ class AdminColumns extends Plugin {
 	/**
 	 * @param string $key
 	 *
-	 * @return ListScreen|null
 	 * @since      3.0
 	 * @deprecated 3.2
 	 */
 	public function get_list_screen( $key ) {
-		_deprecated_function( __METHOD__, '3.2', 'ListScreenTypes::instance()->get_list_screen_by_key()' );
-
-		return $this->list_screen_factory->create( $key );
+		_deprecated_function( __METHOD__, '3.2' );
 	}
 
 	/**

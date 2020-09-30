@@ -21,7 +21,7 @@ class Comment extends ListScreen {
 	public function __construct() {
 		parent::__construct(
 			new MetaType( MetaType::COMMENT ),
-			new Screen( 'edit', 'edit-comments', self::NAME ),
+			new Screen( 'edit-comments', 'edit-comments', self::NAME ),
 			new ListScreenLabel( __( 'Comment' ), __( 'Comments' ) )
 		);
 	}

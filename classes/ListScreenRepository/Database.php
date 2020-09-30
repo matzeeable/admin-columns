@@ -2,13 +2,13 @@
 
 namespace AC\ListScreenRepository;
 
-use AC\ColumnCollection;
 use AC\ColumnFactory;
 use AC\Exception\MissingListScreenIdException;
 use AC\ListScreen;
 use AC\ListScreenCollection;
 use AC\ListScreenFactoryInterface;
 use AC\ListScreenRepositoryWritable;
+use AC\Type\ListScreenData;
 use AC\Type\ListScreenId;
 use DateTime;
 use LogicException;
@@ -132,37 +132,28 @@ final class Database implements ListScreenRepositoryWritable {
 	}
 
 	/**
-	 * @param ListScreen $list_screen
+	 * @param ListScreenData $list_screen
 	 *
-	 * @return void
+	 * @return ListScreen
 	 */
-	// TODO: maybe accept <object> $data instead of ListScreen
-	public function save( ListScreen $list_screen ) {
+	public function save( ListScreenData $data ) {
 		global $wpdb;
 
-		if ( ! $list_screen->has_id() ) {
+		if ( ! ListScreenId::is_valid_id( $data->get( 'id' ) ) ) {
 			throw MissingListScreenIdException::from_saving_list_screen();
 		}
 
-		$columns = [];
-
-		if ( $list_screen->has_columns() ) {
-			foreach ( $list_screen->get_columns() as $column ) {
-				$columns[] = $column->get_options();
-			}
-		}
-
 		$args = [
-			'list_id'       => $list_screen->get_id()->get_id(),
-			'list_key'      => $list_screen->get_key(),
-			'title'         => $list_screen->get_title(),
-			'columns'       => $columns ? serialize( $columns ) : null,
-			'settings'      => $list_screen->get_settings() ? serialize( $list_screen->get_settings() ) : null,
-			'date_modified' => $list_screen->get_updated()->format( 'Y-m-d H:i:s' ),
+			'list_id'       => $data->get( 'id' ),
+			'list_key'      => $data->get( 'key' ),
+			'title'         => $data->get( 'title' ),
+			'columns'       => $data->has( 'columns' ) ? serialize( $data->get( 'columns' ) ) : null,
+			'settings'      => $data->has( 'settings' ) ? serialize( $data->get( 'settings' ) ) : null,
+			'date_modified' => $data->has( 'date' ) ? $data->get( 'date' ) : ( new DateTime() )->format( 'Y-m-d H:i:s' ),
 		];
 
 		$table = $wpdb->prefix . self::TABLE;
-		$stored = $this->find_from_database( $list_screen->get_id() );
+		$stored = $this->find_from_database( new ListScreenId( $data->get( 'id' ) ) );
 
 		if ( $stored ) {
 			$wpdb->update(
@@ -221,41 +212,51 @@ final class Database implements ListScreenRepositoryWritable {
 	 *
 	 * @return ListScreen
 	 */
-	private function create_list_screen( $data ) {
-		$list_screen = $this->list_screen_factory->create( $data->list_key );
+	private function create_list_screen( $row ) {
+		$data = [
+			'key'  => $row->list_key,
+			'id'   => $row->list_id,
+			'date' => DateTime::createFromFormat( 'Y-m-d H:i:s', $row->date_modified ),
+		];
 
-		if ( ! $list_screen ) {
-			return null;
+		if ( $row->settings ) {
+			$data['settings'] = unserialize( $row->settings );
+			$data['settings']['title'] = $row->title;
+		}
+		if ( $row->columns ) {
+			$data['columns'] = unserialize( $row->columns );
 		}
 
-		$list_screen->set_id( new ListScreenId( $data->list_id ) );
-		$list_screen->set_updated( DateTime::createFromFormat( 'Y-m-d H:i:s', $data->date_modified ) );
+		return $this->list_screen_factory->create( new ListScreenData( $data ) );
 
-		$settings = $data->settings
-			? unserialize( $data->settings )
-			: [];
-
-		$settings['title'] = $data->title;
-
-		$list_screen->set_settings( $settings );
-
-		$columns = new ColumnCollection();
-
-		if ( $data->columns ) {
-			foreach ( unserialize( $data->columns ) as $column_name => $column_data ) {
-				$column = $this->column_factory->create( $column_data + [ 'name' => $column_name ], $list_screen );
-
-				if ( null === $column ) {
-					continue;
-				}
-
-				$columns->add( $column );
-			}
-		}
-
-		$list_screen->set_columns( $columns );
-
-		return $list_screen;
+		// TODO: remove
+//		$list_screen->set_id( new ListScreenId( $data->list_id ) );
+//		$list_screen->set_updated( DateTime::createFromFormat( 'Y-m-d H:i:s', $data->date_modified ) );
+//		$settings = $db_row->settings
+//			? unserialize( $db_row->settings )
+//			: [];
+//
+//		$settings['title'] = $data->title;
+//
+//		$list_screen->set_settings( $settings );
+//
+//		$columns = new ColumnCollection();
+//
+//		if ( $data->columns ) {
+//			foreach ( unserialize( $data->columns ) as $column_name => $column_data ) {
+//				$column = $this->column_factory->create( $column_data + [ 'name' => $column_name ], $list_screen );
+//
+//				if ( null === $column ) {
+//					continue;
+//				}
+//
+//				$columns->add( $column );
+//			}
+//		}
+//
+//		$list_screen->set_columns( $columns );
+//
+//		return $list_screen;
 	}
 
 }

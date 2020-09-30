@@ -20,7 +20,7 @@ class HasKey implements Filter {
 		$filtered = new ListScreenCollection();
 
 		foreach ( $list_screens as $list_screen ) {
-			if ( $this->key === $list_screen->get_key()->get_value() ) {
+			if ( $this->key === $list_screen->get_key() ) {
 				$filtered->add( $list_screen );
 			}
 		}

@@ -6,6 +6,7 @@ use AC\ColumnFactory;
 use AC\ListScreenFactory;
 use AC\ListScreenRepository\Storage;
 use AC\Request;
+use AC\Type\ListScreenData;
 use AC\Type\ListScreenId;
 
 class Save {
@@ -42,13 +43,12 @@ class Save {
 			wp_send_json_error( [ 'message' => 'Invalid list Id' ] );
 		}
 
-		$list_screen = $this->list_screen_factory->create( $formdata['list_screen'] );
-
-		if ( ! $list_screen ) {
-			wp_send_json_error( [ 'message' => 'List screen not found' ] );
-		}
-
-		$list_screen->set_id( new ListScreenId( $formdata['list_screen_id'] ) );
+		$data = [
+			'id'       => $formdata['list_screen_id'],
+			'key'      => $formdata['list_screen'],
+			'title'    => 'Original',
+			'settings' => [],
+		];
 
 		foreach ( $formdata['columns'] as $column_name => $column_data ) {
 
@@ -60,20 +60,19 @@ class Save {
 				? $column_name
 				: uniqid();
 
-			$list_screen->add_column( $this->column_factory->create( $column_data, $list_screen ) );
+			$data['columns'][ $column_data['name'] ] = $column_data;
 		}
 
-		$settings = isset( $formdata['settings'] ) && $formdata['settings']
-			? $formdata['settings']
-			: [];
+		if ( isset( $formdata['settings'] ) && $formdata['settings'] ) {
+			$data['settings'] = $formdata['settings'];
+		}
 
-		$settings['title'] = isset( $formdata['title'] ) && $formdata['title']
-			? $formdata['title']
-			: $list_screen->get_label();
+		if ( isset( $formdata['title'] ) && $formdata['title'] ) {
+			$data['title'] = $formdata['title'];
+		}
 
-		$list_screen->set_settings( $settings );
-
-		$this->storage->save( $list_screen );
+		// TODO
+		$list_screen = $this->storage->save( new ListScreenData( $data ) );
 
 		do_action( 'ac/columns_stored', $list_screen );
 

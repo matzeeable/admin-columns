@@ -2,15 +2,21 @@
 
 namespace AC;
 
+use AC\Type\ListScreenData;
+
 interface ListScreenRepositoryWritable extends ListScreenRepository {
 
 	/**
-	 * @param ListScreen $list_screen
+	 * @param ListScreenData $list_screen_data
+	 *
+	 * @return void
 	 */
-	public function save( ListScreen $list_screen );
+	public function save( ListScreenData $list_screen_data );
 
 	/**
 	 * @param ListScreen $list_screen
+	 *
+	 * @return void
 	 */
 	public function delete( ListScreen $list_screen );
 

@@ -61,8 +61,8 @@ class AdminFactory {
 			$this->storage,
 			new Preferences\Site( 'settings' ),
 			$this->list_screen_factory,
-			// TODO: DI
-			new ListScreenTypeRepository()
+			new ListScreenTypeRepository(),
+			new DefaultColumnsRepository()
 		);
 
 		return new Page\Columns(

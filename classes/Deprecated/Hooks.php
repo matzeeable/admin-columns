@@ -8,6 +8,7 @@ use AC\Deprecated\Hook\Filter;
 use AC\ListScreenFactory;
 use AC\ListScreenTypeRepository;
 use AC\Registrable;
+use AC\Type\ListScreenData;
 
 class Hooks implements Registrable {
 
@@ -130,7 +131,7 @@ class Hooks implements Registrable {
 		$columns = [];
 
 		foreach ( $this->list_screen_type_repository->find_all() as $item ) {
-			$list_screen = $this->list_screen_factory->create( $item->get_key() );
+			$list_screen = $this->list_screen_factory->create( new ListScreenData( [ 'key' => $item->get_key() ] ) );
 
 			if ( ! $list_screen ) {
 				continue;

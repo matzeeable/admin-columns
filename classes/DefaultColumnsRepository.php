@@ -7,13 +7,13 @@ class DefaultColumnsRepository {
 	const OPTIONS_KEY = 'cpac_options_';
 
 	/**
-	 * @param ListScreen $list_screen
+	 * @param string $list_key
 	 * @param string $column_name
 	 *
-	 * @return Column|null
+	 * @return array|null
 	 */
-	public function find( ListScreen $list_screen, $column_name ) {
-		$columns = $this->find_all( $list_screen );
+	public function find( $list_key, $column_name ) {
+		$columns = $this->find_all( $list_key );
 
 		return isset( $columns[ $column_name ] )
 			? $columns[ $column_name ]
@@ -21,73 +21,58 @@ class DefaultColumnsRepository {
 	}
 
 	/**
-	 * @param string $list_screen
+	 * @param string $list_key
 	 *
-	 * @return Column[]
+	 * @return array
 	 */
-	public function find_all( ListScreen $list_screen ) {
-		$columns = [];
-
-		foreach ( $this->get( $list_screen->get_key() ) as $name => $label ) {
-			if ( 'cb' === $name ) {
-				continue;
-			}
-
-			$columns[ $name ] = ( new Column() )
-				->set_original( true )
-				->set_name( $name )
-				->set_type( $name )
-				->set_label( $label )
-				->set_list_screen( $list_screen );
-		}
-
-		return $columns;
+	public function find_all( $list_key ) {
+		return $this->get( $list_key );
 	}
 
 	/**
-	 * @param string $list_screen_key
+	 * @param string $list_key
 	 *
 	 * @return string
 	 */
-	private function get_option_name( $list_screen_key ) {
-		return self::OPTIONS_KEY . $list_screen_key . "__default";
+	private function get_option_name( $list_key ) {
+		return self::OPTIONS_KEY . $list_key . "__default";
 	}
 
 	/**
-	 * @param $list_screen_key
+	 * @param string $list_key
 	 * @param array $columns
 	 *
 	 * @return void
 	 */
-	public function update( $list_screen_key, array $columns ) {
-		update_option( $this->get_option_name( $list_screen_key ), $columns, false );
+	public function update( $list_key, array $columns ) {
+		update_option( $this->get_option_name( $list_key ), $columns, false );
 	}
 
 	/**
-	 * @param $list_screen_key
+	 * @param string $list_key
 	 *
 	 * @return bool
 	 */
-	public function exists( $list_screen_key ) {
-		return false !== get_option( $this->get_option_name( $list_screen_key ) );
+	public function exists( $list_key ) {
+		return false !== get_option( $this->get_option_name( $list_key ) );
 	}
 
 	/**
-	 * @param $list_screen_key
+	 * @param string $list_key
 	 *
 	 * @return array
 	 */
-	private function get( $list_screen_key ) {
-		return get_option( $this->get_option_name( $list_screen_key ), [] );
+	private function get( $list_key ) {
+		return get_option( $this->get_option_name( $list_key ), [] );
 	}
 
 	/**
-	 * @param $list_screen_key
+	 * @param string $list_key
 	 *
 	 * @return void
 	 */
-	public function delete( $list_screen_key ) {
-		delete_option( $this->get_option_name( $list_screen_key ) );
+	public function delete( $list_key ) {
+		delete_option( $this->get_option_name( $list_key ) );
 	}
 
 }

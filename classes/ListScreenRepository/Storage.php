@@ -6,6 +6,7 @@ use AC\ListScreen;
 use AC\ListScreenCollection;
 use AC\ListScreenRepository;
 use AC\ListScreenRepositoryWritable;
+use AC\Type\ListScreenData;
 use AC\Type\ListScreenId;
 use LogicException;
 
@@ -109,44 +110,86 @@ final class Storage implements ListScreenRepositoryWritable {
 		return null !== $this->find( $id );
 	}
 
-	public function save( ListScreen $list_screen ) {
-		$this->update( $list_screen, 'save' );
+	/**
+	 * @param ListScreenData $data
+	 *
+	 * @return ListScreen|null
+	 */
+	public function save( ListScreenData $data ) {
+		foreach ( $this->repositories as $repository ) {
+			if ( ! $this->is_writable( $repository, $data->get( ListScreenData::PARAM_ID ), $data->get( ListScreenData::PARAM_KEY ) ) ) {
+				continue;
+			}
+
+			// TODO: repo should return a initiated ListScreen
+			$repository->save( $data );
+		}
+
+		return $this->find( new ListScreenId( $data->get( 'id' ) ) );
+	}
+
+	private function is_writable( ListScreenRepository $repository, $list_id, $list_key, $list_group = null  ) {
+		$match = true;
+
+		if ( $repository->has_rules() ) {
+			$match = $repository->get_rules()->match( [
+				Rule::ID    => $list_id ? new ListScreenId( $list_id ) : null,
+				Rule::TYPE  => $list_key,
+				// TODO
+				Rule::GROUP => $list_group,
+			] );
+		}
+
+		return $match && $repository->is_writable();
 	}
 
 	public function delete( ListScreen $list_screen ) {
-		$this->update( $list_screen, 'delete' );
-	}
-
-	private function update( ListScreen $list_screen, $action ) {
 		foreach ( $this->repositories as $repository ) {
-			$match = true;
-
-			if ( $repository->has_rules() ) {
-				$match = $repository->get_rules()->match( [
-					Rule::ID    => $list_screen->has_id() ? $list_screen->get_id() : null,
-					Rule::TYPE  => $list_screen->get_key()->get_value(),
-					// TODO
-					Rule::GROUP => '', //$list_screen->get_group(),
-				] );
+			if ( ! $this->is_writable( $repository, $list_screen->get_id()->get_id(), $list_screen->get_key() ) ) {
+				continue;
 			}
 
-			if ( $match && $repository->is_writable() ) {
-				switch ( $action ) {
-					case 'save':
-						$repository->save( $list_screen );
-
-						break;
-					case 'delete':
-						$repository->delete( $list_screen );
-
-						break;
-					default:
-						throw new LogicException( 'Invalid action for update call.' );
-				}
-
-				return;
-			}
+			$repository->delete( $list_screen );
 		}
 	}
+
+	// TODO: remove
+	/**
+	 * @param ListScreenData $data
+	 * @param $action
+	 *
+	 * @return ListScreen|null
+	 */
+//	private function update( ListScreenData $data, $action ) {
+//		foreach ( $this->repositories as $repository ) {
+//			$match = true;
+//
+//			if ( $repository->has_rules() ) {
+//				$match = $repository->get_rules()->match( [
+//					Rule::ID    => $data->has( 'id' ) ? $data->get( 'id' ) : null,
+//					Rule::TYPE  => $data->get( 'key' ),
+//					// TODO
+//					Rule::GROUP => '', //$list_screen->get_group(),
+//				] );
+//			}
+//
+//			if ( $match && $repository->is_writable() ) {
+//				switch ( $action ) {
+//					case 'save':
+//						$repository->save( $data );
+//
+//						return $this->find( $data->get( 'id' ) );
+//					case 'delete':
+//						$repository->delete( $this->find( $data->get( 'id' ) ) );
+//
+//						break;
+//					default:
+//						throw new LogicException( 'Invalid action for update call.' );
+//				}
+//
+//				return null;
+//			}
+//		}
+//	}
 
 }
