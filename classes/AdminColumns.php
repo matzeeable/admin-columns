@@ -57,9 +57,7 @@ class AdminColumns extends Plugin {
 		$this->storage = new Storage();
 		$this->storage->set_repositories( [
 			'acp-database' => new ListScreenRepository\Storage\ListScreenRepository(
-
-				// TODO: remove column_factory DI
-				new Database( $this->list_screen_factory, $column_factory ),
+				new Database( $this->list_screen_factory ),
 				true
 			),
 		] );
@@ -204,7 +202,6 @@ class AdminColumns extends Plugin {
 	/**
 	 * @param string $key
 	 *
-	 * @return bool
 	 * @deprecated 3.2
 	 */
 	public function list_screen_exists( $key ) {

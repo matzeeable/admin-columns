@@ -73,23 +73,14 @@ class Columns extends Script {
 			],
 		];
 
-		foreach ( $this->get_list_screen_types() as $list_screen ) {
-			if ( $this->default_columns->exists( $list_screen->get_key() ) ) {
+		foreach ( $this->get_list_screen_types() as $list_screen_type ) {
+			if ( $this->default_columns->exists( $list_screen_type->get_key() ) ) {
 				continue;
 			}
 
-			// TODO: remove factory to retrieve URL
-
-			$list_screen_link = '';
-//			$list_screen_link = $this->list_screen_factory->create( $list_screen->get_key() )->get_url();
-
-			if ( ! $list_screen_link ) {
-				continue;
-			}
-
-			$params['uninitialized_list_screens'][ $list_screen->get_key() ] = [
-				'screen_link' => add_query_arg( [ 'save-default-headings' => '1', 'list_screen' => $list_screen->get_key() ], $list_screen_link ),
-				'label'       => $list_screen->get_label(),
+			$params['uninitialized_list_screens'][ $list_screen_type->get_key() ] = [
+				'screen_link' => add_query_arg( [ 'save-default-headings' => '1', 'list_screen' => $list_screen_type->get_key() ], $list_screen_type->get_url() ),
+				'label'       => $list_screen_type->get_label(),
 			];
 		}
 

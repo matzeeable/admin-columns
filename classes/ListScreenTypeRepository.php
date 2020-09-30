@@ -71,11 +71,11 @@ class ListScreenTypeRepository {
 		$items = [];
 
 		foreach ( $this->get_post_types() as $post_type ) {
-			// TODO: add screen link?
 			$items[] = new ListScreenType(
 				$post_type->name,
 				$post_type->labels->name,
-				ListScreenGroups::POST_TYPE
+				ListScreenGroups::POST_TYPE,
+				add_query_arg( [ 'post_type' => $post_type ], admin_url( 'edit.php' ) )
 			);
 		}
 
@@ -83,20 +83,23 @@ class ListScreenTypeRepository {
 			$items[] = new ListScreenType(
 				Media::NAME,
 				__( 'Media' ),
-				ListScreenGroups::MEDIA
+				ListScreenGroups::MEDIA,
+				add_query_arg( [ 'mode' => 'list' ], admin_url( 'upload.php' ) ),
 			);
 		}
 
 		$items[] = new ListScreenType(
 			User::NAME,
 			__( 'Users' ),
-			ListScreenGroups::USER
+			ListScreenGroups::USER,
+			admin_url( 'users.php' ),
 		);
 
 		$items[] = new ListScreenType(
 			Comment::NAME,
 			__( 'Comments' ),
-			ListScreenGroups::COMMENT
+			ListScreenGroups::COMMENT,
+			admin_url( 'comments.php' )
 		);
 
 		// todo: container that can sort them by Label/Group etc.

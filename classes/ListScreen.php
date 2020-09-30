@@ -104,6 +104,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	/**
 	 * @return string
 	 */
+	// TODO: remove
 	abstract protected function get_table_url();
 
 	/**

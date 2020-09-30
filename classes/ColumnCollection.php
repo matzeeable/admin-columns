@@ -4,6 +4,10 @@ namespace AC;
 
 class ColumnCollection extends Collection {
 
+	public function __construct( array $columns = [] ) {
+		array_map( [ $this, 'add' ], $columns );
+	}
+
 	public function add( Column $column ) {
 		$this->put( $column->get_name(), $column );
 	}

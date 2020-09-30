@@ -2,7 +2,6 @@
 
 namespace AC\ListScreenRepository;
 
-use AC\ColumnFactory;
 use AC\Exception\MissingListScreenIdException;
 use AC\ListScreen;
 use AC\ListScreenCollection;
@@ -22,17 +21,8 @@ final class Database implements ListScreenRepositoryWritable {
 	 */
 	private $list_screen_factory;
 
-	/**
-	 * @var ColumnFactory
-	 */
-	private $column_factory;
-
-	public function __construct(
-		ListScreenFactoryInterface $list_screen_factory,
-		ColumnFactory $column_factory
-	) {
+	public function __construct( ListScreenFactoryInterface $list_screen_factory ) {
 		$this->list_screen_factory = $list_screen_factory;
-		$this->column_factory = $column_factory;
 	}
 
 	/**
@@ -221,42 +211,17 @@ final class Database implements ListScreenRepositoryWritable {
 
 		if ( $row->settings ) {
 			$data['settings'] = unserialize( $row->settings );
+		}
+
+		if ( $row->title ) {
 			$data['settings']['title'] = $row->title;
 		}
+
 		if ( $row->columns ) {
 			$data['columns'] = unserialize( $row->columns );
 		}
 
 		return $this->list_screen_factory->create( new ListScreenData( $data ) );
-
-		// TODO: remove
-//		$list_screen->set_id( new ListScreenId( $data->list_id ) );
-//		$list_screen->set_updated( DateTime::createFromFormat( 'Y-m-d H:i:s', $data->date_modified ) );
-//		$settings = $db_row->settings
-//			? unserialize( $db_row->settings )
-//			: [];
-//
-//		$settings['title'] = $data->title;
-//
-//		$list_screen->set_settings( $settings );
-//
-//		$columns = new ColumnCollection();
-//
-//		if ( $data->columns ) {
-//			foreach ( unserialize( $data->columns ) as $column_name => $column_data ) {
-//				$column = $this->column_factory->create( $column_data + [ 'name' => $column_name ], $list_screen );
-//
-//				if ( null === $column ) {
-//					continue;
-//				}
-//
-//				$columns->add( $column );
-//			}
-//		}
-//
-//		$list_screen->set_columns( $columns );
-//
-//		return $list_screen;
 	}
 
 }

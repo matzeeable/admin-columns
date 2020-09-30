@@ -53,23 +53,32 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 			$list_screen->set_settings( $data->get( ListScreenData::PARAM_SETTINGS ) );
 		}
 
-		$columns = new ColumnCollection();
-
 		if ( $data->has( ListScreenData::PARAM_COLUMNS ) ) {
-			foreach ( $data->get( ListScreenData::PARAM_COLUMNS ) as $column_name => $column_data ) {
-				$column = $this->column_factory->create( $column_data + [ 'name' => $column_name ], $list_screen );
-
-				if ( null === $column ) {
-					continue;
-				}
-
-				$columns->add( $column );
-			}
+			$list_screen->set_columns( $this->create_columns( $data->get( ListScreenData::PARAM_COLUMNS ), $list_screen ) );
 		}
 
-		$list_screen->set_columns( $columns );
-
 		return $list_screen;
+	}
+
+	/**
+	 * @param array $data
+	 *
+	 * @return ColumnCollection
+	 */
+	private function create_columns( array $data, ListScreen $list_screen ) {
+		$columns = new ColumnCollection();
+
+		foreach ( $data as $column_name => $column_data ) {
+			$column = $this->column_factory->create( $column_data + [ 'name' => $column_name ], $list_screen );
+
+			if ( null === $column ) {
+				continue;
+			}
+
+			$columns->add( $column );
+		}
+
+		return $columns;
 	}
 
 	public function create_by_screen( WP_Screen $wp_screen ) {
