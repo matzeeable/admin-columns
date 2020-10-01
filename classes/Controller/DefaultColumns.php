@@ -4,7 +4,6 @@ namespace AC\Controller;
 
 use AC;
 use AC\DefaultColumnsRepository;
-use AC\ListScreen;
 use AC\ListScreenFactory;
 use AC\Registrable;
 use AC\Request;
@@ -13,10 +12,12 @@ use AC\Type\ListScreenData;
 class DefaultColumns implements Registrable {
 
 	const ACTION_KEY = 'save-default-headings';
-	const LISTSCREEN_KEY = 'list_screen';
 
-	/** @var ListScreen */
-	private $list_screen;
+	const LISTSCREEN_KEY = 'list_screen';
+	const SCREEN_ID = 'screen_id';
+
+	/** @var string */
+	private $list_screen_key;
 
 	/** @var Request */
 	private $request;
@@ -52,19 +53,29 @@ class DefaultColumns implements Registrable {
 			return;
 		}
 
-		$list_screen = ( new ListScreenFactory() )->create( new ListScreenData( [ 'key' => $this->request->get( self::LISTSCREEN_KEY ) ] ) );
+		$this->list_screen_key = $this->request->get( self::LISTSCREEN_KEY );
+
+		// TODO: implement sending the SCREEN_ID with the request
+		$screen_id = $this->request->get( self::SCREEN_ID );
+
+		// TODO: remove
+		$list_screen = $this->list_screen_factory->create( new ListScreenData( [
+			ListScreenData::PARAM_KEY => $this->request->get( self::LISTSCREEN_KEY )
+		] ) );
 
 		if ( ! $list_screen ) {
 			return;
 		}
+		$screen_id = $list_screen->get_screen()->get_id();
 
-		$this->list_screen = $list_screen;
+
+
 
 		// Save an empty array in case the hook does not run properly.
-		$this->default_columns->update( $list_screen->get_key(), [] );
+		$this->default_columns->update( $this->list_screen_key, [] );
 
 		// Our custom columns are set at priority 200. Before they are added we need to store the default column headings.
-		add_filter( "manage_{$list_screen->get_screen()->get_id()}_columns", [ $this, 'save_headings' ], 199 );
+		add_filter( "manage_{$screen_id}_columns", [ $this, 'save_headings' ], 199 );
 
 		// no render needed
 		ob_start();
@@ -73,7 +84,7 @@ class DefaultColumns implements Registrable {
 	public function save_headings( $columns ) {
 		ob_end_clean();
 
-		$this->default_columns->update( $this->list_screen->get_key(), $columns && is_array( $columns ) ? $columns : [] );
+		$this->default_columns->update( $this->list_screen_key, $columns && is_array( $columns ) ? $columns : [] );
 
 		exit( 'ac_success' );
 	}

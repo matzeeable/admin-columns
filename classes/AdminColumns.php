@@ -77,7 +77,7 @@ class AdminColumns extends Plugin {
 			$this->admin,
 			new Ajax\NumberFormat( new Request() ),
 			$hooks,
-			new Screen( $this->list_screen_factory ),
+			new Screen(),
 			new Settings\General,
 			new ThirdParty\ACF,
 			new ThirdParty\NinjaForms,
@@ -86,7 +86,7 @@ class AdminColumns extends Plugin {
 			new Controller\DefaultColumns( new Request(), new DefaultColumnsRepository(), $this->list_screen_factory ),
 			new QuickEdit( $this->storage, new Table\Preference() ),
 			new Capabilities\Manage(),
-			new Controller\AjaxColumnRequest( $this->storage, $column_factory, $this->list_screen_factory, $column_types_repository, new Request() ),
+			new Controller\AjaxColumnRequest( $this->storage, $column_factory, $column_types_repository, new Request() ),
 			new Controller\AjaxRequestCustomFieldKeys(),
 			new Controller\AjaxColumnValue( $this->storage ),
 			new Controller\AjaxScreenOptions( new Preference\ScreenOptions() ),
@@ -95,7 +95,7 @@ class AdminColumns extends Plugin {
 			new Controller\RestoreSettingsRequest( $this->storage->get_repository( 'acp-database' ) ),
 			new PluginActionLinks( $this->get_basename() ),
 			new NoticeChecks(),
-			new TableLoader( $this->storage, new PermissionChecker(), $location, new Table\Preference(), $this->list_screen_factory ),
+			new TableLoader( $this->storage, new PermissionChecker(), $location, new Table\Preference() ),
 		];
 
 		foreach ( $services as $service ) {

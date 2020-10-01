@@ -32,6 +32,7 @@ abstract class ColumnRequest {
 			'columns' => $formdata['columns'],
 		] );
 
+		// TODO: remove dependency on factory. use ListScreenTypes.
 		$list_screen = AC()->get_list_screen_factory()->create( $data );
 
 		if ( ! $list_screen ) {

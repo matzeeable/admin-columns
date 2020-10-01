@@ -8,7 +8,6 @@ use AC\ListScreen;
 use AC\ListScreenFactoryInterface;
 use AC\Type\ListScreenData;
 use AC\Type\ListScreenId;
-use WP_Screen;
 
 class ListScreenFactory implements ListScreenFactoryInterface {
 
@@ -20,11 +19,12 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 	/**
 	 * @var array
 	 */
-	protected $list_screens = [
-		ListScreen\User::NAME    => ListScreen\User::CLASS,
-		ListScreen\Media::NAME   => ListScreen\Media::CLASS,
-		ListScreen\Comment::NAME => ListScreen\Comment::CLASS,
-	];
+	// TODO: remove?
+//	protected $list_screens = [
+//		ListScreen\User::NAME    => ListScreen\User::CLASS,
+//		ListScreen\Media::NAME   => ListScreen\Media::CLASS,
+//		ListScreen\Comment::NAME => ListScreen\Comment::CLASS,
+//	];
 
 	/**
 	 * @var ColumnFactory
@@ -36,23 +36,30 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 	}
 
 	public function create( ListScreenData $data ) {
-		$key = $data->get( 'key' );
 
-		/** @var ListScreen $list_screen */
-		if ( isset( $this->list_screens[ $key ] ) ) {
-			$list_screen = new $this->list_screens[$key]();
-		} else {
-			$list_screen = new $this->default_list_screen( $key );
+		$id = $data->has( ListScreenData::PARAM_ID )
+			? new ListScreenId( $data->get( ListScreenData::PARAM_ID ) )
+			: null;
+
+		$settings = $data->has( ListScreenData::PARAM_SETTINGS )
+			? $data->get( ListScreenData::PARAM_SETTINGS )
+			: [];
+
+		switch ( $data->get( 'key' ) ) {
+			case ListScreen\User::NAME :
+				$list_screen = new ListScreen\User( $settings, $id );
+				break;
+			case ListScreen\Media::NAME :
+				$list_screen = new ListScreen\Media( $settings, $id );
+				break;
+			case ListScreen\Comment::NAME :
+				$list_screen = new ListScreen\Comment( $settings, $id );
+				break;
+			default :
+				$list_screen = new $this->default_list_screen( $data->get( 'key' ), $settings, $id );
 		}
 
-		if ( $data->has( ListScreenData::PARAM_ID ) ) {
-			$list_screen->set_id( new ListScreenId( $data->get( ListScreenData::PARAM_ID ) ) );
-		}
-
-		if ( $data->has( ListScreenData::PARAM_SETTINGS ) ) {
-			$list_screen->set_settings( $data->get( ListScreenData::PARAM_SETTINGS ) );
-		}
-
+		// TODO: columns can not be injected, becayse they are dependent on a initiated ListScreen object..
 		if ( $data->has( ListScreenData::PARAM_COLUMNS ) ) {
 			$list_screen->set_columns( $this->create_columns( $data->get( ListScreenData::PARAM_COLUMNS ), $list_screen ) );
 		}
@@ -62,6 +69,7 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 
 	/**
 	 * @param array $data
+	 * @param ListScreen $list_screen
 	 *
 	 * @return ColumnCollection
 	 */
@@ -79,30 +87,6 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 		}
 
 		return $columns;
-	}
-
-	public function create_by_screen( WP_Screen $wp_screen ) {
-		switch ( $wp_screen->base ) {
-			case 'edit' :
-				return $wp_screen->post_type
-					? $this->create( new ListScreenData( [ ListScreenData::PARAM_KEY => $wp_screen->post_type ] ) )
-					: null;
-			case 'users' :
-				// TODO: remove 'delete'
-				return 'users' === $wp_screen->id && 'delete' !== filter_input( INPUT_GET, 'action' )
-					? $this->create( new ListScreenData( [ ListScreenData::PARAM_KEY => ListScreen\User::NAME ] ) )
-					: null;
-			case 'upload' :
-				return 'upload' === $wp_screen->id
-					? $this->create( new ListScreenData( [ ListScreenData::PARAM_KEY => ListScreen\Media::NAME ] ) )
-					: null;
-			case 'edit-comments' :
-				return 'edit-comments' === $wp_screen->id
-					? $this->create( new ListScreenData( [ ListScreenData::PARAM_KEY => ListScreen\Comment::NAME ] ) )
-					: null;
-			default :
-				return null;
-		}
 	}
 
 }

@@ -270,6 +270,7 @@ class Column {
 	public function get_settings() {
 		if ( null === $this->settings ) {
 			$settings = [
+				// TODO: Settings\Column\Type move to Columns page
 				new Settings\Column\Type( $this ),
 				new Settings\Column\Label( $this ),
 				new Settings\Column\Width( $this ),

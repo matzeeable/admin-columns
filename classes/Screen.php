@@ -11,15 +11,6 @@ class Screen implements Registrable {
 	 */
 	protected $screen;
 
-	/**
-	 * @var ListScreenFactoryInterface
-	 */
-	protected $list_screen_factory;
-
-	public function __construct( ListScreenFactoryInterface $list_screen_factory ) {
-		$this->list_screen_factory = $list_screen_factory;
-	}
-
 	public function register() {
 		add_action( 'current_screen', [ $this, 'init' ] );
 	}
@@ -91,13 +82,33 @@ class Screen implements Registrable {
 	/**
 	 * @return string|null
 	 */
-	// TODO: remove?
-	public function get_list_screen() {
-		$list_screen = $this->list_screen_factory->create_by_screen( $this->screen );
+	// TODO: move
+	public function get_list_screen_key() {
+		switch ( $this->screen->base ) {
+			case 'edit' :
+				if ( $this->screen->post_type ) {
+					return $this->screen->post_type;
+				}
+				break;
+			case 'users' :
+				// TODO: remove 'delete'
+				if ( 'users' === $this->screen->id && 'delete' !== filter_input( INPUT_GET, 'action' ) ) {
+					return ListScreen\User::NAME;
+				}
+				break;
+			case 'upload' :
+				if ( 'upload' === $this->screen->id ) {
+					return ListScreen\Media::NAME;
+				}
+				break;
+			case 'edit-comments' :
+				if ( 'edit-comments' === $this->screen->id ) {
+					return ListScreen\Comment::NAME;
+				}
+				break;
+		}
 
-		return $list_screen
-			? $list_screen->get_key()
-			: null;
+		return null;
 	}
 
 	/**
@@ -112,7 +123,8 @@ class Screen implements Registrable {
 	 */
 	public function is_list_screen() {
 		// TODO: check WP_Screen properties. do not use get_list_screen().
-		return null !== $this->get_list_screen();
+		return false;
+//		return null !== $this->get_list_screen();
 	}
 
 	/**

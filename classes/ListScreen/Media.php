@@ -3,6 +3,7 @@
 namespace AC\ListScreen;
 
 use AC;
+use AC\Type\ListScreenId;
 use AC\Type\ListScreenLabel;
 use AC\Type\Screen;
 use ReflectionException;
@@ -12,11 +13,13 @@ class Media extends AC\ListScreenPost {
 
 	const NAME = 'wp-media';
 
-	public function __construct() {
+	public function __construct( array $settings = [], ListScreenId $id = null ) {
 		parent::__construct(
 			'attachment',
 			new Screen( 'upload', 'upload', self::NAME ),
-			new ListScreenLabel( __( 'Media' ), __( 'Media' ) )
+			new ListScreenLabel( __( 'Media' ), __( 'Media' ) ),
+			$settings,
+			$id
 		);
 	}
 

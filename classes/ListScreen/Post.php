@@ -4,17 +4,15 @@ namespace AC\ListScreen;
 
 use AC\ListScreenPost;
 use AC\ListTableFactory;
+use AC\Type\ListScreenId;
 use AC\Type\Screen;
 use ReflectionException;
 use WP_Posts_List_Table;
 
 class Post extends ListScreenPost {
 
-	public function __construct( $post_type ) {
-		parent::__construct(
-			$post_type,
-			new Screen( 'edit', 'edit-' . $post_type, $post_type )
-		);
+	public function __construct( $post_type, array $settings = [], ListScreenId $id = null ) {
+		parent::__construct( $post_type, new Screen( 'edit', 'edit-' . $post_type, $post_type ), null, $settings, $id );
 	}
 
 	/**

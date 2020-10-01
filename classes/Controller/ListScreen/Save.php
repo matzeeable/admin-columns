@@ -2,8 +2,6 @@
 
 namespace AC\Controller\ListScreen;
 
-use AC\ColumnFactory;
-use AC\ListScreenFactory;
 use AC\ListScreenRepository\Storage;
 use AC\Request;
 use AC\Type\ListScreenData;
@@ -16,20 +14,8 @@ class Save {
 	 */
 	private $storage;
 
-	/**
-	 * @var ColumnFactory
-	 */
-	private $column_factory;
-
-	/**
-	 * @var ListScreenFactory
-	 */
-	private $list_screen_factory;
-
-	public function __construct( Storage $storage, ColumnFactory $column_factory, ListScreenFactory $list_screen_factory ) {
+	public function __construct( Storage $storage ) {
 		$this->storage = $storage;
-		$this->column_factory = $column_factory;
-		$this->list_screen_factory = $list_screen_factory;
 	}
 
 	public function request( Request $request ) {

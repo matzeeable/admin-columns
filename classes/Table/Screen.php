@@ -8,6 +8,7 @@ use AC\Capabilities;
 use AC\Form;
 use AC\ListScreen;
 use AC\Registrable;
+use AC\ScreenController;
 use AC\Settings;
 use WP_Post;
 
@@ -33,16 +34,22 @@ final class Screen implements Registrable {
 	 */
 	private $location;
 
+	/**
+	 * @var ButtonBar
+	 */
+	private $button_bar;
+
 	public function __construct( Asset\Location\Absolute $location, ListScreen $list_screen ) {
 		$this->location = $location;
 		$this->list_screen = $list_screen;
+		$this->button_bar = new ButtonBar();
 	}
 
 	/**
 	 * Register hooks
 	 */
 	public function register() {
-		$controller = new AC\ScreenController( $this->list_screen );
+		$controller = new ScreenController( $this->list_screen );
 		$controller->register();
 
 		$render = new TableFormView( $this->list_screen->get_meta_type(), sprintf( '<input type="hidden" name="layout" value="%s">', $this->list_screen->get_id()->get_id() ) );
@@ -59,22 +66,13 @@ final class Screen implements Registrable {
 	}
 
 	/**
-	 * @return Button[]
-	 */
-	public function get_buttons() {
-		return array_merge( [], ...$this->buttons );
-	}
-
-	/**
 	 * @param Button $button
 	 * @param int $priority
 	 *
 	 * @return bool
 	 */
 	public function register_button( Button $button, $priority = 10 ) {
-		$this->buttons[ $priority ][] = $button;
-
-		ksort( $this->buttons, SORT_NUMERIC );
+		$this->button_bar->add_button( $button, $priority );
 
 		return true;
 	}
@@ -207,7 +205,7 @@ final class Screen implements Registrable {
 		       ->set_url( $edit_link )
 		       ->set_dashicon( 'admin-generic' );
 
-		$this->register_button( $button, 1 );
+		$this->button_bar->add_button( $button, 1 );
 	}
 
 	/**
@@ -375,24 +373,9 @@ final class Screen implements Registrable {
 		?>
         <div id="ac-table-actions" class="ac-table-actions">
 
-			<?php $this->render_buttons(); ?>
+			<?php $this->button_bar->render(); ?>
 
 			<?php do_action( 'ac/table/actions', $this ); ?>
-        </div>
-		<?php
-	}
-
-	private function render_buttons() {
-		if ( ! $this->get_buttons() ) {
-			return;
-		}
-		?>
-        <div class="ac-table-actions-buttons">
-			<?php
-			foreach ( $this->get_buttons() as $button ) {
-				$button->render();
-			}
-			?>
         </div>
 		<?php
 	}

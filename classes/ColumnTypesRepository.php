@@ -2,7 +2,6 @@
 
 namespace AC;
 
-// TODO: factory?
 class ColumnTypesRepository {
 
 	/**

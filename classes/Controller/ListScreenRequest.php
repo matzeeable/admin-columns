@@ -188,9 +188,8 @@ class ListScreenRequest {
 		}
 
 		return $this->list_screen_factory->create( new ListScreenData( [
-			'key'     => $key,
-			'title'   => 'Default',
-			'columns' => $columns
+			ListScreenData::PARAM_KEY     => $key,
+			ListScreenData::PARAM_COLUMNS => $columns
 		] ) );
 	}
 

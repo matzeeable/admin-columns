@@ -87,7 +87,7 @@ class Type extends Column {
 	private function get_grouped_columns() {
 		$columns = [];
 
-		// TODO: test
+		// TODO: remove AC\Column::get_list_screen() dependency
 		$column_types = $this->column_types_repository->find( $this->column->get_list_screen() );
 
 		foreach ( $column_types as $column ) {

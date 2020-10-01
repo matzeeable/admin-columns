@@ -5,24 +5,24 @@ namespace AC\ListScreen;
 use AC;
 use AC\ListScreen;
 use AC\MetaType;
+use AC\Type\ListScreenId;
 use AC\Type\ListScreenLabel;
 use AC\Type\Screen;
 use ReflectionException;
 use WP_Comment;
 use WP_Comments_List_Table;
 
-/**
- * @since 2.0
- */
 class Comment extends ListScreen {
 
 	const NAME = 'wp-comments';
 
-	public function __construct() {
+	public function __construct( array $settings = [], ListScreenId $id = null ) {
 		parent::__construct(
 			new MetaType( MetaType::COMMENT ),
 			new Screen( 'edit-comments', 'edit-comments', self::NAME ),
-			new ListScreenLabel( __( 'Comment' ), __( 'Comments' ) )
+			new ListScreenLabel( __( 'Comment' ), __( 'Comments' ) ),
+			$settings,
+			$id
 		);
 	}
 

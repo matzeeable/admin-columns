@@ -67,23 +67,21 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	 * @param ListScreenLabel $label
 	 * @param ColumnCollection $columns
 	 * @param array $settings
+	 * @param ListScreenId $id
 	 */
 	public function __construct(
 		MetaType $meta_type,
 		Screen $screen,
 		ListScreenLabel $label = null,
-		ColumnCollection $columns = null,
-		array $settings = []
+		array $settings = [],
+		ListScreenId $id = null
 	) {
-		if ( null === $columns ) {
-			$columns = new ColumnCollection();
-		}
-
 		$this->meta_type = $meta_type;
 		$this->screen = $screen;
 		$this->label = $label;
-		$this->columns = $columns;
+		$this->columns = new ColumnCollection(); // TODO
 		$this->settings = $settings;
+		$this->id = $id;
 	}
 
 	/**
