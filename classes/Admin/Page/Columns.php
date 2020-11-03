@@ -15,6 +15,7 @@ use AC\Asset\Location;
 use AC\Asset\Script;
 use AC\Asset\Style;
 use AC\Column;
+use AC\ColumnFactory;
 use AC\ColumnTypesRepository;
 use AC\Controller\ListScreenRequest;
 use AC\DefaultColumnsRepository;
@@ -64,6 +65,11 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 	 */
 	private $column_types_repository;
 
+	/**
+	 * @var ColumnFactory
+	 */
+	private $column_factory;
+
 	public function __construct(
 		ListScreenRequest $controller,
 		Location\Absolute $location,
@@ -71,7 +77,8 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 		Menu $menu,
 		Storage $storage,
 		ListScreenFactory $list_screen_factory,
-		ColumnTypesRepository $column_types_repository
+		ColumnTypesRepository $column_types_repository,
+		ColumnFactory $column_factory
 	) {
 		parent::__construct( self::NAME, __( 'Admin Columns', 'codepress-admin-columns' ) );
 
@@ -82,6 +89,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 		$this->storage = $storage;
 		$this->list_screen_factory = $list_screen_factory;
 		$this->column_types_repository = $column_types_repository;
+		$this->column_factory = $column_factory;
 	}
 
 	public function show_read_only_notice( ListScreen $list_screen ) {
@@ -333,18 +341,26 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 	 * @return string
 	 */
 	private function render_column_template( ListScreen $list_screen ) {
-		$column_types = $this->column_types_repository->find( $list_screen );
-
-		$column = $this->get_column_template_by_group( $column_types, 'custom' );
-
-		if ( ! $column ) {
-			$column = $this->get_column_template_by_group( $column_types );
-		}
-
-		$view = new View( [
-			'column' => $column,
+		$column_types = $this->column_types_repository->find_all( [
+			ColumnTypesRepository::LIST_KEY => $list_screen->get_key()
 		] );
 
+		$column = $this->column_factory->create( $list_screen->get_key(), [
+			'type' => $column_types[0]->get_key(),
+			'name' => uniqid(),
+		] );
+
+//		$settings['name'] = $name;
+//		$settings['meta_type'] = new AC\MetaType( $request->get( 'meta_type' ) );
+//		$settings['post_type'] = $request->get( 'post_type' );
+//		$settings['taxonomy'] = $request->get( 'taxonomy' );
+
+		$view = new View( [
+			'column'   => $column,
+			'list_key' => $list_screen->get_key(),
+		] );
+
+		// TODO
 		return $view->set_template( 'admin/edit-column' )->render();
 	}
 

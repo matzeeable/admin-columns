@@ -3,6 +3,7 @@
 namespace AC\Settings\Column;
 
 use AC;
+use AC\MetaType;
 use AC\Settings;
 use AC\View;
 
@@ -14,6 +15,17 @@ class CustomField extends Settings\Column {
 	 * @var string
 	 */
 	private $field;
+
+	/**
+	 * @var MetaType
+	 */
+	private $meta_type;
+
+	public function __construct( AC\Column $column, MetaType $meta_type ) {
+		parent::__construct( $column );
+
+		$this->meta_type = $meta_type;
+	}
 
 	protected function define_options() {
 		return [ 'field' ];
@@ -58,7 +70,7 @@ class CustomField extends Settings\Column {
 		return $this->create_element( 'select', 'field' )
 		            ->set_attribute( 'data-selected', $this->get_field() )
 		            ->set_attribute( 'data-post_type', $this->get_post_type() )
-		            ->set_attribute( 'data-type', $this->get_meta_type() )
+		            ->set_attribute( 'data-type', $this->meta_type->get() )
 		            ->set_options( $options )
 		            ->set_attribute( 'class', 'custom_field' );
 	}
@@ -76,8 +88,11 @@ class CustomField extends Settings\Column {
 		return [ new Settings\Column\CustomFieldType( $this->column ) ];
 	}
 
+	/**
+	 * @return MetaType
+	 */
 	protected function get_meta_type() {
-		return $this->column->get_list_screen()->get_meta_type();
+		return $this->meta_type;
 	}
 
 	/**

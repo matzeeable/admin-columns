@@ -2,78 +2,83 @@
 
 namespace AC;
 
+use AC\Column\CustomField;
+use AC\Column\Post;
+use AC\Column\User;
+use AC\Entity\ColumnType;
+use InvalidArgumentException;
+
 class ColumnTypesRepository {
 
-	/**
-	 * @var DefaultColumnsRepository
-	 */
-	private $default_column_repository;
+	const LIST_KEY = 'list_key';
 
 	/**
-	 * @param DefaultColumnsRepository $default_column_repository
+	 * @param array $args
+	 *
+	 * @return ColumnType[]
 	 */
-	public function __construct( DefaultColumnsRepository $default_column_repository ) {
-		$this->default_column_repository = $default_column_repository;
+	public function find_all( array $args = [] ) {
+		if ( ! isset( $args[ self::LIST_KEY ] ) ) {
+			throw new InvalidArgumentException( sprintf( 'Missing %s argument.', self::LIST_KEY ) );
+		}
+
+		switch ( $args[ self::LIST_KEY ] ) {
+			case ListScreen\User::NAME :
+				$columns = $this->get_user_columns();
+				break;
+
+			default :
+				$columns = $this->get_post_columns( $args[ self::LIST_KEY ] );
+		}
+
+		// TODO: filter by group
+
+		// TODO: add hook
+		return $columns;
 	}
 
-	private function get_default_columns( ListScreen $list_screen ) {
-		$columns = [];
+	protected function get_post_columns( $list_key ) {
 
-		foreach ( $this->default_column_repository->find_all( $list_screen->get_key() ) as $name => $label ) {
-			if ( 'cb' === $name ) {
-				continue;
-			}
+		// TODO: add column types
+		$columns = [
+			new ColumnType( Post\Attachment::TYPE, __( 'Attachments', 'codepress-admin-columns' ), $list_key ),
+			new ColumnType( CustomField::TYPE, __( 'Custom Field', 'codepress-admin-columns' ), $list_key ),
+		];
 
-			$columns[ $name ] = ( new Column() )
-				->set_original( true )
-				->set_name( $name )
-				->set_type( $name )
-				->set_label( $label )
-				->set_list_screen( $list_screen );
+		if ( post_type_supports( $list_key, 'post-formats' ) ) {
+			$columns[] = new ColumnType( Post\Formats::TYPE, __( 'Post Format', 'codepress-admin-columns' ), $list_key );
+		}
+		if ( get_page_templates( null, $list_key ) ) {
+			$columns[] = new ColumnType( Post\PageTemplate::TYPE, __( 'Page Template', 'codepress-admin-columns' ), $list_key );
 		}
 
 		return $columns;
 	}
 
-	/**
-	 * @param ListScreen $list_screen
-	 *
-	 * @return Column[]
-	 */
-	public function find( ListScreen $list_screen ) {
-		// TODO: test
-		$column_types = $this->get_default_columns( $list_screen );
-		$column_types += $this->get_placeholders( $list_screen );
-		$column_types += $list_screen->get_column_types();
-
-		return $column_types;
+	protected function get_user_columns() {
+		return [
+			new ColumnType( User\FirstName::TYPE, __( 'First Name', 'codepress-admin-columns' ), ListScreen\User::NAME ),
+		];
 	}
 
 	/**
-	 * @param ListScreen $list_screen
+	 * @param string $key
+	 * @param string $list_key
 	 *
-	 * @return Column\Placeholder[]
+	 * @return ColumnType|null
 	 */
-	private function get_placeholders( ListScreen $list_screen ) {
-		$column_types = [];
+	public function find( $key, $list_key ) {
+		$columns = $this->find_all( [
+			self::LIST_KEY => $list_key
+		] );
 
-		/** @var Integration $integration */
-		foreach ( new Integrations() as $integration ) {
-
-			if ( ! $integration->show_placeholder( $list_screen ) ) {
-				continue;
-			}
-
-			$plugin_info = new PluginInformation( $integration->get_basename() );
-
-			if ( $integration->is_plugin_active() && ! $plugin_info->is_active() ) {
-				$column = ( new Column\Placeholder() )->set_integration( $integration );
-
-				$column_types[ $column->get_type() ] = $column;
+		foreach ( $columns as $column ) {
+			if ( $column->get_key() === $key ) {
+				return $column;
 			}
 		}
 
-		return $column_types;
+		return null;
 	}
 
 }

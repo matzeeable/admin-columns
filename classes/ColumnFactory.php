@@ -2,61 +2,32 @@
 
 namespace AC;
 
-class ColumnFactory {
+class ColumnFactory implements ColumnFactoryInterface {
 
 	/**
-	 * @var ColumnTypesRepository
+	 * @var ColumnFactoryInterface[]
 	 */
-	private $colummn_types_repository;
-
-	// TODO: $column_types are registered to list screen. Refactor list screen?
+	private $factories;
 
 	/**
-	 * @param ColumnTypesRepository $colummn_types_repository
+	 * @param ColumnFactoryInterface $factory
 	 */
-	public function __construct( ColumnTypesRepository $colummn_types_repository ) {
-
-		// TODO decorate with Cached version
-		$this->colummn_types_repository = $colummn_types_repository;
+	public function add_factory( ColumnFactoryInterface $factory ) {
+		$this->factories[] = $factory;
 	}
 
-	/**
-	 * @param array      $data
-	 * @param ListScreen $list_screen
-	 *
-	 * @return Column|null
-	 */
-	public function create( array $data, ListScreen $list_screen ) {
-		if ( ! isset( $data['type'] ) ) {
-			return null;
+	public function create( $list_key, array $data ) {
+		foreach ( array_reverse( $this->factories ) as $factory ) {
+			$list_screen = $factory->create( $list_key, $data );
+
+			if ( ! $list_screen ) {
+				continue;
+			}
+
+			return $list_screen;
 		}
 
-		$type = $data['type'];
-
-		// TODO: is probably a factory
-		$column_types = $this->colummn_types_repository->find( $list_screen );
-
-		if ( ! isset( $column_types[ $type ] ) ) {
-			return null;
-		}
-
-		/* @var Column $column_type */
-		$column_type = $column_types[ $type ];
-
-		$class = get_class( $column_type );
-
-		/* @var Column $column */
-		$column = new $class();
-		$column->set_name( $data['name'] );
-		$column->set_label( $data['label'] );
-		$column->set_options( $data );
-		$column->set_list_screen( $list_screen );
-
-		if ( $column_type->is_original() ) {
-			$column->set_original( true )->set_type( $data['name'] );
-		}
-
-		return $column;
+		return null;
 	}
 
 }

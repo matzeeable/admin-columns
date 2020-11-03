@@ -8,6 +8,7 @@ use AC\Groups;
 use AC\Settings\Column;
 use AC\View;
 
+// TODO: move outside scope of Column objecct
 class Type extends Column {
 
 	/**
@@ -16,14 +17,20 @@ class Type extends Column {
 	private $type;
 
 	/**
+	 * @var string
+	 */
+	private $list_key;
+
+	/**
 	 * @var ColumnTypesRepository
 	 */
 	private $column_types_repository;
 
-	public function __construct( AC\Column $column ) {
+	public function __construct( AC\Column $column, $list_key ) {
 		parent::__construct( $column );
 
-		$this->column_types_repository = new ColumnTypesRepository( new AC\DefaultColumnsRepository() );
+		$this->list_key = $list_key;
+		$this->column_types_repository = new ColumnTypesRepository();
 	}
 
 	protected function define_options() {
@@ -60,15 +67,14 @@ class Type extends Column {
 	/**
 	 * Returns the type label as human readable: no tags, underscores and capitalized.
 	 *
-	 * @param AC\Column|null $column
+	 * @param string $label
+	 * @param string $type
 	 *
 	 * @return string
 	 */
-	private function get_clean_label( AC\Column $column ) {
-		$label = $column->get_label();
-
+	private function get_clean_label( $label, $type ) {
 		if ( 0 === strlen( strip_tags( $label ) ) ) {
-			$label = ucfirst( str_replace( '_', ' ', $column->get_type() ) );
+			$label = ucfirst( str_replace( '_', ' ', $type ) );
 		}
 
 		return strip_tags( $label );
@@ -88,7 +94,7 @@ class Type extends Column {
 		$columns = [];
 
 		// TODO: remove AC\Column::get_list_screen() dependency
-		$column_types = $this->column_types_repository->find( $this->column->get_list_screen() );
+		$column_types = $this->column_types_repository->find_all( [ 'list_key' => $this->list_key ] );
 
 		foreach ( $column_types as $column ) {
 
@@ -99,11 +105,12 @@ class Type extends Column {
 			$group = apply_filters( 'ac/column_group', $column->get_group(), $column );
 
 			// Labels with html will be replaced by it's name.
-			$columns[ $group ][ $column->get_type() ] = $this->get_clean_label( $column );
+			$columns[ $group ][ $column->get_key() ] = $this->get_clean_label( $column->get_label(), $column->get_key() );
 
-			if ( ! $column->is_original() ) {
-				natcasesort( $columns[ $group ] );
-			}
+			// TODO
+//			if ( ! $column->is_original() ) {
+//				natcasesort( $columns[ $group ] );
+//			}
 		}
 
 		$grouped = [];

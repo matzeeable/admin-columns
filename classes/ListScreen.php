@@ -62,12 +62,12 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	protected $read_only = false;
 
 	/**
-	 * @param MetaType $meta_type
-	 * @param Screen $screen
-	 * @param ListScreenLabel $label
+	 * @param MetaType         $meta_type
+	 * @param Screen           $screen
+	 * @param ListScreenLabel  $label
 	 * @param ColumnCollection $columns
-	 * @param array $settings
-	 * @param ListScreenId $id
+	 * @param array            $settings
+	 * @param ListScreenId     $id
 	 */
 	public function __construct(
 		MetaType $meta_type,
@@ -345,13 +345,13 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	 * @return string
 	 */
 	public function get_url() {
-		return add_query_arg( [ 'layout' => $this->id ? $this->id->get_id() : null ], $this->get_table_url() );
+		return add_query_arg( [ 'layout' => $this->id->get_id() ], $this->get_table_url() );
 	}
 
 	/**
 	 * @param string $column_name
-	 * @param int $id
-	 * @param null $default
+	 * @param int    $id
+	 * @param null   $default
 	 *
 	 * @return string
 	 */
@@ -373,8 +373,8 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 		/**
 		 * Column display value
 		 *
-		 * @param string $value Column display value
-		 * @param int $id Object ID
+		 * @param string $value  Column display value
+		 * @param int    $id     Object ID
 		 * @param Column $column Column object
 		 *
 		 * @since 3.0

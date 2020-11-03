@@ -15,6 +15,7 @@ class Column {
 	/**
 	 * @var string Unique type
 	 */
+	// TODO: maybe remove?
 	private $type;
 
 	/**
@@ -53,6 +54,13 @@ class Column {
 	 */
 	protected $options = [];
 
+	public function __construct( $type, $name, array $data = [], $post_type = null ) {
+		$this->type = $type;
+		$this->name = $name;
+		$this->options = $data;
+		$this->post_type = $post_type;
+	}
+
 	/**
 	 * Get the unique name of the column
 	 * @return string Column name
@@ -87,26 +95,9 @@ class Column {
 	 *
 	 * @return $this
 	 */
+	// TODO: deprecated
 	public function set_type( $type ) {
 		$this->type = (string) $type;
-
-		return $this;
-	}
-
-	/**
-	 * @return ListScreen
-	 */
-	public function get_list_screen() {
-		return $this->list_screen;
-	}
-
-	/**
-	 * @param ListScreen $list_screen
-	 *
-	 * @return $this
-	 */
-	public function set_list_screen( ListScreen $list_screen ) {
-		$this->list_screen = $list_screen;
 
 		return $this;
 	}
@@ -125,6 +116,7 @@ class Column {
 	 *
 	 * @return $this
 	 */
+	// TODO: deprecated
 	public function set_label( $label ) {
 		$this->label = $label;
 
@@ -159,17 +151,26 @@ class Column {
 	}
 
 	/**
-	 * @return string Post type
+	 * @return bool
+	 */
+	public function has_post_type() {
+		return null !== $this->post_type;
+	}
+
+	/**
+	 * @return string
 	 */
 	public function get_post_type() {
-		return method_exists( $this->list_screen, 'get_post_type' ) ? $this->list_screen->get_post_type() : false;
+		return $this->post_type;
 	}
 
 	/**
 	 * @return string Taxonomy
 	 */
 	public function get_taxonomy() {
-		return method_exists( $this->list_screen, 'get_taxonomy' ) ? $this->list_screen->get_taxonomy() : false;
+		return null;
+		// TODO
+//		return method_exists( $this->list_screen, 'get_taxonomy' ) ? $this->list_screen->get_taxonomy() : false;
 	}
 
 	/**
@@ -177,6 +178,7 @@ class Column {
 	 * An original column will then use the original label and value.
 	 * @since 3.0
 	 */
+	// TODO: move to Column\Default
 	public function is_original() {
 		return $this->original;
 	}
@@ -186,6 +188,7 @@ class Column {
 	 *
 	 * @return $this
 	 */
+	// TODO: move to Column\Default
 	public function set_original( $boolean ) {
 		$this->original = (bool) $boolean;
 
@@ -270,8 +273,6 @@ class Column {
 	public function get_settings() {
 		if ( null === $this->settings ) {
 			$settings = [
-				// TODO: Settings\Column\Type move to Columns page
-				new Settings\Column\Type( $this ),
 				new Settings\Column\Label( $this ),
 				new Settings\Column\Width( $this ),
 			];

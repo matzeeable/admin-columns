@@ -92,7 +92,7 @@ class ListScreenTypeRepository {
 			User::NAME,
 			__( 'Users' ),
 			ListScreenGroups::USER,
-			admin_url( 'users.php' ),
+			admin_url( 'users.php' )
 		);
 
 		$items[] = new ListScreenType(

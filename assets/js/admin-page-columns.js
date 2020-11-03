@@ -183,7 +183,7 @@ jQuery(document).ready(function () {
   _modules_modals__WEBPACK_IMPORTED_MODULE_2__["default"].init().register(new _modules_modal__WEBPACK_IMPORTED_MODULE_4__["default"](document.querySelector('#ac-modal-pro')), 'pro');
   new _admin_columns_menu__WEBPACK_IMPORTED_MODULE_5__["default"]().init();
   new _admin_columns_feedback__WEBPACK_IMPORTED_MODULE_6__["default"]('.sidebox#direct-feedback');
-  ['AC_Column_Change', 'AC_Column_Refresh', 'AC_Column_Refresh'].forEach(function (hook) {
+  ['AC_Column_Change', 'AC_Column_Refresh'].forEach(function (hook) {
     jQuery(document).on(hook, function () {
       return ac_pointers();
     });
@@ -432,6 +432,10 @@ function () {
         action: 'ac-columns',
         id: 'select',
         type: type,
+        list_screen: AC.list_screen,
+        meta_type: AC.meta_type,
+        post_type: AC.post_type,
+        taxonomy: AC.taxonomy,
         data: AC.Form.serialize(),
         current_original_columns: AC.Form.originalColumns(),
         original_columns: AC.original_columns,
@@ -1680,6 +1684,11 @@ function () {
   function Label(column) {
     this.column = column;
     this.setting = column.el.querySelector('.ac-column-setting--label');
+
+    if (!this.setting) {
+      return;
+    }
+
     this.iconpicker = this.setting.querySelector('.-iconpicker');
 
     if (!this.iconpicker) {

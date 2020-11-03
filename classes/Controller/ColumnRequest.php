@@ -68,7 +68,7 @@ abstract class ColumnRequest {
 			] );
 		}
 
-		wp_send_json_success( $this->render_column( $column ) );
+		wp_send_json_success( $this->render_column( $column, $list_screen->get_key() ) );
 	}
 
 	/**
@@ -76,9 +76,10 @@ abstract class ColumnRequest {
 	 *
 	 * @return string
 	 */
-	private function render_column( AC\Column $column ) {
+	private function render_column( AC\Column $column, $list_key ) {
 		$view = new View( [
-			'column' => $column,
+			'column'   => $column,
+			'list_key' => $list_key,
 		] );
 
 		$view->set_template( 'admin/edit-column' );

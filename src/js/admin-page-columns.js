@@ -78,7 +78,7 @@ jQuery( document ).ready( function() {
 	new Menu().init();
 	new Feedback( '.sidebox#direct-feedback' );
 
-	[ 'AC_Column_Change', 'AC_Column_Refresh', 'AC_Column_Refresh' ].forEach( hook => {
+	[ 'AC_Column_Change', 'AC_Column_Refresh' ].forEach( hook => {
 		jQuery( document ).on( hook, () => ac_pointers() );
 	} );
 

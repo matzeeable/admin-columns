@@ -57,7 +57,6 @@ class Save {
 			$data['title'] = $formdata['title'];
 		}
 
-		// TODO
 		$list_screen = $this->storage->save( new ListScreenData( $data ) );
 
 		do_action( 'ac/columns_stored', $list_screen );

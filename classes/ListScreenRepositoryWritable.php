@@ -9,7 +9,7 @@ interface ListScreenRepositoryWritable extends ListScreenRepository {
 	/**
 	 * @param ListScreenData $list_screen_data
 	 *
-	 * @return void
+	 * @return ListScreen
 	 */
 	public function save( ListScreenData $list_screen_data );
 

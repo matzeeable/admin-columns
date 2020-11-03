@@ -2,12 +2,12 @@
 
 namespace AC\Meta;
 
-use AC\Column;
-
 class QueryMeta extends Query {
 
 	/**
-	 * @param Column $column
+	 * @param string $meta_type
+	 * @param string $meta_key
+	 * @param string|null $post_type
 	 */
 	public function __construct( $meta_type, $meta_key, $post_type = null ) {
 		parent::__construct( $meta_type );

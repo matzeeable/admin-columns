@@ -5,13 +5,14 @@ namespace AC\Column\Post;
 use AC\Column;
 use AC\Settings;
 
-/**
- * @since 2.0
- */
 class Attachment extends Column {
 
-	public function __construct() {
-		$this->set_type( 'column-attachment' );
+	const TYPE = 'column-attachment';
+
+	public function __construct( $name, array $data = [] ) {
+		parent::__construct( self::TYPE, $name, $data );
+
+		// TODO: remove
 		$this->set_label( __( 'Attachments', 'codepress-admin-columns' ) );
 	}
 
@@ -27,7 +28,7 @@ class Attachment extends Column {
 	private function get_attachment_ids( $post_id ) {
 		$attachment_ids = get_posts( [
 			'post_type'      => 'attachment',
-			'posts_per_page' => -1,
+			'posts_per_page' => - 1,
 			'post_status'    => null,
 			'post_parent'    => $post_id,
 			'fields'         => 'ids',

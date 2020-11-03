@@ -3,34 +3,26 @@
 namespace AC\Column;
 
 use AC\Column;
+use AC\MetaType;
 
+// TODO
 abstract class Meta extends Column {
 
 	/**
-	 * Return the meta_key of this column
+	 * @var MetaType
+	 */
+	protected $meta_type;
+
+	public function __construct( $type, $name, MetaType $meta_type, array $data = [], $post_type = null ) {
+		parent::__construct( $type, $name, $data, $post_type );
+
+		$this->meta_type = $meta_type;
+	}
+
+	/**
 	 * @return string
 	 */
 	abstract public function get_meta_key();
-
-	/**
-	 * Is data stored serialized?
-	 * @var bool
-	 */
-	private $serialized = false;
-
-	/**
-	 * @return bool
-	 */
-	public function is_serialized() {
-		return $this->serialized;
-	}
-
-	/**
-	 * @param bool $serialized
-	 */
-	public function set_serialized( $serialized ) {
-		$this->serialized = (bool) $serialized;
-	}
 
 	/**
 	 * @param $id
@@ -44,25 +36,21 @@ abstract class Meta extends Column {
 	}
 
 	/**
-	 * Retrieve metadata object type (e.g., comment, post, or user)
-	 * @return string
-	 * @since 3.0
+	 * @return MetaType
 	 */
 	public function get_meta_type() {
-		return $this->get_list_screen()->get_meta_type();
+		return $this->meta_type;
 	}
 
 	/**
-	 * Get meta value
-	 *
-	 * @param int    $id
+	 * @param int $id
 	 * @param string $meta_key
-	 * @param bool   $single
+	 * @param bool $single
 	 *
 	 * @return mixed
 	 */
 	public function get_meta_value( $id, $meta_key, $single = true ) {
-		return get_metadata( $this->get_meta_type(), $id, $meta_key, $single );
+		return get_metadata( $this->meta_type->get(), $id, $meta_key, $single );
 	}
 
 }

@@ -9,8 +9,10 @@ use AC\Column;
  */
 class FirstName extends Column\Meta {
 
+	const TYPE = 'column-first_name';
+
 	public function __construct() {
-		$this->set_type( 'column-first_name' )
+		$this->set_type( self::TYPE )
 		     ->set_label( __( 'First Name', 'codepress-admin-columns' ) );
 	}
 

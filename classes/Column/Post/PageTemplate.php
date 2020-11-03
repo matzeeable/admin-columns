@@ -3,14 +3,15 @@
 namespace AC\Column\Post;
 
 use AC\Column;
+use AC\Column\MetaKey;
 
-/**
- * @since 2.0
- */
-class PageTemplate extends Column\Meta {
+class PageTemplate extends Column implements MetaKey {
 
-	public function __construct() {
-		$this->set_type( 'column-page_template' );
+	const TYPE = 'column-page_template';
+
+	public function __construct( $name, $post_type, array $data = [] ) {
+		parent::__construct( self::TYPE, $name, $data );
+
 		$this->set_label( __( 'Page Template', 'codepress-admin-columns' ) );
 	}
 
@@ -26,10 +27,6 @@ class PageTemplate extends Column\Meta {
 		}
 
 		return $template;
-	}
-
-	function is_valid() {
-		return $this->get_page_templates() ? true : false;
 	}
 
 	/**

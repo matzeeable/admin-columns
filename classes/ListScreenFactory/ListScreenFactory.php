@@ -6,6 +6,8 @@ use AC\ColumnCollection;
 use AC\ColumnFactory;
 use AC\ListScreen;
 use AC\ListScreenFactoryInterface;
+use AC\ListScreenPost;
+use AC\MetaType;
 use AC\Type\ListScreenData;
 use AC\Type\ListScreenId;
 
@@ -15,16 +17,6 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 	 * @var string
 	 */
 	protected $default_list_screen = ListScreen\Post::CLASS;
-
-	/**
-	 * @var array
-	 */
-	// TODO: remove?
-//	protected $list_screens = [
-//		ListScreen\User::NAME    => ListScreen\User::CLASS,
-//		ListScreen\Media::NAME   => ListScreen\Media::CLASS,
-//		ListScreen\Comment::NAME => ListScreen\Comment::CLASS,
-//	];
 
 	/**
 	 * @var ColumnFactory
@@ -59,7 +51,7 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 				$list_screen = new $this->default_list_screen( $data->get( 'key' ), $settings, $id );
 		}
 
-		// TODO: columns can not be injected, becayse they are dependent on a initiated ListScreen object..
+		// TODO: columns can not be injected into the constructor of a ListScreen object, because they are dependent on the same initiated ListScreen object..
 		if ( $data->has( ListScreenData::PARAM_COLUMNS ) ) {
 			$list_screen->set_columns( $this->create_columns( $data->get( ListScreenData::PARAM_COLUMNS ), $list_screen ) );
 		}
@@ -73,11 +65,18 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 	 *
 	 * @return ColumnCollection
 	 */
-	private function create_columns( array $data, ListScreen $list_screen ) {
+	private function create_columns( array $column_data, ListScreen $list_screen ) {
 		$columns = new ColumnCollection();
 
-		foreach ( $data as $column_name => $column_data ) {
-			$column = $this->column_factory->create( $column_data + [ 'name' => $column_name ], $list_screen );
+		foreach ( $column_data as $column_name => $settings ) {
+			$data = $settings + [
+					'name'      => $column_name,
+					'meta_type' => new MetaType( $list_screen->get_meta_type() ),
+					'post_type' => $list_screen instanceof ListScreenPost ? $list_screen->get_post_type() : null,
+					'taxanomy'  => method_exists( $list_screen, 'get_taxanomy' ) ? $list_screen->get_taxanomy() : null
+				];
+
+			$column = $this->column_factory->create( $list_screen->get_key(), $data );
 
 			if ( null === $column ) {
 				continue;

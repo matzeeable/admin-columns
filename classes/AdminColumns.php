@@ -14,6 +14,7 @@ use AC\ListScreenRepository\Storage;
 use AC\Screen\QuickEdit;
 use AC\Table;
 use AC\ThirdParty;
+use AC\ColumnFactory;
 
 class AdminColumns extends Plugin {
 
@@ -33,6 +34,11 @@ class AdminColumns extends Plugin {
 	private $list_screen_factory;
 
 	/**
+	 * @var ColumnFactory
+	 */
+	private $column_factory;
+
+	/**
 	 * @since 2.5
 	 * @var self
 	 */
@@ -47,12 +53,17 @@ class AdminColumns extends Plugin {
 	}
 
 	private function __construct() {
-		$column_factory = new ColumnFactory( new ColumnTypesRepository( new DefaultColumnsRepository() ) );
+		$this->column_factory = new ColumnFactory();
+		$this->column_factory->add_factory( new ColumnFactory\ColumnFactory() );
+
+		do_action( 'ac/columns', $this->list_screen_factory );
 
 		$this->list_screen_factory = new ListScreenFactory();
 		$this->list_screen_factory->add_factory(
-			new ListScreenFactory\ListScreenFactory( $column_factory )
+			new ListScreenFactory\ListScreenFactory( $this->column_factory )
 		);
+
+		do_action( 'ac/list_screen', $this->list_screen_factory );
 
 		$this->storage = new Storage();
 		$this->storage->set_repositories( [
@@ -67,11 +78,19 @@ class AdminColumns extends Plugin {
 			$this->get_dir()
 		);
 
-		$column_types_repository = new ColumnTypesRepository( new DefaultColumnsRepository() );
+		$column_types_repository = new ColumnTypesRepository();
 
 		$hooks = new Deprecated\Hooks( new ListScreenTypeRepository(), $this->list_screen_factory, $column_types_repository );
 
-		$this->admin = ( new AdminFactory( $this->storage, $location, $this->list_screen_factory, $column_types_repository, $hooks ) )->create();
+		$admin_factory = ( new AdminFactory(
+			$this->storage, $location,
+			$this->list_screen_factory,
+			$column_types_repository,
+			$this->column_factory,
+			$hooks
+		) );
+
+		$this->admin = $admin_factory->create();
 
 		$services = [
 			$this->admin,

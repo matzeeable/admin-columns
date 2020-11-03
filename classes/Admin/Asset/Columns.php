@@ -60,6 +60,9 @@ class Columns extends Script {
 		$params = [
 			'_ajax_nonce'                => wp_create_nonce( AC\Ajax\Handler::NONCE_ACTION ),
 			'list_screen'                => $this->list_screen->get_key(),
+			'meta_type'                  => $this->list_screen->get_meta_type(),
+			'post_type'                  => $this->list_screen instanceof AC\ListScreenPost ? $this->list_screen->get_post_type() : null,
+			'taxonomy'                   => method_exists( $this->list_screen, 'get_taxonomy' ) ? $this->list_screen->get_taxonomy() : null,
 			'layout'                     => $this->list_screen->has_id() ? $this->list_screen->get_id()->get_id() : null,
 			'original_columns'           => [],
 			'uninitialized_list_screens' => [],

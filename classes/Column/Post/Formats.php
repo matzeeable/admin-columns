@@ -5,19 +5,21 @@ namespace AC\Column\Post;
 use AC\Column;
 use AC\Settings;
 
-/**
- * @since 2.0
- */
 class Formats extends Column {
 
-	public function __construct() {
-		$this->set_type( 'column-post_formats' );
+	const TYPE = 'column-post_formats';
+
+	public function __construct( $name, array $data = [] ) {
+		parent::__construct( self::TYPE, $name, $data );
+
+		// TODO: remove
 		$this->set_label( __( 'Post Format', 'codepress-admin-columns' ) );
 	}
 
-	public function is_valid() {
-		return post_type_supports( $this->get_post_type(), 'post-formats' );
-	}
+	// TODO: remove
+//	public function is_valid() {
+//		return post_type_supports( $this->get_post_type(), 'post-formats' );
+//	}
 
 	public function get_raw_value( $post_id ) {
 		return get_post_format( $post_id );

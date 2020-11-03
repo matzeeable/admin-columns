@@ -166,6 +166,8 @@ final class Database implements ListScreenRepositoryWritable {
 				array_fill( 0, 7, '%s' )
 			);
 		}
+
+		return $this->find( new ListScreenId( $data->get( 'id' ) ) );
 	}
 
 	public function delete( ListScreen $list_screen ) {
