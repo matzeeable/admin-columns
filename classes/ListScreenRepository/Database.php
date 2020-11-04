@@ -129,21 +129,23 @@ final class Database implements ListScreenRepositoryWritable {
 	public function save( ListScreenData $data ) {
 		global $wpdb;
 
-		if ( ! ListScreenId::is_valid_id( $data->get( 'id' ) ) ) {
+		if ( ! ListScreenId::is_valid_id( $data->get( ListScreenData::PARAM_ID ) ) ) {
 			throw MissingListScreenIdException::from_saving_list_screen();
 		}
 
+		$id = new ListScreenId( $data->get( ListScreenData::PARAM_ID ) );
+
 		$args = [
-			'list_id'       => $data->get( 'id' ),
-			'list_key'      => $data->get( 'key' ),
-			'title'         => $data->get( 'title' ),
-			'columns'       => $data->has( 'columns' ) ? serialize( $data->get( 'columns' ) ) : null,
-			'settings'      => $data->has( 'settings' ) ? serialize( $data->get( 'settings' ) ) : null,
+			'list_id'       => $id->get_id(),
+			'list_key'      => $data->get( ListScreenData::PARAM_KEY ),
+			'title'         => $data->get( ListScreenData::PARAM_TITLE ),
+			'columns'       => $data->has( ListScreenData::PARAM_COLUMNS ) ? serialize( $data->get( ListScreenData::PARAM_COLUMNS ) ) : null,
+			'settings'      => $data->has( ListScreenData::PARAM_SETTINGS ) ? serialize( $data->get( ListScreenData::PARAM_SETTINGS ) ) : null,
 			'date_modified' => $data->has( 'date' ) ? $data->get( 'date' ) : ( new DateTime() )->format( 'Y-m-d H:i:s' ),
 		];
 
 		$table = $wpdb->prefix . self::TABLE;
-		$stored = $this->find_from_database( new ListScreenId( $data->get( 'id' ) ) );
+		$stored = $this->find_from_database( $id );
 
 		if ( $stored ) {
 			$wpdb->update(
@@ -167,7 +169,7 @@ final class Database implements ListScreenRepositoryWritable {
 			);
 		}
 
-		return $this->find( new ListScreenId( $data->get( 'id' ) ) );
+		return $this->find( $id );
 	}
 
 	public function delete( ListScreen $list_screen ) {
@@ -206,21 +208,21 @@ final class Database implements ListScreenRepositoryWritable {
 	 */
 	private function create_list_screen( $row ) {
 		$data = [
-			'key'  => $row->list_key,
-			'id'   => $row->list_id,
-			'date' => DateTime::createFromFormat( 'Y-m-d H:i:s', $row->date_modified ),
+			ListScreenData::PARAM_KEY  => $row->list_key,
+			ListScreenData::PARAM_ID   => $row->list_id,
+			ListScreenData::PARAM_DATE => DateTime::createFromFormat( 'Y-m-d H:i:s', $row->date_modified ),
 		];
 
 		if ( $row->settings ) {
-			$data['settings'] = unserialize( $row->settings );
+			$data[ ListScreenData::PARAM_SETTINGS ] = unserialize( $row->settings );
 		}
 
 		if ( $row->title ) {
-			$data['settings']['title'] = $row->title;
+			$data[ ListScreenData::PARAM_SETTINGS ]['title'] = $row->title;
 		}
 
 		if ( $row->columns ) {
-			$data['columns'] = unserialize( $row->columns );
+			$data[ ListScreenData::PARAM_COLUMNS ] = unserialize( $row->columns );
 		}
 
 		return $this->list_screen_factory->create( new ListScreenData( $data ) );

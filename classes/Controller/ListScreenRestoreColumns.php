@@ -7,6 +7,7 @@ use AC\ColumnCollection;
 use AC\ListScreenRepository\Storage;
 use AC\Message\Notice;
 use AC\Registrable;
+use AC\Type\ListScreenData;
 use AC\Type\ListScreenId;
 
 class ListScreenRestoreColumns implements Registrable {
@@ -39,8 +40,14 @@ class ListScreenRestoreColumns implements Registrable {
 						return;
 					}
 
+					// TODO: clear columns
 					$list_screen->set_columns( new ColumnCollection( [] ) );
-					$this->repository->save( $list_screen );
+
+					$data = new ListScreenData( [
+						ListScreenData::PARAM_KEY
+					]);
+
+					$this->repository->save( $data );
 
 					$notice = new Notice( sprintf( __( 'Settings for %s restored successfully.', 'codepress-admin-columns' ), "<strong>" . esc_html( $list_screen->get_title() ) . "</strong>" ) );
 					$notice->register();

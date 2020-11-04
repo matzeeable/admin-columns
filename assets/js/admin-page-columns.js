@@ -467,6 +467,10 @@ function () {
       id: 'refresh',
       _ajax_nonce: AC._ajax_nonce,
       data: AC.Form.serialize(),
+      list_screen: AC.list_screen,
+      meta_type: AC.meta_type,
+      post_type: AC.post_type,
+      taxonomy: AC.taxonomy,
       column_name: this.name,
       original_columns: AC.original_columns
     };

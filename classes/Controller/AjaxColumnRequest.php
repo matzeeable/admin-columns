@@ -4,7 +4,6 @@ namespace AC\Controller;
 
 use AC\Ajax;
 use AC\ColumnFactory;
-use AC\ColumnTypesRepository;
 use AC\Controller\ColumnRequest\Refresh;
 use AC\Controller\ColumnRequest\Select;
 use AC\Controller\ListScreen\Save;
@@ -26,11 +25,6 @@ class AjaxColumnRequest implements Registrable {
 	private $column_factory;
 
 	/**
-	 * @var ColumnTypesRepository
-	 */
-	private $column_types_repository;
-
-	/**
 	 * @var Request
 	 */
 	private $request;
@@ -38,12 +32,10 @@ class AjaxColumnRequest implements Registrable {
 	public function __construct(
 		Storage $storage,
 		ColumnFactory $column_factory,
-		ColumnTypesRepository $column_types_repository,
 		Request $request
 	) {
 		$this->storage = $storage;
 		$this->column_factory = $column_factory;
-		$this->column_types_repository = $column_types_repository;
 		$this->request = $request;
 	}
 
@@ -71,7 +63,7 @@ class AjaxColumnRequest implements Registrable {
 				( new Save( $this->storage ) )->request( $this->request );
 				break;
 			case 'select':
-				( new Select( $this->column_factory, $this->column_types_repository ) )->request( $this->request );
+				( new Select( $this->column_factory ) )->request( $this->request );
 				break;
 			case 'refresh':
 				( new Refresh( $this->column_factory ) )->request( $this->request );

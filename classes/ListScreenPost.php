@@ -14,8 +14,8 @@ abstract class ListScreenPost extends ListScreen {
 	 */
 	protected $post_type;
 
-	public function __construct( $post_type, Screen $screen, ListScreenLabel $label = null, array $settings = [], ListScreenId $id = null ) {
-		parent::__construct( new MetaType( MetaType::POST ), $screen, $label, $settings, $id );
+	public function __construct( $post_type, Screen $screen, ColumnCollection $columns, ListScreenLabel $label = null, array $settings = [], ListScreenId $id = null ) {
+		parent::__construct( $columns, new MetaType( MetaType::POST ), $screen, $label, $settings, $id );
 
 		$this->post_type = (string) $post_type;
 	}

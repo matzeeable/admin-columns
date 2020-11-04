@@ -4,7 +4,6 @@ namespace AC\Controller;
 
 use AC;
 use AC\Column\Placeholder;
-use AC\Type\ListScreenData;
 use AC\View;
 
 abstract class ColumnRequest {
@@ -21,30 +20,17 @@ abstract class ColumnRequest {
 	/**
 	 * @return AC\Column
 	 */
-	abstract protected function get_column( AC\Request $request, AC\ListScreen $list_screen );
+	abstract protected function get_column( AC\Request $request );
 
 	public function request( AC\Request $request ) {
-		parse_str( $request->get( 'data' ), $formdata );
+		$column = $this->get_column( $request );
 
-		$data = new ListScreenData( [
-			'id'      => $formdata['list_screen_id'],
-			'key'     => $formdata['list_screen'],
-			'columns' => $formdata['columns'],
-		] );
-
-		// TODO: remove dependency on factory. use ListScreenTypes.
-		$list_screen = AC()->get_list_screen_factory()->create( $data );
-
-		if ( ! $list_screen ) {
-			wp_die();
-		}
-
-		$column = $this->get_column( $request, $list_screen );
+		$list_screen_type = ( new AC\ListScreenTypeRepository() )->find( $request->get( 'list_screen' ) );
 
 		if ( ! $column ) {
 			wp_send_json_error( [
 				'type'  => 'message',
-				'error' => sprintf( __( 'Please visit the %s screen once to load all available columns', 'codepress-admin-columns' ), ac_helper()->html->link( $list_screen->get_url(), $list_screen->get_label() ) ),
+				'error' => sprintf( __( 'Please visit the %s screen once to load all available columns', 'codepress-admin-columns' ), ac_helper()->html->link( $list_screen_type->get_url(), $list_screen_type->get_label() ) ),
 			] );
 		}
 
@@ -68,7 +54,7 @@ abstract class ColumnRequest {
 			] );
 		}
 
-		wp_send_json_success( $this->render_column( $column, $list_screen->get_key() ) );
+		wp_send_json_success( $this->render_column( $column, $list_screen_type->get_key() ) );
 	}
 
 	/**

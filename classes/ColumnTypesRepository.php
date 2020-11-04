@@ -11,12 +11,15 @@ use InvalidArgumentException;
 class ColumnTypesRepository {
 
 	const LIST_KEY = 'list_key';
+	const GROUP = 'group';
 
 	/**
 	 * @param array $args
 	 *
 	 * @return ColumnType[]
 	 */
+
+	// TODO: return ColumnTypeCollection
 	public function find_all( array $args = [] ) {
 		if ( ! isset( $args[ self::LIST_KEY ] ) ) {
 			throw new InvalidArgumentException( sprintf( 'Missing %s argument.', self::LIST_KEY ) );
@@ -58,6 +61,7 @@ class ColumnTypesRepository {
 	protected function get_user_columns() {
 		return [
 			new ColumnType( User\FirstName::TYPE, __( 'First Name', 'codepress-admin-columns' ), ListScreen\User::NAME ),
+			new ColumnType( User\Description::TYPE, __( 'Description', 'codepress-admin-columns' ), ListScreen\User::NAME ),
 		];
 	}
 

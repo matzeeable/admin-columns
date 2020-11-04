@@ -16,11 +16,6 @@ class Formats extends Column {
 		$this->set_label( __( 'Post Format', 'codepress-admin-columns' ) );
 	}
 
-	// TODO: remove
-//	public function is_valid() {
-//		return post_type_supports( $this->get_post_type(), 'post-formats' );
-//	}
-
 	public function get_raw_value( $post_id ) {
 		return get_post_format( $post_id );
 	}

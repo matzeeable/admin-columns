@@ -13,8 +13,8 @@ abstract class Meta extends Column {
 	 */
 	protected $meta_type;
 
-	public function __construct( $type, $name, MetaType $meta_type, array $data = [], $post_type = null ) {
-		parent::__construct( $type, $name, $data, $post_type );
+	public function __construct( $type, $name, MetaType $meta_type, array $data = [] ) {
+		parent::__construct( $type, $name, $data );
 
 		$this->meta_type = $meta_type;
 	}

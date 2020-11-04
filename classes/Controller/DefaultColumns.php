@@ -68,9 +68,6 @@ class DefaultColumns implements Registrable {
 		}
 		$screen_id = $list_screen->get_screen()->get_id();
 
-
-
-
 		// Save an empty array in case the hook does not run properly.
 		$this->default_columns->update( $this->list_screen_key, [] );
 

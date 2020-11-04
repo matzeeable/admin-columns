@@ -69,7 +69,6 @@ class CustomField extends Settings\Column {
 
 		return $this->create_element( 'select', 'field' )
 		            ->set_attribute( 'data-selected', $this->get_field() )
-		            ->set_attribute( 'data-post_type', $this->get_post_type() )
 		            ->set_attribute( 'data-type', $this->meta_type->get() )
 		            ->set_options( $options )
 		            ->set_attribute( 'class', 'custom_field' );
@@ -93,13 +92,6 @@ class CustomField extends Settings\Column {
 	 */
 	protected function get_meta_type() {
 		return $this->meta_type;
-	}
-
-	/**
-	 * @return string Post type
-	 */
-	protected function get_post_type() {
-		return $this->column->get_post_type();
 	}
 
 	/**

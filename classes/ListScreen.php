@@ -62,24 +62,25 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	protected $read_only = false;
 
 	/**
-	 * @param MetaType         $meta_type
-	 * @param Screen           $screen
-	 * @param ListScreenLabel  $label
+	 * @param MetaType $meta_type
+	 * @param Screen $screen
+	 * @param ListScreenLabel $label
 	 * @param ColumnCollection $columns
-	 * @param array            $settings
-	 * @param ListScreenId     $id
+	 * @param array $settings
+	 * @param ListScreenId $id
 	 */
 	public function __construct(
+		ColumnCollection $columns,
 		MetaType $meta_type,
 		Screen $screen,
 		ListScreenLabel $label = null,
 		array $settings = [],
 		ListScreenId $id = null
 	) {
+		$this->columns = $columns;
 		$this->meta_type = $meta_type;
 		$this->screen = $screen;
 		$this->label = $label;
-		$this->columns = new ColumnCollection(); // TODO
 		$this->settings = $settings;
 		$this->id = $id;
 	}
@@ -216,13 +217,13 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	 * @return Column[]
 	 */
 	// TODO: refactor. obsolete.
-	public function get_column_types() {
-		if ( null === $this->column_types ) {
-			$this->set_column_types();
-		}
-
-		return $this->column_types;
-	}
+//	public function get_column_types() {
+//		if ( null === $this->column_types ) {
+//			$this->set_column_types();
+//		}
+//
+//		return $this->column_types;
+//	}
 
 	/**
 	 * @param string $name
@@ -237,69 +238,69 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	/**
 	 * @param string $type Column type
 	 */
-	public function deregister_column_type( $type ) {
-		if ( isset( $this->column_types[ $type ] ) ) {
-			unset( $this->column_types[ $type ] );
-		}
-	}
+//	public function deregister_column_type( $type ) {
+//		if ( isset( $this->column_types[ $type ] ) ) {
+//			unset( $this->column_types[ $type ] );
+//		}
+//	}
 
 	/**
 	 * @param Column $column
 	 */
-	public function register_column_type( Column $column ) {
-		if ( ! $column->get_type() ) {
-			return;
-		}
-
-		$column->set_list_screen( $this );
-
-		// TODO: AC/Column::is_valid should accept a AC/ListScreen object
-		if ( ! $column->is_valid() ) {
-			return;
-		}
-
-		$repo = new DefaultColumnsRepository();
-
-		if ( $column->is_original() && ! $repo->find( $this->get_key(), $column->get_type() ) ) {
-			return;
-		}
-
-		$this->column_types[ $column->get_type() ] = $column;
-	}
+//	public function register_column_type( Column $column ) {
+//		if ( ! $column->get_type() ) {
+//			return;
+//		}
+//
+//		$column->set_list_screen( $this );
+//
+//		// TODO: AC/Column::is_valid should accept a AC/ListScreen object
+//		if ( ! $column->is_valid() ) {
+//			return;
+//		}
+//
+//		$repo = new DefaultColumnsRepository();
+//
+//		if ( $column->is_original() && ! $repo->find( $this->get_key(), $column->get_type() ) ) {
+//			return;
+//		}
+//
+//		$this->column_types[ $column->get_type() ] = $column;
+//	}
 
 	/**
 	 * Available column types
 	 */
-	private function set_column_types() {
-		$this->column_types = [];
-
-		// Load Custom columns
-		$this->register_column_types();
-
-		/**
-		 * Register column types
-		 *
-		 * @param ListScreen $this
-		 */
-		do_action( 'ac/column_types', $this );
-	}
+//	private function set_column_types() {
+//		$this->column_types = [];
+//
+//		// Load Custom columns
+//		$this->register_column_types();
+//
+//		/**
+//		 * Register column types
+//		 *
+//		 * @param ListScreen $this
+//		 */
+//		do_action( 'ac/column_types', $this );
+//	}
 
 	/**
 	 * @param string $namespace
 	 *
 	 * @throws ReflectionException
 	 */
-	public function register_column_types_from_dir( $namespace ) {
-		$classes = Autoloader::instance()->get_class_names_from_dir( $namespace );
-
-		foreach ( $classes as $class ) {
-			$reflection = new ReflectionClass( $class );
-
-			if ( $reflection->isInstantiable() ) {
-				$this->register_column_type( new $class );
-			}
-		}
-	}
+//	public function register_column_types_from_dir( $namespace ) {
+//		$classes = Autoloader::instance()->get_class_names_from_dir( $namespace );
+//
+//		foreach ( $classes as $class ) {
+//			$reflection = new ReflectionClass( $class );
+//
+//			if ( $reflection->isInstantiable() ) {
+//				$this->register_column_type( new $class );
+//			}
+//		}
+//	}
 
 	/**
 	 * @param string $column_name
@@ -309,17 +310,17 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 		unset( $this->columns[ $column_name ] );
 	}
 
-	public function add_column( Column $column ) {
-		$this->columns->add( $column );
-	}
+//	public function add_column( Column $column ) {
+//		$this->columns->add( $column );
+//	}
+//
+//	public function set_columns( ColumnCollection $columns ) {
+//		$this->columns = $columns;
+//	}
 
-	public function set_columns( ColumnCollection $columns ) {
-		$this->columns = $columns;
-	}
-
-	public function set_settings( array $settings ) {
-		$this->settings = $settings;
-	}
+//	public function set_settings( array $settings ) {
+//		$this->settings = $settings;
+//	}
 
 	/**
 	 * @return array
@@ -345,13 +346,13 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	 * @return string
 	 */
 	public function get_url() {
-		return add_query_arg( [ 'layout' => $this->id->get_id() ], $this->get_table_url() );
+		return add_query_arg( [ 'layout' => $this->has_id() ? $this->id->get_id() : null ], $this->get_table_url() );
 	}
 
 	/**
 	 * @param string $column_name
-	 * @param int    $id
-	 * @param null   $default
+	 * @param int $id
+	 * @param null $default
 	 *
 	 * @return string
 	 */
@@ -373,8 +374,8 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 		/**
 		 * Column display value
 		 *
-		 * @param string $value  Column display value
-		 * @param int    $id     Object ID
+		 * @param string $value Column display value
+		 * @param int $id Object ID
 		 * @param Column $column Column object
 		 *
 		 * @since 3.0

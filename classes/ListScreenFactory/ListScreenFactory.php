@@ -6,17 +6,11 @@ use AC\ColumnCollection;
 use AC\ColumnFactory;
 use AC\ListScreen;
 use AC\ListScreenFactoryInterface;
-use AC\ListScreenPost;
 use AC\MetaType;
 use AC\Type\ListScreenData;
 use AC\Type\ListScreenId;
 
 class ListScreenFactory implements ListScreenFactoryInterface {
-
-	/**
-	 * @var string
-	 */
-	protected $default_list_screen = ListScreen\Post::CLASS;
 
 	/**
 	 * @var ColumnFactory
@@ -37,52 +31,48 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 			? $data->get( ListScreenData::PARAM_SETTINGS )
 			: [];
 
-		switch ( $data->get( 'key' ) ) {
+		switch ( $data->get( ListScreenData::PARAM_KEY ) ) {
 			case ListScreen\User::NAME :
-				$list_screen = new ListScreen\User( $settings, $id );
-				break;
+				return new ListScreen\User( $this->create_columns( $data, new MetaType( MetaType::USER ) ), $settings, $id );
 			case ListScreen\Media::NAME :
-				$list_screen = new ListScreen\Media( $settings, $id );
-				break;
+				return new ListScreen\Media( $this->create_columns( $data, new MetaType( MetaType::POST ) ), $settings, $id );
 			case ListScreen\Comment::NAME :
-				$list_screen = new ListScreen\Comment( $settings, $id );
-				break;
+				return new ListScreen\Comment( $this->create_columns( $data, new MetaType( MetaType::COMMENT ) ), $settings, $id );
 			default :
-				$list_screen = new $this->default_list_screen( $data->get( 'key' ), $settings, $id );
+				return new ListScreen\Post( $data->get( ListScreenData::PARAM_KEY ), $this->create_columns( $data, new MetaType( MetaType::POST ) ), $settings, $id );
 		}
-
-		// TODO: columns can not be injected into the constructor of a ListScreen object, because they are dependent on the same initiated ListScreen object..
-		if ( $data->has( ListScreenData::PARAM_COLUMNS ) ) {
-			$list_screen->set_columns( $this->create_columns( $data->get( ListScreenData::PARAM_COLUMNS ), $list_screen ) );
-		}
-
-		return $list_screen;
 	}
 
 	/**
-	 * @param array $data
-	 * @param ListScreen $list_screen
+	 * @param ListScreenData $data
+	 * @param MetaType $meta_type
 	 *
 	 * @return ColumnCollection
 	 */
-	private function create_columns( array $column_data, ListScreen $list_screen ) {
+	private function create_columns( ListScreenData $data, MetaType $meta_type ) {
 		$columns = new ColumnCollection();
 
-		foreach ( $column_data as $column_name => $settings ) {
-			$data = $settings + [
-					'name'      => $column_name,
-					'meta_type' => new MetaType( $list_screen->get_meta_type() ),
-					'post_type' => $list_screen instanceof ListScreenPost ? $list_screen->get_post_type() : null,
-					'taxanomy'  => method_exists( $list_screen, 'get_taxanomy' ) ? $list_screen->get_taxanomy() : null
-				];
+		if ( $data->has( ListScreenData::PARAM_COLUMNS ) ) {
 
-			$column = $this->column_factory->create( $list_screen->get_key(), $data );
+			$list_key = $data->get( ListScreenData::PARAM_KEY );
 
-			if ( null === $column ) {
-				continue;
+			foreach ( $data->get( ListScreenData::PARAM_COLUMNS ) as $column_name => $settings ) {
+				$data = $settings + [
+						'name'      => $column_name,
+						'list_key'  => $list_key,
+						'post_type' => $list_key,
+						'taxonomy'  => str_replace( 'wp-taxonomy_', '', $list_key ),
+						'meta_type' => $meta_type,
+					];
+
+				$column = $this->column_factory->create( $data );
+
+				if ( null === $column ) {
+					continue;
+				}
+
+				$columns->add( $column );
 			}
-
-			$columns->add( $column );
 		}
 
 		return $columns;

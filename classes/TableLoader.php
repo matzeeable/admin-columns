@@ -69,6 +69,7 @@ class TableLoader implements Registrable {
 		$list_screen = null;
 
 		if ( $list_id ) {
+			// TODO: what to do when not stored? The DefaultColumns will not be stored when there is no list screen.
 			$list_screen = $this->storage->find( $list_id );
 		}
 

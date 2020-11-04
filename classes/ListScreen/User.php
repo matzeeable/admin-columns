@@ -16,8 +16,9 @@ class User extends ListScreen {
 
 	const NAME = 'wp-users';
 
-	public function __construct( array $settings = [], ListScreenId $id = null ) {
+	public function __construct( AC\ColumnCollection $columns, array $settings = [], ListScreenId $id = null ) {
 		parent::__construct(
+			$columns,
 			new MetaType( MetaType::USER ),
 			new Screen( 'users', 'users', self::NAME ),
 			new ListScreenLabel( __( 'User' ), __( 'Users' ) ),

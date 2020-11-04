@@ -19,6 +19,7 @@ use AC\ColumnFactory;
 use AC\ColumnTypesRepository;
 use AC\Controller\ListScreenRequest;
 use AC\DefaultColumnsRepository;
+use AC\Entity\ColumnType;
 use AC\ListScreen;
 use AC\ListScreenFactory;
 use AC\ListScreenRepository\Storage;
@@ -288,7 +289,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
             </div>
 
             <div id="add-new-column-template">
-				<?= $this->render_column_template( $list_screen ); ?>
+				<?= $this->render_column_template( $list_screen->get_key() ); ?>
             </div>
 
         </div>
@@ -310,6 +311,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 	 *
 	 * @return Column|false
 	 */
+	// TODO
 	private function get_column_template_by_group( $column_types, $group = false ) {
 		if ( ! $group ) {
 			return array_shift( $column_types );
@@ -336,20 +338,26 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 	}
 
 	/**
-	 * @param ListScreen $list_screen
+	 * @param string $list_key
 	 *
 	 * @return string
 	 */
-	private function render_column_template( ListScreen $list_screen ) {
+	private function render_column_template( $list_key ) {
+	    // TODO: ColumnTypeCollection
 		$column_types = $this->column_types_repository->find_all( [
-			ColumnTypesRepository::LIST_KEY => $list_screen->get_key()
+			ColumnTypesRepository::LIST_KEY => $list_key
 		] );
 
-		$column = $this->column_factory->create( $list_screen->get_key(), [
-			'type' => $column_types[0]->get_key(),
-			'name' => uniqid(),
+		/** @var ColumnType $column_type */
+		$column_type = $column_types[0];
+
+		$column = $this->column_factory->create( [
+			'type'     => $column_type->get_key(),
+			'name'     => uniqid(),
+			'list_key' => $list_key
 		] );
 
+		// TODO: remove
 //		$settings['name'] = $name;
 //		$settings['meta_type'] = new AC\MetaType( $request->get( 'meta_type' ) );
 //		$settings['post_type'] = $request->get( 'post_type' );
@@ -357,7 +365,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 
 		$view = new View( [
 			'column'   => $column,
-			'list_key' => $list_screen->get_key(),
+			'list_key' => $list_key,
 		] );
 
 		// TODO

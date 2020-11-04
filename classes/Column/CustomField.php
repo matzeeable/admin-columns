@@ -17,8 +17,8 @@ class CustomField extends Column\Meta {
 
 	const TYPE = 'column-meta';
 
-	public function __construct( $name, MetaType $meta_type, array $data = [], $post_type = null ) {
-		parent::__construct( self::TYPE, $name, $meta_type, $data, $post_type );
+	public function __construct( $name, MetaType $meta_type, array $data = [] ) {
+		parent::__construct( self::TYPE, $name, $meta_type, $data );
 
 		// TODO: remove
 		$this->set_label( __( 'Custom Field', 'codepress-admin-columns' ) )

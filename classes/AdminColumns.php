@@ -14,7 +14,6 @@ use AC\ListScreenRepository\Storage;
 use AC\Screen\QuickEdit;
 use AC\Table;
 use AC\ThirdParty;
-use AC\ColumnFactory;
 
 class AdminColumns extends Plugin {
 
@@ -54,16 +53,10 @@ class AdminColumns extends Plugin {
 
 	private function __construct() {
 		$this->column_factory = new ColumnFactory();
-		$this->column_factory->add_factory( new ColumnFactory\ColumnFactory() );
-
-		do_action( 'ac/columns', $this->list_screen_factory );
+		$this->column_factory->set_factories( [ new ColumnFactory\ColumnFactory() ] );
 
 		$this->list_screen_factory = new ListScreenFactory();
-		$this->list_screen_factory->add_factory(
-			new ListScreenFactory\ListScreenFactory( $this->column_factory )
-		);
-
-		do_action( 'ac/list_screen', $this->list_screen_factory );
+		$this->list_screen_factory->set_factories( [ new ListScreenFactory\ListScreenFactory( $this->column_factory ) ] );
 
 		$this->storage = new Storage();
 		$this->storage->set_repositories( [
@@ -93,6 +86,8 @@ class AdminColumns extends Plugin {
 		$this->admin = $admin_factory->create();
 
 		$services = [
+			$this->column_factory,
+			$this->list_screen_factory,
 			$this->admin,
 			new Ajax\NumberFormat( new Request() ),
 			$hooks,
@@ -105,7 +100,7 @@ class AdminColumns extends Plugin {
 			new Controller\DefaultColumns( new Request(), new DefaultColumnsRepository(), $this->list_screen_factory ),
 			new QuickEdit( $this->storage, new Table\Preference() ),
 			new Capabilities\Manage(),
-			new Controller\AjaxColumnRequest( $this->storage, $column_factory, $column_types_repository, new Request() ),
+			new Controller\AjaxColumnRequest( $this->storage, $this->column_factory, new Request() ),
 			new Controller\AjaxRequestCustomFieldKeys(),
 			new Controller\AjaxColumnValue( $this->storage ),
 			new Controller\AjaxScreenOptions( new Preference\ScreenOptions() ),

@@ -2,6 +2,7 @@
 
 namespace AC\ListScreen;
 
+use AC\ColumnCollection;
 use AC\ListScreenPost;
 use AC\ListTableFactory;
 use AC\Type\ListScreenId;
@@ -11,8 +12,8 @@ use WP_Posts_List_Table;
 
 class Post extends ListScreenPost {
 
-	public function __construct( $post_type, array $settings = [], ListScreenId $id = null ) {
-		parent::__construct( $post_type, new Screen( 'edit', 'edit-' . $post_type, $post_type ), null, $settings, $id );
+	public function __construct( $post_type, ColumnCollection $columns, array $settings = [], ListScreenId $id = null ) {
+		parent::__construct( $post_type, new Screen( 'edit', 'edit-' . $post_type, $post_type ), $columns, null, $settings, $id );
 	}
 
 	/**

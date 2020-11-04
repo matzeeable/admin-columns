@@ -54,11 +54,10 @@ class Column {
 	 */
 	protected $options = [];
 
-	public function __construct( $type, $name, array $data = [], $post_type = null ) {
+	public function __construct( $type, $name, array $data = [] ) {
 		$this->type = $type;
 		$this->name = $name;
 		$this->options = $data;
-		$this->post_type = $post_type;
 	}
 
 	/**
@@ -153,25 +152,25 @@ class Column {
 	/**
 	 * @return bool
 	 */
-	public function has_post_type() {
-		return null !== $this->post_type;
-	}
+//	public function has_post_type() {
+//		return null !== $this->post_type;
+//	}
 
 	/**
 	 * @return string
 	 */
-	public function get_post_type() {
-		return $this->post_type;
-	}
+	// TODO: deprecate
+//	public function get_post_type() {
+//		return $this->post_type;
+//	}
 
 	/**
 	 * @return string Taxonomy
 	 */
-	public function get_taxonomy() {
-		return null;
-		// TODO
-//		return method_exists( $this->list_screen, 'get_taxonomy' ) ? $this->list_screen->get_taxonomy() : false;
-	}
+	// TODO: deprecate
+//	public function get_taxonomy() {
+//		return null;
+//	}
 
 	/**
 	 * Return true when a default column has been replaced by a custom column.

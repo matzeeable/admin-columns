@@ -27,8 +27,6 @@ abstract class ListScreenLegacy {
 	 */
 	abstract public function register();
 
-	abstract public function add_column( Column $column );
-
 	public function get_preferences() {
 		_deprecated_function( __METHOD__, 'NEWVERSION', 'AC/ListScreen::get_settings()' );
 

@@ -9,9 +9,17 @@ class PageTemplate extends Column implements MetaKey {
 
 	const TYPE = 'column-page_template';
 
+	/**
+	 * @var string
+	 */
+	private $post_type;
+
 	public function __construct( $name, $post_type, array $data = [] ) {
 		parent::__construct( self::TYPE, $name, $data );
 
+		$this->post_type = $post_type;
+
+		// TODO: remove
 		$this->set_label( __( 'Page Template', 'codepress-admin-columns' ) );
 	}
 
@@ -33,17 +41,11 @@ class PageTemplate extends Column implements MetaKey {
 	 * @return array
 	 */
 	public function get_page_templates() {
-		global $wp_version;
-
 		if ( ! function_exists( 'get_page_templates' ) ) {
 			return [];
 		}
 
-		if ( version_compare( $wp_version, '4.7', '>=' ) ) {
-			return get_page_templates( null, $this->get_post_type() );
-		}
-
-		return get_page_templates();
+		return get_page_templates( null, $this->post_type );
 	}
 
 }

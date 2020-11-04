@@ -29,6 +29,8 @@ class ListScreenType {
 	 */
 	private $network;
 
+	// TODO: add meta type?
+
 	/**
 	 * @param string $key
 	 * @param string $label

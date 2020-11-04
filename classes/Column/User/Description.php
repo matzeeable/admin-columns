@@ -3,18 +3,18 @@
 namespace AC\Column\User;
 
 use AC\Column;
+use AC\MetaType;
 use AC\Settings;
 
-/**
- * @since 2.0
- */
 class Description extends Column\Meta {
 
-	public function __construct() {
-		$this->set_type( 'column-user_description' );
-		$this->set_label( __( 'Description', 'codepress-admin-columns' ) );
+	const TYPE = 'column-user_description';
+
+	public function __construct( $name, array $data = [] ) {
+		parent::__construct( self::TYPE, $name, new MetaType( MetaType::USER ), $data );
 	}
 
+	// TODO: remove?
 	public function get_meta_key() {
 		return 'description';
 	}

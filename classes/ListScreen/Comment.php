@@ -16,8 +16,9 @@ class Comment extends ListScreen {
 
 	const NAME = 'wp-comments';
 
-	public function __construct( array $settings = [], ListScreenId $id = null ) {
+	public function __construct( AC\ColumnCollection $columns, array $settings = [], ListScreenId $id = null ) {
 		parent::__construct(
+			$columns,
 			new MetaType( MetaType::COMMENT ),
 			new Screen( 'edit-comments', 'edit-comments', self::NAME ),
 			new ListScreenLabel( __( 'Comment' ), __( 'Comments' ) ),

@@ -45,6 +45,8 @@ class DefaultColumnsRepository {
 	 * @return void
 	 */
 	public function update( $list_key, array $columns ) {
+		unset( $columns['cb'] );
+
 		update_option( $this->get_option_name( $list_key ), $columns, false );
 	}
 

@@ -6,7 +6,7 @@ use AC;
 
 class Refresh extends AC\Controller\ColumnRequest {
 
-	protected function get_column( AC\Request $request, AC\ListScreen $list_screen ) {
+	protected function get_column( AC\Request $request ) {
 		parse_str( $request->get( 'data' ), $formdata );
 		$options = $formdata['columns'];
 		$name = filter_input( INPUT_POST, 'column_name' );
@@ -21,8 +21,9 @@ class Refresh extends AC\Controller\ColumnRequest {
 		$settings['meta_type'] = new AC\MetaType( $request->get( 'meta_type' ) );
 		$settings['post_type'] = $request->get( 'post_type' );
 		$settings['taxonomy'] = $request->get( 'taxonomy' );
+		$settings['list_key'] = $request->get( 'list_screen' );
 
-		return $this->column_factory->create( $request->get( 'list_screen' ), $settings );
+		return $this->column_factory->create( $settings );
 	}
 
 }

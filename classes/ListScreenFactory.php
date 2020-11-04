@@ -4,16 +4,17 @@ namespace AC;
 
 use AC\Type\ListScreenData;
 
-class ListScreenFactory implements ListScreenFactoryInterface {
+class ListScreenFactory implements ListScreenFactoryInterface, Registrable {
 
 	/**
 	 * @var ListScreenFactoryInterface[]
 	 */
 	private $factories;
 
-	/**
-	 * @param ListScreenFactoryInterface $factory
-	 */
+	public function set_factories( array $factories ) {
+		array_map( [ $this, 'add_factory' ], $factories );
+	}
+
 	public function add_factory( ListScreenFactoryInterface $factory ) {
 		$this->factories[] = $factory;
 	}
@@ -30,6 +31,10 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 		}
 
 		return null;
+	}
+
+	public function register() {
+		do_action( 'ac/list_screen_factory', $this );
 	}
 
 }

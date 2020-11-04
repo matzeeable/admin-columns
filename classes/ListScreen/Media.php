@@ -13,10 +13,11 @@ class Media extends AC\ListScreenPost {
 
 	const NAME = 'wp-media';
 
-	public function __construct( array $settings = [], ListScreenId $id = null ) {
+	public function __construct( AC\ColumnCollection $columns, array $settings = [], ListScreenId $id = null ) {
 		parent::__construct(
 			'attachment',
 			new Screen( 'upload', 'upload', self::NAME ),
+			$columns,
 			new ListScreenLabel( __( 'Media' ), __( 'Media' ) ),
 			$settings,
 			$id
