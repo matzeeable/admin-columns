@@ -137,9 +137,10 @@ class Hooks implements Registrable {
 				continue;
 			}
 
-			foreach ( $this->column_types_repository->find( $list_screen ) as $column ) {
-				$columns[ $column->get_type() ] = $column->get_type();
-			}
+			// TODO
+//			foreach ( $this->column_types_repository->find( $list_screen ) as $column ) {
+//				$columns[ $column->get_type() ] = $column->get_type();
+//			}
 		}
 
 		return $columns;

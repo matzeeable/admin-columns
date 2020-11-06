@@ -10,6 +10,8 @@ use AC\View;
 class CustomFieldType extends Settings\Column
 	implements Settings\FormatValue {
 
+	const NAME = 'field_type';
+
 	const TYPE_ARRAY = 'array';
 	const TYPE_BOOLEAN = 'checkmark';
 	const TYPE_COLOR = 'color';
@@ -30,7 +32,7 @@ class CustomFieldType extends Settings\Column
 	private $field_type;
 
 	protected function define_options() {
-		return [ 'field_type' ];
+		return [ self::NAME ];
 	}
 
 	public function get_dependent_settings() {
@@ -39,25 +41,25 @@ class CustomFieldType extends Settings\Column
 		switch ( $this->get_field_type() ) {
 
 			case self::TYPE_DATE :
-				$settings[] = new Date( $this->column );
+				$settings[] = new Date( $this->column_name );
 
 				break;
 			case self::TYPE_IMAGE  :
 			case self::TYPE_MEDIA :
-				$settings[] = new Image( $this->column );
-				$settings[] = new MediaLink( $this->column );
+				$settings[] = new Image( $this->column_name );
+				$settings[] = new MediaLink( $this->column_name );
 
 				break;
 			case self::TYPE_TEXT :
-				$settings[] = new StringLimit( $this->column );
+				$settings[] = new StringLimit( $this->column_name );
 
 				break;
 			case self::TYPE_URL :
-				$settings[] = new LinkLabel( $this->column );
+				$settings[] = new LinkLabel( $this->column_name );
 
 				break;
 			case self::TYPE_NUMERIC :
-				$settings[] = new NumberFormat( $this->column );
+				$settings[] = new NumberFormat( $this->column_name );
 				break;
 		}
 
@@ -278,8 +280,8 @@ class CustomFieldType extends Settings\Column
 				break;
 			case self::TYPE_COUNT :
 
-				if ( $this->column instanceof AC\Column\Meta ) {
-					$value = $this->column->get_meta_value( $original_value, $this->column->get_meta_key(), false );
+				if ( $this->column_name instanceof AC\Column\Meta ) {
+					$value = $this->column_name->get_meta_value( $original_value, $this->column_name->get_meta_key(), false );
 
 					if ( $value ) {
 						if ( 1 === count( $value ) && is_array( $value[0] ) ) {

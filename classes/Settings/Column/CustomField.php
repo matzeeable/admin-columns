@@ -21,8 +21,8 @@ class CustomField extends Settings\Column {
 	 */
 	private $meta_type;
 
-	public function __construct( AC\Column $column, MetaType $meta_type ) {
-		parent::__construct( $column );
+	public function __construct( $column_name, MetaType $meta_type ) {
+		parent::__construct( $column_name );
 
 		$this->meta_type = $meta_type;
 	}
@@ -84,7 +84,7 @@ class CustomField extends Settings\Column {
 	}
 
 	public function get_dependent_settings() {
-		return [ new Settings\Column\CustomFieldType( $this->column ) ];
+		return [ new Settings\Column\CustomFieldType( $this->column_name ) ];
 	}
 
 	/**

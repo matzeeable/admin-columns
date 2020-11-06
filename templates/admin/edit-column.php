@@ -86,7 +86,7 @@ $is_original = false;
 
 			<?php
 
-			$type = new \AC\Settings\Column\Type( $column, $this->list_key );
+			$type = new \AC\Settings\Column\Type( $column->get_name(), $column->get_type(), $this->list_key );
 			echo $type->render() . "\n";;
 
 			?>

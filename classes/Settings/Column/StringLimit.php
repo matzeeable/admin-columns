@@ -46,11 +46,11 @@ class StringLimit extends Settings\Column {
 		switch ( $this->get_string_limit() ) {
 
 			case 'character_limit' :
-				$setting[] = new Settings\Column\CharacterLimit( $this->column );
+				$setting[] = new Settings\Column\CharacterLimit( $this->column_name );
 
 				break;
 			case 'word_limit' :
-				$setting[] = new Settings\Column\WordLimit( $this->column );
+				$setting[] = new Settings\Column\WordLimit( $this->column_name );
 
 				break;
 		}

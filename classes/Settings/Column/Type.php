@@ -26,9 +26,15 @@ class Type extends Column {
 	 */
 	private $column_types_repository;
 
-	public function __construct( AC\Column $column, $list_key ) {
-		parent::__construct( $column );
+	/**
+	 * @var string
+	 */
+	private $column_type;
 
+	public function __construct( $column_name, $column_type, $list_key ) {
+		parent::__construct( $column_name );
+
+		$this->column_type = $column_type;
 		$this->list_key = $list_key;
 
 		// TODO
@@ -37,7 +43,7 @@ class Type extends Column {
 
 	protected function define_options() {
 		return [
-			'type' => $this->column->get_type(),
+			'type' => $this->column_type,
 		];
 	}
 
@@ -50,10 +56,10 @@ class Type extends Column {
 		$tooltip = __( 'Choose a column type.', 'codepress-admin-columns' );
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			$tooltip .= '<em>' . __( 'Type', 'codepress-admin-columns' ) . ': ' . $this->column->get_type() . '</em>';
+			$tooltip .= '<em>' . __( 'Type', 'codepress-admin-columns' ) . ': ' . $this->column_type . '</em>';
 
-			if ( $this->column->get_name() ) {
-				$tooltip .= '<em>' . __( 'Name', 'codepress-admin-columns' ) . ': ' . $this->column->get_name() . '</em>';
+			if ( $this->column_name ) {
+				$tooltip .= '<em>' . __( 'Name', 'codepress-admin-columns' ) . ': ' . $this->column_name . '</em>';
 			}
 		}
 

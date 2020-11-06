@@ -29,15 +29,15 @@ class CustomField extends Column\Meta {
 	}
 
 	public function register_settings() {
-		$this->add_setting( new Settings\Column\CustomField( $this, $this->meta_type ) )
-		     ->add_setting( new Settings\Column\BeforeAfter( $this ) );
+		$this->add_setting( new Settings\Column\CustomField( $this->name, $this->meta_type ) )
+		     ->add_setting( new Settings\Column\BeforeAfter( $this->name ) );
 
 		if ( ! ac_is_pro_active() ) {
-			$this->add_setting( new Settings\Column\Pro\Sorting( $this ) )
-			     ->add_setting( new Settings\Column\Pro\InlineEditing( $this ) )
-			     ->add_setting( new Settings\Column\Pro\BulkEditing( $this ) )
-			     ->add_setting( new Settings\Column\Pro\SmartFiltering( $this ) )
-			     ->add_setting( new Settings\Column\Pro\Export( $this ) );
+			$this->add_setting( new Settings\Column\Pro\Sorting( $this->name ) )
+			     ->add_setting( new Settings\Column\Pro\InlineEditing( $this->name ) )
+			     ->add_setting( new Settings\Column\Pro\BulkEditing( $this->name ) )
+			     ->add_setting( new Settings\Column\Pro\SmartFiltering( $this->name ) )
+			     ->add_setting( new Settings\Column\Pro\Export( $this->name ) );
 		}
 	}
 

@@ -8,8 +8,7 @@ use AC\Column\Post;
 use AC\Column\User;
 use AC\ColumnFactoryInterface;
 use AC\ListScreen;
-use LogicException;
-use RuntimeException;
+use InvalidArgumentException;
 
 class ColumnFactory implements ColumnFactoryInterface {
 
@@ -22,17 +21,17 @@ class ColumnFactory implements ColumnFactoryInterface {
 
 	public function create( array $data ) {
 
+		// TODO: validate $data. maybe turn into value object.
 		if ( ! isset( $data[ self::LIST_KEY ] ) ) {
-			throw new LogicException( sprintf( 'Missing %s argument.', self::LIST_KEY ) );
+			throw new InvalidArgumentException( sprintf( 'Missing %s argument.', self::LIST_KEY ) );
+		}
+
+		if ( ! isset( $data[ self::TYPE ] ) ) {
+			throw new InvalidArgumentException( sprintf( 'Missing %s argument.', self::TYPE ) );
 		}
 
 		if ( ! isset( $data[ self::NAME ] ) ) {
 			$data[ self::NAME ] = uniqid();
-		}
-
-		// TODO: validate $data. maybe turn into value object.
-		if ( ! isset( $data[ self::TYPE ] ) ) {
-			throw new RuntimeException( sprintf( 'Missing %s argument.', self::TYPE ) );
 		}
 
 		switch ( $data[ self::LIST_KEY ] ) {

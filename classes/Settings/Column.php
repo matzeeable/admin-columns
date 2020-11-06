@@ -21,9 +21,9 @@ abstract class Column {
 	protected $options = [];
 
 	/**
-	 * @var AC\Column
+	 * @var string
 	 */
-	protected $column;
+	protected $column_name;
 
 	/**
 	 * Options that are set by the user and should not be overwritten with defaults
@@ -31,13 +31,8 @@ abstract class Column {
 	 */
 	private $user_set = [];
 
-	/**
-	 * @param AC\Column $column
-	 */
-
-	// TODO: remove AC\Column dependency
-	public function __construct( AC\Column $column ) {
-		$this->column = $column;
+	public function __construct( $column_name ) {
+		$this->column_name = $column_name;
 
 		$this->set_options();
 		$this->set_name();
@@ -282,8 +277,8 @@ abstract class Column {
 				$element->set_type( $type );
 		}
 
-		$element->set_name( sprintf( 'columns[%s][%s]', $this->column->get_name(), $name ) );
-		$element->set_id( sprintf( 'ac-%s-%s', $this->column->get_name(), $name ) );
+		$element->set_name( sprintf( 'columns[%s][%s]', $this->column_name, $name ) );
+		$element->set_id( sprintf( 'ac-%s-%s', $this->column_name, $name ) );
 		$element->add_class( 'ac-setting-input_' . $name );
 
 		// try to set current value
@@ -373,10 +368,6 @@ abstract class Column {
 		}
 
 		return $rendered;
-	}
-
-	public function get_column() {
-		return $this->column;
 	}
 
 }

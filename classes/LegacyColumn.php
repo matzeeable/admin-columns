@@ -7,33 +7,28 @@ class LegacyColumn {
 	/**
 	 * @var string Unique Name
 	 */
-	private $name;
+	protected $name;
 
 	/**
 	 * @var string Unique type
 	 */
 	// TODO: maybe remove?
-	private $type;
+	protected $type;
 
 	/**
 	 * @var string Label which describes this column
 	 */
-	private $label;
+	protected $label;
 
 	/**
 	 * @var string Group name
 	 */
-	private $group;
+	protected $group;
 
 	/**
 	 * @var Settings\Column[]
 	 */
-	private $settings;
-
-	/**
-	 * @var Settings\FormatValue[]|Settings\FormatCollection[]
-	 */
-	private $formatters;
+	protected $settings;
 
 	/**
 	 * The options managed by the settings
@@ -116,18 +111,6 @@ class LegacyColumn {
 		return $this->get_settings()->get( $id );
 	}
 
-	public function get_formatters() {
-		if ( null === $this->formatters ) {
-			foreach ( $this->get_settings() as $setting ) {
-				if ( $setting instanceof Settings\FormatValue || $setting instanceof Settings\FormatCollection ) {
-					$this->formatters[] = $setting;
-				}
-			}
-		}
-
-		return $this->formatters;
-	}
-
 	/**
 	 * @return string
 	 * @since 3.2.5
@@ -150,8 +133,8 @@ class LegacyColumn {
 		if ( null === $this->settings ) {
 			$settings = [
 				// TODO
-				new Settings\Column\Label( $this ),
-				new Settings\Column\Width( $this ),
+				new Settings\Column\Label( $this->name, $this->label ),
+				new Settings\Column\Width( $this->name ),
 			];
 
 			foreach ( $settings as $setting ) {
@@ -308,7 +291,7 @@ class LegacyColumn {
 	public function is_original() {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
-		return $this->original;
+		return null;
 	}
 
 	/**

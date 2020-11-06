@@ -21,7 +21,7 @@ class AttachmentDisplay extends Settings\Column
 
 		switch ( $this->get_attachment_display() ) {
 			case 'thumbnail' :
-				$settings[] = new Settings\Column\Images( $this->column );
+				$settings[] = new Settings\Column\Images( $this->column_name );
 
 				break;
 		}

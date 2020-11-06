@@ -12,9 +12,20 @@ class Label extends Settings\Column {
 	 */
 	private $label;
 
+	/**
+	 * @var string
+	 */
+	private $column_label;
+
+	public function __construct( $column_name, $column_label ) {
+		parent::__construct( $column_name );
+
+		$this->column_label = $column_label;
+	}
+
 	protected function define_options() {
 		return [
-			'label'      => $this->column->get_label(),
+			'label'      => $this->column_label,
 			'label_type' => 'text',
 		];
 	}
@@ -23,7 +34,7 @@ class Label extends Settings\Column {
 
 		$setting = $this
 			->create_element( 'text' )
-			->set_attribute( 'placeholder', $this->column->get_label() );
+			->set_attribute( 'placeholder', $this->column_label );
 
 		$view = new View( [
 			'label'   => __( 'Label', 'codepress-admin-columns' ),
