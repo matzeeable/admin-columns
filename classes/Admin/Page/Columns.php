@@ -343,7 +343,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 	 * @return string
 	 */
 	private function render_column_template( $list_key ) {
-	    // TODO: ColumnTypeCollection
+		// TODO: ColumnTypeCollection
 		$column_types = $this->column_types_repository->find_all( [
 			ColumnTypesRepository::LIST_KEY => $list_key
 		] );
@@ -352,23 +352,16 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 		$column_type = $column_types[0];
 
 		$column = $this->column_factory->create( [
-			'type'     => $column_type->get_key(),
-			'name'     => uniqid(),
-			'list_key' => $list_key
+			ColumnFactory\ColumnFactory::TYPE     => $column_type->get_key(),
+			ColumnFactory\ColumnFactory::NAME     => uniqid(),
+			ColumnFactory\ColumnFactory::LIST_KEY => $list_key
 		] );
-
-		// TODO: remove
-//		$settings['name'] = $name;
-//		$settings['meta_type'] = new AC\MetaType( $request->get( 'meta_type' ) );
-//		$settings['post_type'] = $request->get( 'post_type' );
-//		$settings['taxonomy'] = $request->get( 'taxonomy' );
 
 		$view = new View( [
 			'column'   => $column,
 			'list_key' => $list_key,
 		] );
 
-		// TODO
 		return $view->set_template( 'admin/edit-column' )->render();
 	}
 

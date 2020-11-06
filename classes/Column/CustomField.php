@@ -18,11 +18,10 @@ class CustomField extends Column\Meta {
 	const TYPE = 'column-meta';
 
 	public function __construct( $name, MetaType $meta_type, array $data = [] ) {
-		parent::__construct( self::TYPE, $name, $meta_type, $data );
+		parent::__construct( self::TYPE, $name, __( 'Custom Field', 'codepress-admin-columns' ), $meta_type, $data );
 
-		// TODO: remove
-		$this->set_label( __( 'Custom Field', 'codepress-admin-columns' ) )
-		     ->set_group( 'custom_field' );
+		// TODO: group
+//		     ->set_group( 'custom_field' );
 	}
 
 	public function get_meta_key() {

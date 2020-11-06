@@ -30,7 +30,9 @@ class Type extends Column {
 		parent::__construct( $column );
 
 		$this->list_key = $list_key;
-		$this->column_types_repository = new ColumnTypesRepository();
+
+		// TODO
+		$this->column_types_repository = new ColumnTypesRepository( new AC\DefaultColumnsRepository() );
 	}
 
 	protected function define_options() {
@@ -94,7 +96,7 @@ class Type extends Column {
 		$columns = [];
 
 		// TODO: remove AC\Column::get_list_screen() dependency
-		$column_types = $this->column_types_repository->find_all( [ 'list_key' => $this->list_key ] );
+		$column_types = $this->column_types_repository->find_all( [ ColumnTypesRepository::LIST_KEY => $this->list_key ] );
 
 		foreach ( $column_types as $column ) {
 

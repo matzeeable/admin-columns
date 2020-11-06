@@ -52,9 +52,12 @@ abstract class ListScreenPost extends ListScreen {
 	/**
 	 * Register post specific columns
 	 */
+	// TODO: deprecated
 	protected function register_column_types() {
-		$this->register_column_type( new Column\CustomField );
-		$this->register_column_type( new Column\Actions );
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+//		$this->register_column_type( new Column\CustomField );
+//		$this->register_column_type( new Column\Actions );
 	}
 
 	/**

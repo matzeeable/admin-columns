@@ -34,6 +34,8 @@ abstract class Column {
 	/**
 	 * @param AC\Column $column
 	 */
+
+	// TODO: remove AC\Column dependency
 	public function __construct( AC\Column $column ) {
 		$this->column = $column;
 

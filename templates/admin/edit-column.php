@@ -9,12 +9,15 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 $column = $this->column;
+$list_screen = $this->column;
 
+$is_original = false;
+// TODO $is_original
 ?>
 
 <div class="ac-column ac-<?= esc_attr( $column->get_type() ); ?>"
      data-type="<?= esc_attr( $column->get_type() ); ?>"
-     data-original="<?= esc_attr( $column->is_original() ); ?>"
+     data-original="<?= esc_attr( $is_original ); ?>"
      data-column-name="<?= esc_attr( $column->get_name() ); ?>">
 
     <div class="ac-column-header">
@@ -53,7 +56,7 @@ $column = $this->column;
                         <small class="column-type"><?= sprintf( '%s: %s', __( 'Type', 'codepress-admin-columns' ), $column->get_type() ); ?></small>
                         <a class="edit-button" data-toggle="column"><?php _e( 'Edit', 'codepress-admin-columns' ); ?></a>
                         <a class="close-button" data-toggle="column"><?php _e( 'Close', 'codepress-admin-columns' ); ?></a>
-						<?php if ( ! $column->is_original() ) : ?>
+						<?php if ( ! $is_original ) : ?>
                             <a class="clone-button" href="#"><?php _e( 'Clone', 'codepress-admin-columns' ); ?></a>
 						<?php endif; ?>
                         <a class="remove-button"><?php _e( 'Remove', 'codepress-admin-columns' ); ?></a>
@@ -61,7 +64,14 @@ $column = $this->column;
                 </td>
                 <td class="column_type">
                     <div class="inner" data-toggle="column">
-						<?= ac_helper()->html->strip_attributes( $column->get_label(), [ 'style', 'class' ] ); ?>
+                        <?php
+
+                        // TODO
+                        $type = ( new \AC\ColumnTypesRepository( new \AC\DefaultColumnsRepository() ) )->find( $column->get_type(), $this->list_key );
+
+                        ?>
+
+						<?= ac_helper()->html->strip_attributes( $type ? $type->get_label() : 'TODO', [ 'style', 'class' ] ); ?>
                     </div>
                 </td>
                 <td class="column_edit" data-toggle="column">
@@ -95,7 +105,7 @@ $column = $this->column;
                     <td class="col-settings">
                         <p>
                             <a href="#" class="close-button" data-toggle="column"><?php _e( 'Close', 'codepress-admin-columns' ); ?></a>
-							<?php if ( ! $column->is_original() ) : ?>
+							<?php if ( ! $is_original ) : ?>
                                 <a class="clone-button" href="#"><?php _e( 'Clone', 'codepress-admin-columns' ); ?></a>
 							<?php endif; ?>
                             <a href="#" class="remove-button"><?php _e( 'Remove' ); ?></a>

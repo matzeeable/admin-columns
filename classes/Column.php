@@ -5,238 +5,15 @@ namespace AC;
 /**
  * @since 3.0
  */
-class Column {
-
-	/**
-	 * @var string Unique Name
-	 */
-	private $name;
-
-	/**
-	 * @var string Unique type
-	 */
-	// TODO: maybe remove?
-	private $type;
-
-	/**
-	 * @var string Label which describes this column
-	 */
-	private $label;
-
-	/**
-	 * @var string Group name
-	 */
-	private $group;
-
-	/**
-	 * @var bool An original column will use the already defined column value and label.
-	 */
-	private $original = false;
-
-	/**
-	 * @var Settings\Column[]
-	 */
-	private $settings;
+class Column extends LegacyColumn implements Column\Renderable {
 
 	/**
 	 * @var Settings\FormatValue[]|Settings\FormatCollection[]
 	 */
 	private $formatters;
 
-	/**
-	 * @var ListScreen
-	 */
-	protected $list_screen;
-
-	/**
-	 * The options managed by the settings
-	 * @var array
-	 */
-	protected $options = [];
-
-	public function __construct( $type, $name, array $data = [] ) {
-		$this->type = $type;
-		$this->name = $name;
-		$this->options = $data;
-	}
-
-	/**
-	 * Get the unique name of the column
-	 * @return string Column name
-	 * @since 2.3.4
-	 */
-	public function get_name() {
-		return $this->name;
-	}
-
-	/**
-	 * @param string $name
-	 *
-	 * @return $this
-	 */
-	public function set_name( $name ) {
-		$this->name = (string) $name;
-
-		return $this;
-	}
-
-	/**
-	 * Get the type of the column.
-	 * @return string Type
-	 * @since 2.3.4
-	 */
-	public function get_type() {
-		return $this->type;
-	}
-
-	/**
-	 * @param string $type
-	 *
-	 * @return $this
-	 */
-	// TODO: deprecated
-	public function set_type( $type ) {
-		$this->type = (string) $type;
-
-		return $this;
-	}
-
-	/**
-	 * Get the type of the column.
-	 * @return string Label of column's type
-	 * @since 2.4.9
-	 */
-	public function get_label() {
-		return $this->label;
-	}
-
-	/**
-	 * @param string $label
-	 *
-	 * @return $this
-	 */
-	// TODO: deprecated
-	public function set_label( $label ) {
-		$this->label = $label;
-
-		return $this;
-	}
-
-	/**
-	 * @return string Group
-	 * @since 3.0
-	 */
-	public function get_group() {
-		if ( null === $this->group ) {
-			$this->set_group( 'custom' );
-
-			if ( $this->is_original() ) {
-				$this->set_group( 'default' );
-			}
-		}
-
-		return $this->group;
-	}
-
-	/**
-	 * @param string $group Group label
-	 *
-	 * @return $this
-	 */
-	public function set_group( $group ) {
-		$this->group = $group;
-
-		return $this;
-	}
-
-	/**
-	 * @return bool
-	 */
-//	public function has_post_type() {
-//		return null !== $this->post_type;
-//	}
-
-	/**
-	 * @return string
-	 */
-	// TODO: deprecate
-//	public function get_post_type() {
-//		return $this->post_type;
-//	}
-
-	/**
-	 * @return string Taxonomy
-	 */
-	// TODO: deprecate
-//	public function get_taxonomy() {
-//		return null;
-//	}
-
-	/**
-	 * Return true when a default column has been replaced by a custom column.
-	 * An original column will then use the original label and value.
-	 * @since 3.0
-	 */
-	// TODO: move to Column\Default
-	public function is_original() {
-		return $this->original;
-	}
-
-	/**
-	 * @param bool $boolean
-	 *
-	 * @return $this
-	 */
-	// TODO: move to Column\Default
-	public function set_original( $boolean ) {
-		$this->original = (bool) $boolean;
-
-		return $this;
-	}
-
-	/**
-	 * Overwrite this function in child class.
-	 * Determine whether this column type should be available
-	 * @return bool Whether the column type should be available
-	 * @since 2.2
-	 */
-	public function is_valid() {
-		return true;
-	}
-
-	/**
-	 * @param Settings\Column $setting
-	 *
-	 * @return $this
-	 */
-	public function add_setting( Settings\Column $setting ) {
-		$setting->set_values( $this->options );
-
-		$this->settings[ $setting->get_name() ] = $setting;
-
-		foreach ( (array) $setting->get_dependent_settings() as $dependent_setting ) {
-			$this->add_setting( $dependent_setting );
-		}
-
-		return $this;
-	}
-
-	/**
-	 * @param string $id Settings ID
-	 */
-	public function remove_setting( $id ) {
-		if ( isset( $this->settings[ $id ] ) ) {
-			unset( $this->settings[ $id ] );
-		}
-	}
-
-	/**
-	 * @param string $id
-	 *
-	 * @return Settings\Column|Settings\Column\User|Settings\Column\Separator|Settings\Column\Label
-	 */
-	public function get_setting( $id ) {
-		return $this->get_settings()->get( $id );
+	public function render( $id ) {
+		return $this->get_value( $id );
 	}
 
 	public function get_formatters() {
@@ -252,90 +29,6 @@ class Column {
 	}
 
 	/**
-	 * @return string
-	 * @since 3.2.5
-	 */
-	public function get_custom_label() {
-
-		/**
-		 * @param string $label
-		 * @param Column $column
-		 *
-		 * @since 3.0
-		 */
-		return apply_filters( 'ac/headings/label', $this->get_setting( 'label' )->get_value(), $this );
-	}
-
-	/**
-	 * @return Collection
-	 */
-	public function get_settings() {
-		if ( null === $this->settings ) {
-			$settings = [
-				new Settings\Column\Label( $this ),
-				new Settings\Column\Width( $this ),
-			];
-
-			foreach ( $settings as $setting ) {
-				$this->add_setting( $setting );
-			}
-
-			$this->register_settings();
-
-			do_action( 'ac/column/settings', $this );
-		}
-
-		return new Collection( $this->settings );
-	}
-
-	/**
-	 * Register settings
-	 */
-	protected function register_settings() {
-		// Overwrite in child class
-	}
-
-	/**
-	 * @param string $key
-	 *
-	 * @return null|string|bool
-	 */
-	public function get_option( $key ) {
-		$options = $this->get_options();
-
-		return isset( $options[ $key ] ) ? $options[ $key ] : null;
-	}
-
-	/**
-	 * @param array $options
-	 *
-	 * @return $this
-	 */
-	public function set_options( array $options ) {
-		$this->options = $options;
-
-		return $this;
-	}
-
-	/**
-	 * Get the current options
-	 * @return array
-	 */
-	public function get_options() {
-		return $this->options;
-	}
-
-	/**
-	 * Enqueue CSS + JavaScript on the admin listings screen!
-	 * This action is called in the admin_head action on the listings screen where your column values are displayed.
-	 * Use this action to add CSS + JavaScript
-	 * @since 2.3.4
-	 */
-	public function scripts() {
-		// Overwrite in child class
-	}
-
-	/**
 	 * Apply available formatters (recursive) on the value
 	 *
 	 * @param mixed $value
@@ -344,6 +37,8 @@ class Column {
 	 *
 	 * @return mixed
 	 */
+
+	// TODO: DI Renderable with formatting
 	public function get_formatted_value( $value, $original_value = null, $current = 0 ) {
 		$formatters = $this->get_formatters();
 		$available = count( (array) $formatters );
@@ -379,19 +74,6 @@ class Column {
 	}
 
 	/**
-	 * Get the raw, underlying value for the column
-	 * Not suitable for direct display, use get_value() for that
-	 *
-	 * @param int $id
-	 *
-	 * @return string|array
-	 * @since 2.0.3
-	 */
-	public function get_raw_value( $id ) {
-		return null;
-	}
-
-	/**
 	 * Display value
 	 *
 	 * @param int $id
@@ -403,10 +85,6 @@ class Column {
 
 		if ( $value instanceof Collection ) {
 			$value = $value->filter()->implode( $this->get_separator() );
-		}
-
-		if ( ! $this->is_original() && ac_helper()->string->is_empty( $value ) ) {
-			$value = $this->get_empty_char();
 		}
 
 		return (string) $value;

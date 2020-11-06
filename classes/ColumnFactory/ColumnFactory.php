@@ -14,8 +14,9 @@ use RuntimeException;
 class ColumnFactory implements ColumnFactoryInterface {
 
 	const LIST_KEY = 'list_key';
-	const COLUMN_NAME = 'name';
-	const COLUMN_TYPE = 'type';
+	const NAME = 'name';
+	const TYPE = 'type';
+	const LABEL = 'label';
 	const POST_TYPE = 'post_type';
 	const META_TYPE = 'meta_type';
 
@@ -25,13 +26,13 @@ class ColumnFactory implements ColumnFactoryInterface {
 			throw new LogicException( sprintf( 'Missing %s argument.', self::LIST_KEY ) );
 		}
 
-		if ( ! isset( $data[ self::COLUMN_NAME ] ) ) {
-			$data[ self::COLUMN_NAME ] = uniqid();
+		if ( ! isset( $data[ self::NAME ] ) ) {
+			$data[ self::NAME ] = uniqid();
 		}
 
 		// TODO: validate $data. maybe turn into value object.
-		if ( ! isset( $data[ self::COLUMN_TYPE ] ) ) {
-			throw new RuntimeException( sprintf( 'Missing %s argument.', self::COLUMN_TYPE ) );
+		if ( ! isset( $data[ self::TYPE ] ) ) {
+			throw new RuntimeException( sprintf( 'Missing %s argument.', self::TYPE ) );
 		}
 
 		switch ( $data[ self::LIST_KEY ] ) {
@@ -51,15 +52,15 @@ class ColumnFactory implements ColumnFactoryInterface {
 	 * @return Column|null
 	 */
 	protected function create_post_type_column( array $data ) {
-		switch ( $data[ self::COLUMN_TYPE ] ) {
+		switch ( $data[ self::TYPE ] ) {
 			case Post\Attachment::TYPE :
-				return new Post\Attachment( $data[ self::COLUMN_NAME ], $data );
+				return new Post\Attachment( $data[ self::NAME ], $data );
 			case Post\Formats::TYPE :
-				return new Post\Formats( $data[ self::COLUMN_NAME ], $data );
+				return new Post\Formats( $data[ self::NAME ], $data );
 			case Post\PageTemplate::TYPE :
-				return new Post\PageTemplate( $data[ self::COLUMN_NAME ], $data[ self::POST_TYPE ], $data );
+				return new Post\PageTemplate( $data[ self::NAME ], $data[ self::POST_TYPE ], $data );
 			case CustomField::TYPE :
-				return new CustomField( $data[ self::COLUMN_NAME ], $data[ self::META_TYPE ], $data );
+				return new CustomField( $data[ self::NAME ], $data[ self::META_TYPE ], $data );
 			default :
 				return $this->create_default( $data );
 		}
@@ -71,22 +72,18 @@ class ColumnFactory implements ColumnFactoryInterface {
 	 * @return Column|null
 	 */
 	protected function create_user_column( array $data ) {
-		switch ( $data[ self::COLUMN_TYPE ] ) {
+		switch ( $data[ self::TYPE ] ) {
 			case User\Description::TYPE :
-				return new User\Description( $data[ self::COLUMN_NAME ], $data );
+				return new User\Description( $data[ self::NAME ], $data );
 			case CustomField::TYPE :
-				return new CustomField( $data[ self::COLUMN_NAME ], $data[ self::META_TYPE ], $data );
+				return new CustomField( $data[ self::NAME ], $data[ self::META_TYPE ], $data );
 			default :
 				return $this->create_default( $data );
 		}
 	}
 
 	protected function create_default( array $data ) {
-
-		// TODO: move setters to constructor. Create Column\Default column.
-		return ( new Column( $data[ self::COLUMN_TYPE ], $data[ self::COLUMN_TYPE ] ) )
-			->set_original( true )
-			->set_label( $data['label'] );
+		return ( new Column( $data[ self::TYPE ], $data[ self::TYPE ], $data[ self::LABEL ], $data ) );
 	}
 
 }

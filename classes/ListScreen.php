@@ -6,7 +6,6 @@ use AC\Type\ListScreenId;
 use AC\Type\ListScreenLabel;
 use AC\Type\Screen;
 use DateTime;
-use ReflectionClass;
 use ReflectionException;
 
 /**
@@ -360,14 +359,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 	public function get_display_value_by_column_name( $column_name, $id, $default = null ) {
 		$column = $this->columns->get( $column_name );
 
-		if ( ! $column ) {
-			return $default;
-		}
-
-		// TODO: check Renderable interface.
-		$value = $column->get_value( $id );
-
-		if ( $column->is_original() && ac_helper()->string->is_empty( $value ) ) {
+		if ( ! $column || ! $column instanceof Column\Renderable ) {
 			return $default;
 		}
 
@@ -380,9 +372,7 @@ abstract class ListScreen extends ListScreenLegacy implements Registrable {
 		 *
 		 * @since 3.0
 		 */
-		$value = apply_filters( 'ac/column/value', $value, $id, $column );
-
-		return $value;
+		return apply_filters( 'ac/column/value', $column->render( $id ), $id, $column );
 	}
 
 }

@@ -10,10 +10,7 @@ class Attachment extends Column {
 	const TYPE = 'column-attachment';
 
 	public function __construct( $name, array $data = [] ) {
-		parent::__construct( self::TYPE, $name, $data );
-
-		// TODO: remove
-		$this->set_label( __( 'Attachments', 'codepress-admin-columns' ) );
+		parent::__construct( self::TYPE, $name, __( 'Attachments', 'codepress-admin-columns' ), $data );
 	}
 
 	public function get_raw_value( $post_id ) {

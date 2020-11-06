@@ -46,18 +46,20 @@ class Comment extends ListScreen {
 		return '#the-comment-list';
 	}
 
+	public function get_table_url() {
+		return admin_url( 'comments.php' );
+	}
+
 	/**
 	 * Register column types
 	 * @throws ReflectionException
 	 */
 	protected function register_column_types() {
-		$this->register_column_type( new AC\Column\CustomField );
-		$this->register_column_type( new AC\Column\Actions );
-		$this->register_column_types_from_dir( 'AC\Column\Comment' );
-	}
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
-	public function get_table_url() {
-		return admin_url( 'comments.php' );
+//		$this->register_column_type( new AC\Column\CustomField );
+//		$this->register_column_type( new AC\Column\Actions );
+//		$this->register_column_types_from_dir( 'AC\Column\Comment' );
 	}
 
 	/**

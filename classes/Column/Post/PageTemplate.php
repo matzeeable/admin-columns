@@ -15,12 +15,9 @@ class PageTemplate extends Column implements MetaKey {
 	private $post_type;
 
 	public function __construct( $name, $post_type, array $data = [] ) {
-		parent::__construct( self::TYPE, $name, $data );
+		parent::__construct( self::TYPE, $name, __( 'Page Template', 'codepress-admin-columns' ), $data );
 
 		$this->post_type = $post_type;
-
-		// TODO: remove
-		$this->set_label( __( 'Page Template', 'codepress-admin-columns' ) );
 	}
 
 	public function get_meta_key() {

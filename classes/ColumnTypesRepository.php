@@ -14,6 +14,17 @@ class ColumnTypesRepository {
 	const GROUP = 'group';
 
 	/**
+	 * @var DefaultColumnsRepository
+	 */
+	private $default_columns_repository;
+
+	public function __construct( DefaultColumnsRepository $default_columns_repository ) {
+		$this->default_columns_repository = $default_columns_repository;
+	}
+
+
+
+	/**
 	 * @param array $args
 	 *
 	 * @return ColumnType[]
@@ -53,6 +64,10 @@ class ColumnTypesRepository {
 		}
 		if ( get_page_templates( null, $list_key ) ) {
 			$columns[] = new ColumnType( Post\PageTemplate::TYPE, __( 'Page Template', 'codepress-admin-columns' ), $list_key );
+		}
+
+		foreach ( $this->default_columns_repository->find_all( $list_key ) as $name => $label ) {
+			$columns[] = new ColumnType( $name, $label, $list_key, 'default' );
 		}
 
 		return $columns;

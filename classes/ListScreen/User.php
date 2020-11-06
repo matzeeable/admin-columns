@@ -57,16 +57,6 @@ class User extends ListScreen {
 	}
 
 	/**
-	 * @throws ReflectionException
-	 */
-	protected function register_column_types() {
-		$this->register_column_type( new AC\Column\CustomField );
-		$this->register_column_type( new AC\Column\Actions );
-
-		$this->register_column_types_from_dir( 'AC\Column\User' );
-	}
-
-	/**
 	 * @param int $id
 	 *
 	 * @return string HTML
@@ -87,6 +77,19 @@ class User extends ListScreen {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
 		return ( new AC\ListTableFactory() )->create_user_table( $this->screen->get_id() );
+	}
+
+	/**
+	 * @throws ReflectionException
+	 */
+	protected function register_column_types() {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		// TODO
+//		$this->register_column_type( new AC\Column\CustomField );
+//		$this->register_column_type( new AC\Column\Actions );
+//
+//		$this->register_column_types_from_dir( 'AC\Column\User' );
 	}
 
 }

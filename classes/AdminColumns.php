@@ -71,7 +71,7 @@ class AdminColumns extends Plugin {
 			$this->get_dir()
 		);
 
-		$column_types_repository = new ColumnTypesRepository();
+		$column_types_repository = new ColumnTypesRepository( new DefaultColumnsRepository() );
 
 		$hooks = new Deprecated\Hooks( new ListScreenTypeRepository(), $this->list_screen_factory, $column_types_repository );
 
