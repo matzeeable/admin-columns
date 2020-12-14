@@ -8,12 +8,16 @@ use AC\View;
 class ExifData extends Settings\Column
 	implements Settings\FormatValue {
 
-	const NAME = 'exif_data';
+	const NAME = 'exif_datatype';
 
 	/**
 	 * @var string
 	 */
 	private $exif_datatype;
+
+	public function __construct() {
+		parent::__construct( self::NAME );
+	}
 
 	protected function set_name() {
 		$this->name = self::NAME;
@@ -23,14 +27,17 @@ class ExifData extends Settings\Column
 		return [ 'exif_datatype' => 'aperture' ];
 	}
 
-	public function create_view() {
-		$setting = $this->create_element( 'select' )
+	public function create_view( $column_name ) {
+		$setting = $this->create_element( 'select', $column_name )
 		                ->set_attribute( 'data-label', 'update' )
 		                ->set_attribute( 'data-refresh', 'column' )
 		                ->set_options( $this->get_exif_types() );
 
 		return new View( [
-			'label'   => $this->column->get_label(),
+
+			// TODO
+			//'label'   => $this->column->get_label(),
+			'label'   => null,
 			'setting' => $setting,
 		] );
 	}
@@ -39,23 +46,23 @@ class ExifData extends Settings\Column
 
 		switch ( $this->get_exif_datatype() ) {
 			case 'aperture' :
-				$settings = [ new Settings\Column\BeforeAfter\Aperture( $this->column ) ];
+				$settings = [ new Settings\Column\BeforeAfter\Aperture() ];
 
 				break;
 			case 'focal_length' :
-				$settings = [ new Settings\Column\BeforeAfter\FocalLength( $this->column ) ];
+				$settings = [ new Settings\Column\BeforeAfter\FocalLength() ];
 
 				break;
 			case 'iso' :
-				$settings = [ new Settings\Column\BeforeAfter\ISO( $this->column ) ];
+				$settings = [ new Settings\Column\BeforeAfter\ISO() ];
 
 				break;
 			case 'shutter_speed' :
-				$settings = [ new Settings\Column\BeforeAfter\ShutterSpeed( $this->column ) ];
+				$settings = [ new Settings\Column\BeforeAfter\ShutterSpeed() ];
 
 				break;
 			default :
-				$settings = [ new Settings\Column\BeforeAfter( $this->column ) ];
+				$settings = [ new Settings\Column\BeforeAfter() ];
 		}
 
 		return $settings;

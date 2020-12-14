@@ -12,6 +12,10 @@ abstract class DateTimeFormat extends Settings\Column
 
 	private $date_format;
 
+	public function __construct() {
+		parent::__construct( self::NAME );
+	}
+
 	protected function set_name() {
 		$this->name = self::NAME;
 	}
@@ -49,9 +53,9 @@ abstract class DateTimeFormat extends Settings\Column
 		return $this->get_html_label( $label, $date_format, $description );
 	}
 
-	public function create_view() {
+	public function create_view( $column_name ) {
 		$setting = $this
-			->create_element( 'text' )
+			->create_element( 'text', $column_name )
 			->set_attribute( 'placeholder', $this->get_default() );
 
 		$view = new View( [

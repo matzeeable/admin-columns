@@ -8,6 +8,10 @@ use AC\Column\Post;
 use AC\Column\User;
 use AC\ColumnFactoryInterface;
 use AC\ListScreen;
+use AC\Settings\Column\BeforeAfter;
+use AC\Settings\Column\Label;
+use AC\Settings\Column\Width;
+use AC\Settings\ColumnSettingsCollection;
 use InvalidArgumentException;
 
 class ColumnFactory implements ColumnFactoryInterface {
@@ -51,13 +55,31 @@ class ColumnFactory implements ColumnFactoryInterface {
 	 * @return Column|null
 	 */
 	protected function create_post_type_column( array $data ) {
+
 		switch ( $data[ self::TYPE ] ) {
 			case Post\Attachment::TYPE :
 				return new Post\Attachment( $data[ self::NAME ], $data );
 			case Post\Formats::TYPE :
 				return new Post\Formats( $data[ self::NAME ], $data );
+			case Post\ID::TYPE :
+				// TODO: PHP 5.6+
+				$settings = new ColumnSettingsCollection( [
+					new Label( $data[ Label::NAME ] ?? __( 'ID', 'codepress-admin-columns' ) ),
+					new Width( $data[ Width::OPTION_WIDTH ] ?? null, $data[ Width::OPTION_WIDTH_UNIT ] ?? null ),
+					new BeforeAfter(
+						$data[ BeforeAfter::OPTION_BEFORE ] ?? null,
+						$data[ BeforeAfter::OPTION_AFTER ] ?? null
+					)
+				] );
+
+				return new Post\ID( $data[ self::NAME ], $settings );
 			case Post\PageTemplate::TYPE :
-				return new Post\PageTemplate( $data[ self::NAME ], $data[ self::POST_TYPE ], $data );
+				$settings = new ColumnSettingsCollection( [
+					new Label( $data[ Label::NAME ] ?? __( 'Page Template', 'codepress-admin-columns' ) ),
+					new Width( $data[ Width::OPTION_WIDTH ] ?? null, $data[ Width::OPTION_WIDTH_UNIT ] ?? null )
+				] );
+
+				return new Post\PageTemplate( $data[ self::NAME ], $data[ self::POST_TYPE ], $settings );
 			case CustomField::TYPE :
 				return new CustomField( $data[ self::NAME ], $data[ self::META_TYPE ], $data );
 			default :

@@ -8,14 +8,28 @@ use AC\View;
 class UserLink extends Settings\Column
 	implements Settings\FormatValue {
 
+	const NAME = 'user_link_to';
+
 	/**
 	 * @var string
 	 */
 	protected $user_link_to;
 
+	/**
+	 * @var string
+	 */
+	private $post_type;
+
+	// TODO $post_type
+	public function __construct( $post_type = 'post' ) {
+		parent::__construct( self::NAME );
+
+		$this->post_type = $post_type;
+	}
+
 	protected function define_options() {
 		return [
-			'user_link_to' => 'edit_user',
+			self::NAME => 'edit_user',
 		];
 	}
 
@@ -29,7 +43,7 @@ class UserLink extends Settings\Column
 				break;
 			case 'view_user_posts' :
 				$link = add_query_arg( [
-					'post_type' => $this->column->get_post_type(),
+					'post_type' => $this->post_type,
 					'author'    => $user_id,
 				], 'edit.php' );
 
@@ -53,8 +67,9 @@ class UserLink extends Settings\Column
 		return $value;
 	}
 
-	public function create_view() {
-		$select = $this->create_element( 'select' )->set_options( $this->get_display_options() );
+	public function create_view( $column_name ) {
+		$select = $this->create_element( 'select', $column_name )
+		               ->set_options( $this->get_display_options() );
 
 		$view = new View( [
 			'label'   => __( 'Link To', 'codepress-admin-columns' ),

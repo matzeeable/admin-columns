@@ -11,6 +11,8 @@ use AC\View;
 // TODO: move outside scope of Column objecct
 class Type extends Column {
 
+	const NAME = 'type';
+
 	/**
 	 * @var string
 	 */
@@ -31,8 +33,8 @@ class Type extends Column {
 	 */
 	private $column_type;
 
-	public function __construct( $column_name, $column_type, $list_key ) {
-		parent::__construct( $column_name );
+	public function __construct( $column_type, $list_key ) {
+		parent::__construct( self::NAME );
 
 		$this->column_type = $column_type;
 		$this->list_key = $list_key;
@@ -41,16 +43,11 @@ class Type extends Column {
 		$this->column_types_repository = new ColumnTypesRepository( new AC\DefaultColumnsRepository() );
 	}
 
-	protected function define_options() {
-		return [
-			'type' => $this->column_type,
-		];
-	}
-
-	public function create_view() {
+	public function create_view( $column_name ) {
 		$type = $this
-			->create_element( 'select' )
-			->set_options( $this->get_grouped_columns() );
+			->create_element( 'select', $column_name )
+			->set_options( $this->get_grouped_columns() )
+		->set_value( $this->column_type );
 
 		// Tooltip
 		$tooltip = __( 'Choose a column type.', 'codepress-admin-columns' );
@@ -156,17 +153,6 @@ class Type extends Column {
 	 */
 	public function get_type() {
 		return $this->type;
-	}
-
-	/**
-	 * @param string $type
-	 *
-	 * @return bool
-	 */
-	public function set_type( $type ) {
-		$this->type = $type;
-
-		return true;
 	}
 
 }

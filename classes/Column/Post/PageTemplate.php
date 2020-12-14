@@ -4,6 +4,7 @@ namespace AC\Column\Post;
 
 use AC\Column;
 use AC\Column\MetaKey;
+use AC\Settings\ColumnSettingsCollection;
 
 class PageTemplate extends Column implements MetaKey {
 
@@ -14,8 +15,8 @@ class PageTemplate extends Column implements MetaKey {
 	 */
 	private $post_type;
 
-	public function __construct( $name, $post_type, array $data = [] ) {
-		parent::__construct( self::TYPE, $name, __( 'Page Template', 'codepress-admin-columns' ), $data );
+	public function __construct( $name, $post_type, ColumnSettingsCollection $settings ) {
+		parent::__construct( self::TYPE, $name, $settings );
 
 		$this->post_type = $post_type;
 	}
@@ -24,8 +25,12 @@ class PageTemplate extends Column implements MetaKey {
 		return '_wp_page_template';
 	}
 
-	function get_value( $post_id ) {
-		$template = array_search( $this->get_raw_value( $post_id ), $this->get_page_templates() );
+	public function get_meta_value( $id ) {
+		return get_post_meta( $id, $this->get_meta_key(), true );
+	}
+
+	function get_value( $id ) {
+		$template = array_search( $this->get_meta_value( $id ), $this->get_page_templates() );
 
 		if ( ! $template ) {
 			return $this->get_empty_char();

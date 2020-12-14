@@ -7,12 +7,19 @@ use AC\Settings;
 
 class Images extends Settings\Column\Image {
 
+	const NAME = 'images';
+
+	// TODO: image_limit
+	public function __construct() {
+		parent::__construct( self::NAME );
+	}
+
 	protected function set_name() {
 		return $this->name = 'images';
 	}
 
 	public function get_dependent_settings() {
-		return [ new Settings\Column\NumberOfItems( $this->column_name ) ];
+		return [ new Settings\Column\NumberOfItems() ];
 	}
 
 	private function get_image_limit() {

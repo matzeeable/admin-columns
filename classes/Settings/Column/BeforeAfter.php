@@ -10,6 +10,8 @@ class BeforeAfter extends Column
 	implements Settings\FormatValue {
 
 	const NAME = 'before_after';
+	const OPTION_BEFORE = 'before';
+	const OPTION_AFTER = 'after';
 
 	/**
 	 * @var string
@@ -21,42 +23,62 @@ class BeforeAfter extends Column
 	 */
 	private $after;
 
-	protected function set_name() {
-		$this->name = self::NAME;
+	/**
+	 * @var array
+	 */
+	private $placeholders;
+
+	public function __construct( $before, $after, array $placeholders = [] ) {
+		parent::__construct( self::NAME );
+
+		$this->before = (string) $before;
+		$this->after = (string) $after;
+		$this->placeholders = $placeholders;
 	}
 
-	protected function define_options() {
-		return [ 'before', 'after' ];
-	}
+	// TODO remove
+//	protected function set_name() {
+//		$this->name = self::NAME;
+//	}
+//
+//	protected function define_options() {
+//		return [ 'before', 'after' ];
+//	}
 
 	public function format( $value, $original_value ) {
 		if ( ac_helper()->string->is_empty( $value ) ) {
 			return $value;
 		}
 
-		if ( $this->get_before() || $this->get_after() ) {
-			$value = $this->get_before() . $value . $this->get_after();
+		if ( $this->before || $this->after ) {
+			$value = $this->before . $value . $this->after;
 		}
 
 		return $value;
 	}
 
-	protected function get_before_element() {
-		$text = $this->create_element( 'text', 'before' );
-		$text->set_attribute( 'placeholder', $this->get_default( 'before' ) );
+	private function get_placeholder( $name ) {
+		return isset( $this->placeholders[ $name ] )
+			? $this->placeholders[ $name ]
+			: null;
+	}
+
+	protected function get_before_element( $column_name ) {
+		$text = $this->create_element( 'text', $column_name, self::OPTION_BEFORE )->set_value( $this->before );
+		$text->set_attribute( 'placeholder', $this->get_placeholder( 'before' ) );
 
 		return $text;
 	}
 
-	protected function get_after_element() {
-		$text = $this->create_element( 'text', 'after' );
-		$text->set_attribute( 'placeholder', $this->get_default( 'after' ) );
+	protected function get_after_element( $column_name ) {
+		$text = $this->create_element( 'text', $column_name, self::OPTION_AFTER )->set_value( $this->after );
+		$text->set_attribute( 'placeholder', $this->get_placeholder( 'after' ) );
 
 		return $text;
 	}
 
-	public function create_view() {
-		$setting = $this->get_before_element();
+	public function create_view( $column_name ) {
+		$setting = $this->get_before_element( $column_name );
 
 		$for = $setting->get_id();
 
@@ -67,7 +89,7 @@ class BeforeAfter extends Column
 			'for'         => $for,
 		] );
 
-		$setting = $this->get_after_element();
+		$setting = $this->get_after_element( $column_name );
 
 		$after = new View( [
 			'label'       => __( 'After', 'codepress-admin-columns' ),
@@ -91,32 +113,10 @@ class BeforeAfter extends Column
 	}
 
 	/**
-	 * @param $before
-	 *
-	 * @return bool
-	 */
-	public function set_before( $before ) {
-		$this->before = $before;
-
-		return true;
-	}
-
-	/**
 	 * @return string
 	 */
 	public function get_after() {
 		return $this->after;
-	}
-
-	/**
-	 * @param $after
-	 *
-	 * @return bool
-	 */
-	public function set_after( $after ) {
-		$this->after = $after;
-
-		return true;
 	}
 
 }

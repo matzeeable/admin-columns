@@ -15,9 +15,9 @@ class ActionIcons extends Column {
 		];
 	}
 
-	public function create_view() {
+	public function create_view( $column_name ) {
 
-		$setting = $this->create_element( 'radio' )
+		$setting = $this->create_element( 'radio', $column_name )
 		                ->set_options( [
 			                '1' => __( 'Yes' ),
 			                ''  => __( 'No' ),

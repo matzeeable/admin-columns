@@ -17,9 +17,9 @@ class LinkLabel extends Settings\Column
 		return [ 'link_label' ];
 	}
 
-	public function create_view() {
+	public function create_view( $column_name ) {
 		$view = new View( [
-			'setting' => $this->create_element( 'text' ),
+			'setting' => $this->create_element( 'text', $column_name ),
 			'label'   => __( 'Link Label', 'codepress-admin-columns' ),
 			'tooltip' => __( 'Leave blank to display the URL', 'codepress-admin-columns' ),
 		] );

@@ -265,7 +265,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 							? $list_screen->get_columns()
 							: $repo->find_all( $list_screen->get_key() );
 
-						$columns = new View( [
+						$columns_view = new View( [
 							'class'          => implode( ' ', $classes ),
 							'list_screen'    => $list_screen->get_key(),
 							'list_screen_id' => $list_screen->has_id() ? $list_screen->get_id()->get_id() : ListScreenId::generate()->get_id(),
@@ -277,7 +277,7 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 
 						do_action( 'ac/settings/before_columns', $list_screen );
 
-						echo $columns->set_template( 'admin/edit-columns' );
+						echo $columns_view->set_template( 'admin/edit-columns' );
 
 						do_action( 'ac/settings/after_columns', $list_screen );
 

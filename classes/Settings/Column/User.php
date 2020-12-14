@@ -36,7 +36,7 @@ class User extends Settings\Column implements Settings\FormatValue {
 	public function get_dependent_settings() {
 		$settings = [];
 
-		$settings[] = new Settings\Column\UserLink( $this->column );
+		$settings[] = new Settings\Column\UserLink();
 
 		return $settings;
 	}
@@ -44,8 +44,8 @@ class User extends Settings\Column implements Settings\FormatValue {
 	/**
 	 * @return View
 	 */
-	public function create_view() {
-		$select = $this->create_element( 'select', 'display_author_as' )
+	public function create_view( $column_name ) {
+		$select = $this->create_element( 'select', $column_name, 'display_author_as' )
 		               ->set_attribute( 'data-label', 'update' )
 		               ->set_attribute( 'data-refresh', 'column' )
 		               ->set_options( $this->get_display_options() );

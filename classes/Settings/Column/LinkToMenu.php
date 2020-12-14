@@ -18,8 +18,8 @@ class LinkToMenu extends Settings\Column\Toggle
 		];
 	}
 
-	public function create_view() {
-		$view = parent::create_view();
+	public function create_view( $column_name ) {
+		$view = parent::create_view( $column_name );
 
 		$view->set_data( [
 			'label'   => __( 'Link to menu', 'codepress-admin-columns' ),

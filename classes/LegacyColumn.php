@@ -2,6 +2,8 @@
 
 namespace AC;
 
+use AC\Settings\Column\Width;
+
 class LegacyColumn {
 
 	/**
@@ -25,10 +27,11 @@ class LegacyColumn {
 	 */
 	protected $group;
 
+	// TODO: remove
 	/**
 	 * @var Settings\Column[]
 	 */
-	protected $settings;
+	//protected $settings;
 
 	/**
 	 * The options managed by the settings
@@ -36,12 +39,12 @@ class LegacyColumn {
 	 */
 	protected $options = [];
 
-	public function __construct( $type, $name, $label, array $data = [] ) {
-		$this->type = $type;
-		$this->name = $name;
-		$this->label = $label;
-		$this->options = $data;
-	}
+//	public function __construct( $type, $name, $label, array $options = [] ) {
+//		$this->type = $type;
+//		$this->name = $name;
+//		$this->label = $label;
+//		$this->options = $options;
+//	}
 
 	/**
 	 * Get the unique name of the column
@@ -49,18 +52,7 @@ class LegacyColumn {
 	 * @since 2.3.4
 	 */
 	public function get_name() {
-		return $this->name;
-	}
-
-	/**
-	 * @param string $name
-	 *
-	 * @return $this
-	 */
-	public function set_name( $name ) {
-		$this->name = (string) $name;
-
-		return $this;
+		return $this->id;
 	}
 
 	/**
@@ -76,30 +68,61 @@ class LegacyColumn {
 		return $this->group;
 	}
 
+	// TODO
+
 	/**
 	 * @param Settings\Column $setting
 	 *
 	 * @return $this
 	 */
 	public function add_setting( Settings\Column $setting ) {
-		$setting->set_values( $this->options );
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
-		$this->settings[ $setting->get_name() ] = $setting;
+//		$setting->set_values( $this->options );
 
-		foreach ( (array) $setting->get_dependent_settings() as $dependent_setting ) {
-			$this->add_setting( $dependent_setting );
-		}
-
-		return $this;
+//		$this->settings[ $setting->get_name() ] = $setting;
+//
+//		foreach ( (array) $setting->get_dependent_settings() as $dependent_setting ) {
+//			$this->add_setting( $dependent_setting );
+//		}
+//
+//		return $this;
 	}
 
 	/**
 	 * @param string $id Settings ID
 	 */
 	public function remove_setting( $id ) {
-		if ( isset( $this->settings[ $id ] ) ) {
-			unset( $this->settings[ $id ] );
-		}
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+//		if ( isset( $this->settings[ $id ] ) ) {
+//			unset( $this->settings[ $id ] );
+//		}
+	}
+
+	/**
+	 * @return Collection
+	 */
+	public function _get_settings() {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+//		if ( null === $this->settings ) {
+//			$settings = [
+//				// TODO
+//				new Settings\Column\Label( $this->label ),
+//				new Settings\Column\Width( $this->get_option( Width::OPTION_WIDTH ), $this->get_option( Width::OPTION_WIDTH_UNIT ) ),
+//			];
+//
+//			foreach ( $settings as $setting ) {
+//				$this->add_setting( $setting );
+//			}
+//
+//			$this->register_settings();
+//
+//			do_action( 'ac/column/settings', $this );
+//		}
+//
+//		return new Collection( $this->settings );
 	}
 
 	/**
@@ -108,7 +131,9 @@ class LegacyColumn {
 	 * @return Settings\Column|Settings\Column\User|Settings\Column\Separator|Settings\Column\Label
 	 */
 	public function get_setting( $id ) {
-		return $this->get_settings()->get( $id );
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+//		return $this->get_settings()->get( $id );
 	}
 
 	/**
@@ -124,29 +149,6 @@ class LegacyColumn {
 		 * @since 3.0
 		 */
 		return apply_filters( 'ac/headings/label', $this->get_setting( 'label' )->get_value(), $this );
-	}
-
-	/**
-	 * @return Collection
-	 */
-	public function get_settings() {
-		if ( null === $this->settings ) {
-			$settings = [
-				// TODO
-				new Settings\Column\Label( $this->name, $this->label ),
-				new Settings\Column\Width( $this->name ),
-			];
-
-			foreach ( $settings as $setting ) {
-				$this->add_setting( $setting );
-			}
-
-			$this->register_settings();
-
-			do_action( 'ac/column/settings', $this );
-		}
-
-		return new Collection( $this->settings );
 	}
 
 	/**
@@ -317,6 +319,19 @@ class LegacyColumn {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
 		return true;
+	}
+
+	/**
+	 * @param string $name
+	 *
+	 * @return $this
+	 */
+	public function set_name( $name ) {
+		_deprecated_function( __METHOD__, 'NEWVERSION' );
+
+		$this->name = (string) $name;
+
+		return $this;
 	}
 
 }

@@ -14,6 +14,23 @@ abstract class Meta extends Column {
 	 */
 	private $field;
 
+	/**
+	 * @var string
+	 */
+	private $meta_type;
+
+	/**
+	 * @var string
+	 */
+	private $cache_key;
+
+	public function __construct( $name, $meta_type, $cache_key ) {
+		parent::__construct( $name );
+
+		$this->meta_type = $meta_type;
+		$this->cache_key = $cache_key;
+	}
+
 	abstract protected function get_meta_keys();
 
 	protected function define_options() {
@@ -23,9 +40,9 @@ abstract class Meta extends Column {
 	/**
 	 * @return Select
 	 */
-	protected function get_setting_field() {
+	protected function get_setting_field( $column_name ) {
 		$setting = $this
-			->create_element( 'select', 'field' )
+			->create_element( 'select', $column_name, 'field' )
 			->set_options( $this->group_keys( $this->get_cached_keys() ) )
 			->set_no_result( __( 'No fields available.', 'codepress-admin-columns' ) );
 
@@ -51,16 +68,19 @@ abstract class Meta extends Column {
 	 * @return string
 	 */
 	protected function get_cache_key() {
+		return $this->cache_key;
 		// TODO
-		return $this->column->get_list_screen()->get_key();
+//		return $this->column->get_list_screen()->get_key();
 	}
 
 	/**
 	 * @return string
 	 */
 	protected function get_meta_type() {
+		return $this->meta_type;
+
 		// TODO
-		return $this->column->get_list_screen()->get_meta_type();
+//		return $this->column->get_list_screen()->get_meta_type();
 	}
 
 	protected function get_cache_group() {
@@ -70,10 +90,10 @@ abstract class Meta extends Column {
 	/**
 	 * @return View
 	 */
-	public function create_view() {
+	public function create_view( $column_name ) {
 		$view = new View( [
 			'label'   => __( 'Field', 'codepress-admin-columns' ),
-			'setting' => $this->get_setting_field(),
+			'setting' => $this->get_setting_field( $column_name ),
 		] );
 
 		return $view;

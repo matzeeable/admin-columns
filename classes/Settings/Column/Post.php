@@ -35,11 +35,11 @@ class Post extends Settings\Column
 
 		switch ( $this->get_post_property_display() ) {
 			case self::PROPERTY_FEATURED_IMAGE :
-				$setting[] = new Settings\Column\Image( $this->column );
+				$setting[] = new Settings\Column\Image( $this->column_name );
 				break;
 		}
 
-		$setting[] = new Settings\Column\PostLink( $this->column );
+		$setting[] = new Settings\Column\PostLink( $this->column_name );
 
 		return $setting;
 	}

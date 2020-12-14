@@ -19,8 +19,8 @@ class CharacterLimit extends Settings\Column
 		];
 	}
 
-	public function create_view() {
-		$word_limit = $this->create_element( 'number' )
+	public function create_view( $column_name ) {
+		$word_limit = $this->create_element( 'number', $column_name )
 		                   ->set_attribute( 'min', 0 )
 		                   ->set_attribute( 'step', 1 );
 

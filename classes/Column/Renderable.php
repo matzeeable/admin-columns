@@ -7,13 +7,8 @@ interface Renderable {
 	/**
 	 * @param int $id
 	 *
-	 * @return string
+	 * @return string|null
 	 */
 	public function render( $id );
-
-	// TODO: trait? Remove?
-	public function get_empty_char();
-
-	public function get_separator();
 
 }

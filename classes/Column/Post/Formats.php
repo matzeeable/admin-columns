@@ -9,8 +9,8 @@ class Formats extends Column {
 
 	const TYPE = 'column-post_formats';
 
-	public function __construct( $name, array $data = [] ) {
-		parent::__construct( self::TYPE, $name, __( 'Post Format', 'codepress-admin-columns' ), $data );
+	public function __construct( $id, array $data = [] ) {
+		parent::__construct( self::TYPE, $id, $data );
 	}
 
 	public function get_raw_value( $post_id ) {
@@ -22,7 +22,7 @@ class Formats extends Column {
 	}
 
 	public function register_settings() {
-		$this->add_setting( new Settings\Column\PostFormatIcon( $this ) );
+		$this->add_setting( new Settings\Column\PostFormatIcon( $this->get_option( Settings\Column\PostFormatIcon::NAME ) ) );
 	}
 
 }

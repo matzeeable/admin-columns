@@ -5,7 +5,7 @@ namespace AC\Settings\Column;
 use AC\Settings;
 use AC\View;
 
-class PostFormatIcon extends Settings\Column
+class _PostFormatIcon extends Settings\Column
 	implements Settings\FormatValue {
 
 	const NAME = 'use_icon';
@@ -15,15 +15,13 @@ class PostFormatIcon extends Settings\Column
 	 */
 	private $use_icon;
 
-	public function __construct( $use_icon = false ) {
+	public function __construct() {
 		parent::__construct( self::NAME );
-
-		$this->use_icon = (bool) $use_icon;
 	}
 
-//	protected function define_options() {
-//		return [ self::NAME => '1' ];
-//	}
+	protected function define_options() {
+		return [ self::NAME => '1' ];
+	}
 
 	public function create_view( $column_name ) {
 
@@ -31,7 +29,7 @@ class PostFormatIcon extends Settings\Column
 		                ->set_options( [
 			                '1' => __( 'Yes' ),
 			                ''  => __( 'No' ),
-		                ] )->set_value( $this->use_icon );
+		                ] );
 
 		$view = new View( [
 			'label'   => __( 'Use an icon?', 'codepress-admin-columns' ),

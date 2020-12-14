@@ -7,34 +7,25 @@ use AC\View;
 
 class Label extends Settings\Column {
 
+	const NAME = 'label';
+
 	/**
 	 * @var string
 	 */
 	private $label;
 
-	/**
-	 * @var string
-	 */
-	private $column_label;
+	public function __construct( $label ) {
+		parent::__construct( self::NAME );
 
-	public function __construct( $column_name, $column_label ) {
-		parent::__construct( $column_name );
-
-		$this->column_label = $column_label;
+		$this->label = $label;
 	}
 
-	protected function define_options() {
-		return [
-			'label'      => $this->column_label,
-			'label_type' => 'text',
-		];
-	}
-
-	public function create_view() {
+	public function create_view( $column_name ) {
 
 		$setting = $this
-			->create_element( 'text' )
-			->set_attribute( 'placeholder', $this->column_label );
+			->create_element( 'text', $column_name )
+			->set_value( $this->label )
+			->set_attribute( 'placeholder', $this->label );
 
 		$view = new View( [
 			'label'   => __( 'Label', 'codepress-admin-columns' ),

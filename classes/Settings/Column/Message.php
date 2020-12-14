@@ -31,7 +31,7 @@ class Message extends Settings\Column {
 		return $this;
 	}
 
-	public function create_view() {
+	public function create_view( $column_name ) {
 		$view = new View( [
 			'label'   => $this->label,
 			'setting' => $this->message,

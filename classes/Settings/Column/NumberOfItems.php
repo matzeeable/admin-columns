@@ -14,6 +14,10 @@ class NumberOfItems extends Settings\Column {
 	 */
 	private $number_of_items;
 
+	public function __construct() {
+		parent::__construct( self::NAME );
+	}
+
 	protected function set_name() {
 		return $this->name = self::NAME;
 	}
@@ -24,8 +28,8 @@ class NumberOfItems extends Settings\Column {
 		];
 	}
 
-	public function create_view() {
-		$item_limit = $this->create_element( 'number' )
+	public function create_view( $column_name ) {
+		$item_limit = $this->create_element( 'number', $column_name )
 		                   ->set_attribute( 'step', 1 );
 
 		$view = new View( [

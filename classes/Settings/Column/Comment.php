@@ -40,20 +40,20 @@ class Comment extends Settings\Column
 
 			case self::PROPERTY_DATE :
 				return [
-					new Settings\Column\Date( $this->column ),
-					new Settings\Column\CommentLink( $this->column ),
+					new Settings\Column\Date(),
+					new Settings\Column\CommentLink(),
 				];
 
 				break;
 			case self::PROPERTY_COMMENT :
 				return [
-					new Settings\Column\StringLimit( $this->column ),
-					new Settings\Column\CommentLink( $this->column ),
+					new Settings\Column\StringLimit(),
+					new Settings\Column\CommentLink(),
 				];
 
 				break;
 			default :
-				return [ new Settings\Column\CommentLink( $this->column ) ];
+				return [ new Settings\Column\CommentLink() ];
 		}
 	}
 

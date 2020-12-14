@@ -7,7 +7,7 @@ use AC\View;
 
 abstract class Toggle extends Settings\Column {
 
-	public function create_view() {
+	public function create_view( $column_name ) {
 		$setting = $this
 			->create_element( 'radio' )
 			->set_options( [

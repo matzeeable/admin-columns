@@ -55,8 +55,9 @@ class ColumnTypesRepository {
 
 		// TODO: add column types
 		$columns = [
-			new ColumnType( Post\Attachment::TYPE, __( 'Attachments', 'codepress-admin-columns' ), $list_key ),
-			new ColumnType( CustomField::TYPE, __( 'Custom Field', 'codepress-admin-columns' ), $list_key ),
+//			new ColumnType( Post\Attachment::TYPE, __( 'Attachments', 'codepress-admin-columns' ), $list_key ),
+//			new ColumnType( CustomField::TYPE, __( 'Custom Field', 'codepress-admin-columns' ), $list_key ),
+			new ColumnType( Post\ID::TYPE, __( 'ID', 'codepress-admin-columns' ), $list_key ),
 		];
 
 		if ( post_type_supports( $list_key, 'post-formats' ) ) {

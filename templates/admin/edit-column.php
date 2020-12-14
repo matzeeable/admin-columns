@@ -32,6 +32,7 @@ $is_original = false;
                         <div class="meta">
 							<?php
 
+                            // TODO
 							foreach ( $column->get_settings() as $setting ) {
 								if ( $setting instanceof \AC\Settings\Column ) {
 									echo $setting->render_header() . "\n";
@@ -50,7 +51,7 @@ $is_original = false;
 							?>
                         </div>
                         <a class="toggle" data-toggle="column">
-							<?= $column->get_setting( 'label' )->get_value(); ?>
+							<?php // TODO $column->get_setting( 'label' )->get_value(); ?>
                         </a>
                         <small class="column-id"><?= sprintf( '%s: %s', __( 'Name', 'codepress-admin-columns' ), $column->get_name() ); ?></small>
                         <small class="column-type"><?= sprintf( '%s: %s', __( 'Type', 'codepress-admin-columns' ), $column->get_type() ); ?></small>
@@ -86,15 +87,15 @@ $is_original = false;
 
 			<?php
 
-			$type = new \AC\Settings\Column\Type( $column->get_name(), $column->get_type(), $this->list_key );
-			echo $type->render() . "\n";;
+			$type = new \AC\Settings\Column\Type( $column->get_type(), $this->list_key );
+			echo $type->render( $column->get_name() ) . "\n";;
 
 			?>
 
 			<?php
 
 			foreach ( $column->get_settings() as $setting ) {
-				echo $setting->render() . "\n";
+				echo $setting->render( $column->get_name() ) . "\n";
 			}
 
 			?>

@@ -7,6 +7,8 @@ use AC;
 class Select extends AC\Controller\ColumnRequest {
 
 	protected function get_column( AC\Request $request ) {
+		// TODO: get label?
+
 		return $this->column_factory->create( [
 			'name'      => $request->get( 'type' ),
 			'type'      => $request->get( 'type' ),

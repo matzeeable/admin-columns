@@ -35,7 +35,8 @@ class Columns extends Script {
 	) {
 		parent::__construct( $handle, $location, [
 			'jquery',
-			'dashboard',
+// TODO: causes console log error
+//			'dashboard',
 			'jquery-ui-slider',
 			'jquery-ui-sortable',
 			'wp-pointer',

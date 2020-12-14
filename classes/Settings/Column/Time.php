@@ -6,8 +6,8 @@ use AC\Settings;
 
 class Time extends Settings\Column\DateTimeFormat {
 
-	public function create_view() {
-		$view = parent::create_view();
+	public function create_view( $column_name ) {
+		$view = parent::create_view( $column_name );
 
 		$view->set( 'label', __( 'Time Format', 'codepress-admin-columns' ) );
 		$view->set( 'tooltip', __( 'This will determine how the time will be displayed.', 'codepress-admin-columns' ) );

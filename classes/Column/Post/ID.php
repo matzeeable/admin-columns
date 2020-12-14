@@ -3,24 +3,18 @@
 namespace AC\Column\Post;
 
 use AC\Column;
-use AC\Settings;
+use AC\Settings\ColumnSettingsCollection;
 
-/**
- * @since 2.0
- */
-class ID extends Column {
+class ID extends Column implements Column\Renderable {
 
-	public function __construct() {
-		$this->set_type( 'column-postid' );
-		$this->set_label( __( 'ID', 'codepress-admin-columns' ) );
+	const TYPE = 'column-postid';
+
+	public function __construct( $id, ColumnSettingsCollection $settings ) {
+		parent::__construct( self::TYPE, $id, $settings );
 	}
 
-	public function get_raw_value( $post_id ) {
-		return $post_id;
-	}
-
-	public function register_settings() {
-		$this->add_setting( new Settings\Column\BeforeAfter( $this ) );
+	public function render( $id ) {
+		return $id;
 	}
 
 }

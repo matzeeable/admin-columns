@@ -9,8 +9,8 @@ class Attachment extends Column {
 
 	const TYPE = 'column-attachment';
 
-	public function __construct( $name, array $data = [] ) {
-		parent::__construct( self::TYPE, $name, __( 'Attachments', 'codepress-admin-columns' ), $data );
+	public function __construct( $id, array $settings = [] ) {
+		parent::__construct( self::TYPE, $id, __( 'Attachments', 'codepress-admin-columns' ), $settings );
 	}
 
 	public function get_raw_value( $post_id ) {
@@ -38,8 +38,9 @@ class Attachment extends Column {
 		return $attachment_ids;
 	}
 
-	public function register_settings() {
-		$this->add_setting( new Settings\Column\AttachmentDisplay( $this->get_name() ) );
-	}
+	// TODO
+//	public function register_settings() {
+//		$this->add_setting( new Settings\Column\AttachmentDisplay() );
+//	}
 
 }

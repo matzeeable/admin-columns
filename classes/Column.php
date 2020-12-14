@@ -2,23 +2,74 @@
 
 namespace AC;
 
+use AC\Settings\ColumnSettingsCollection;
+
 /**
  * @since 3.0
  */
-class Column extends LegacyColumn implements Column\Renderable {
+class Column extends LegacyColumn {
+
+	// TODO formatters
 
 	/**
 	 * @var Settings\FormatValue[]|Settings\FormatCollection[]
 	 */
 	private $formatters;
 
-	public function render( $id ) {
-		return $this->get_value( $id );
+	/**
+	 * @var string
+	 */
+	protected $type;
+
+	/**
+	 * @var string
+	 */
+	protected $id;
+
+	/**
+	 * @var ColumnSettingsCollection|null
+	 */
+	protected $settings;
+
+	public function __construct( $type, $id, ColumnSettingsCollection $settings = null ) {
+		$this->type = $type;
+		$this->id = $id;
+		$this->settings = $settings;
 	}
+
+	public function get_type() {
+		return $this->type;
+	}
+
+	public function has_settings() {
+		return null !== $this->settings;
+	}
+
+	public function get_settings() {
+		return $this->settings;
+	}
+
+	public function get_setting( $name ) {
+		return $this->settings->offsetExists( $name )
+			? $this->settings->offsetGet( $name )
+			: null;
+	}
+
+
+
+	// ###################
+	// ###################
+	// ###################
+	// TODO
+	// ###################
+	// ###################
+	// ###################
 
 	public function get_formatters() {
 		if ( null === $this->formatters ) {
-			foreach ( $this->get_settings() as $setting ) {
+
+			// TODO
+			foreach ( $this->settings as $setting ) {
 				if ( $setting instanceof Settings\FormatValue || $setting instanceof Settings\FormatCollection ) {
 					$this->formatters[] = $setting;
 				}
