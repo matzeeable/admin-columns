@@ -4,25 +4,15 @@ namespace AC;
 
 use AC\Settings\ColumnSettingsCollection;
 
-/**
- * @since 3.0
- */
 class Column extends LegacyColumn {
 
-	// TODO formatters
-
 	/**
-	 * @var Settings\FormatValue[]|Settings\FormatCollection[]
-	 */
-	private $formatters;
-
-	/**
-	 * @var string
+	 * @var string Column type e.g. 'column-title'
 	 */
 	protected $type;
 
 	/**
-	 * @var string
+	 * @var string Column unique id e.g. '188e47a6c'
 	 */
 	protected $id;
 
@@ -50,12 +40,24 @@ class Column extends LegacyColumn {
 	}
 
 	public function get_setting( $name ) {
-		return $this->settings->offsetExists( $name )
-			? $this->settings->offsetGet( $name )
+		return $this->settings->exists( $name )
+			? $this->settings->get( $name )
 			: null;
 	}
 
+	public function get_formatters() {
+		$formatters = [];
 
+		if ( $this->settings ) {
+			foreach ( $this->settings as $setting ) {
+				if ( $setting instanceof Settings\FormatValue || $setting instanceof Settings\FormatCollection ) {
+					$formatters[] = $setting;
+				}
+			}
+		}
+
+		return $formatters;
+	}
 
 	// ###################
 	// ###################
@@ -63,21 +65,8 @@ class Column extends LegacyColumn {
 	// TODO
 	// ###################
 	// ###################
+
 	// ###################
-
-	public function get_formatters() {
-		if ( null === $this->formatters ) {
-
-			// TODO
-			foreach ( $this->settings as $setting ) {
-				if ( $setting instanceof Settings\FormatValue || $setting instanceof Settings\FormatCollection ) {
-					$this->formatters[] = $setting;
-				}
-			}
-		}
-
-		return $this->formatters;
-	}
 
 	/**
 	 * Apply available formatters (recursive) on the value
@@ -123,6 +112,8 @@ class Column extends LegacyColumn {
 
 		return $value;
 	}
+
+	// TODO: remove
 
 	/**
 	 * Display value

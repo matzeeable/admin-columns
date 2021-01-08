@@ -2,7 +2,7 @@
 
 namespace AC;
 
-use AC\Settings\Column\Width;
+//use AC\Settings\Column\Width;
 
 class LegacyColumn {
 
@@ -10,12 +10,6 @@ class LegacyColumn {
 	 * @var string Unique Name
 	 */
 	protected $name;
-
-	/**
-	 * @var string Unique type
-	 */
-	// TODO: maybe remove?
-	protected $type;
 
 	/**
 	 * @var string Label which describes this column
@@ -27,18 +21,13 @@ class LegacyColumn {
 	 */
 	protected $group;
 
-	// TODO: remove
-	/**
-	 * @var Settings\Column[]
-	 */
-	//protected $settings;
-
 	/**
 	 * The options managed by the settings
 	 * @var array
 	 */
 	protected $options = [];
 
+	// TODO: remove
 //	public function __construct( $type, $name, $label, array $options = [] ) {
 //		$this->type = $type;
 //		$this->name = $name;
@@ -53,15 +42,6 @@ class LegacyColumn {
 	 */
 	public function get_name() {
 		return $this->id;
-	}
-
-	/**
-	 * Get the type of the column.
-	 * @return string Type
-	 * @since 2.3.4
-	 */
-	public function get_type() {
-		return $this->type;
 	}
 
 	public function get_group() {
@@ -130,11 +110,11 @@ class LegacyColumn {
 	 *
 	 * @return Settings\Column|Settings\Column\User|Settings\Column\Separator|Settings\Column\Label
 	 */
-	public function get_setting( $id ) {
-		_deprecated_function( __METHOD__, 'NEWVERSION' );
+//	public function get_setting( $id ) {
+//		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
 //		return $this->get_settings()->get( $id );
-	}
+//	}
 
 	/**
 	 * @return string
