@@ -53,7 +53,7 @@ class AdminColumns extends Plugin {
 
 	private function __construct() {
 		$this->column_factory = new ColumnFactory();
-		$this->column_factory->set_factories( [ new ColumnFactory\ColumnFactory() ] );
+		$this->column_factory->set_factories( [ new ColumnFactory\ColumnFactory( new ColumnSettingFactory() ) ] );
 
 		$this->list_screen_factory = new ListScreenFactory();
 		$this->list_screen_factory->set_factories( [ new ListScreenFactory\ListScreenFactory( $this->column_factory ) ] );

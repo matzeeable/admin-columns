@@ -23,7 +23,7 @@ class Refresh extends AC\Controller\ColumnRequest {
 		$settings['taxonomy'] = $request->get( 'taxonomy' );
 		$settings['list_key'] = $request->get( 'list_screen' );
 
-		return $this->column_factory->create( $settings );
+		return $this->column_factory->create( new AC\Type\ColumnData( $settings ) );
 	}
 
 }

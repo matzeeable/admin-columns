@@ -8,15 +8,17 @@ use AC\View;
 class CharacterLimit extends Settings\Column
 	implements Settings\FormatValue {
 
+	const NAME = self::OPTION_LIMIT;
+	const OPTION_LIMIT = 'character_limit';
 	/**
 	 * @var int
 	 */
-	private $character_limit;
+	private $limit;
 
-	protected function define_options() {
-		return [
-			'character_limit' => 20,
-		];
+	public function __construct( $limit ) {
+		parent::__construct( self::NAME );
+
+		$this->limit = $limit;
 	}
 
 	public function create_view( $column_name ) {
@@ -37,7 +39,7 @@ class CharacterLimit extends Settings\Column
 	 * @return int
 	 */
 	public function get_character_limit() {
-		return $this->character_limit;
+		return $this->limit;
 	}
 
 	/**
@@ -45,8 +47,9 @@ class CharacterLimit extends Settings\Column
 	 *
 	 * @return bool
 	 */
+	// TODO remove
 	public function set_character_limit( $character_limit ) {
-		$this->character_limit = $character_limit;
+		$this->limit = $character_limit;
 
 		return true;
 	}

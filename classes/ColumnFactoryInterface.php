@@ -2,13 +2,15 @@
 
 namespace AC;
 
+use AC\Type\ColumnData;
+
 interface ColumnFactoryInterface {
 
 	/**
-	 * @param array $data
+	 * @param ColumnData $data
 	 *
 	 * @return Column|null
 	 */
-	public function create( array $data );
+	public function create( ColumnData $data );
 
 }

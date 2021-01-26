@@ -3,14 +3,14 @@
 namespace AC\Column\Post;
 
 use AC\Column;
-use AC\Settings;
+use AC\Settings\ColumnSettingsCollection;
 
 class Formats extends Column {
 
 	const TYPE = 'column-post_formats';
 
-	public function __construct( $id, array $data = [] ) {
-		parent::__construct( self::TYPE, $id, $data );
+	public function __construct( $name, ColumnSettingsCollection $settings ) {
+		parent::__construct( self::TYPE, $name, $settings );
 	}
 
 	public function get_raw_value( $post_id ) {
@@ -19,10 +19,6 @@ class Formats extends Column {
 
 	public function get_taxonomy() {
 		return 'post_format';
-	}
-
-	public function register_settings() {
-		$this->add_setting( new Settings\Column\PostFormatIcon( $this->get_option( Settings\Column\PostFormatIcon::NAME ) ) );
 	}
 
 }

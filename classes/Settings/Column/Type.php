@@ -47,7 +47,7 @@ class Type extends Column {
 		$type = $this
 			->create_element( 'select', $column_name )
 			->set_options( $this->get_grouped_columns() )
-		->set_value( $this->column_type );
+			->set_value( $this->column_type );
 
 		// Tooltip
 		$tooltip = __( 'Choose a column type.', 'codepress-admin-columns' );

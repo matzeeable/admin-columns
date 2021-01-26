@@ -2,6 +2,8 @@
 
 namespace AC;
 
+use AC\Type\ColumnData;
+
 class ColumnFactory implements ColumnFactoryInterface, Registrable {
 
 	/**
@@ -17,7 +19,7 @@ class ColumnFactory implements ColumnFactoryInterface, Registrable {
 		$this->factories[] = $factory;
 	}
 
-	public function create( array $data ) {
+	public function create( ColumnData $data ) {
 		foreach ( array_reverse( $this->factories ) as $factory ) {
 			$list_screen = $factory->create( $data );
 

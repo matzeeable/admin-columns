@@ -3,14 +3,14 @@
 namespace AC\Column\Post;
 
 use AC\Column;
-use AC\Settings;
+use AC\Settings\ColumnSettingsCollection;
 
 class Attachment extends Column {
 
 	const TYPE = 'column-attachment';
 
-	public function __construct( $id, array $settings = [] ) {
-		parent::__construct( self::TYPE, $id, __( 'Attachments', 'codepress-admin-columns' ), $settings );
+	public function __construct( $id, ColumnSettingsCollection $settings = null ) {
+		parent::__construct( self::TYPE, $id, $settings );
 	}
 
 	public function get_raw_value( $post_id ) {

@@ -7,6 +7,7 @@ use AC\ColumnFactory;
 use AC\ListScreen;
 use AC\ListScreenFactoryInterface;
 use AC\MetaType;
+use AC\Type\ColumnData;
 use AC\Type\ListScreenData;
 use AC\Type\ListScreenId;
 
@@ -65,7 +66,7 @@ class ListScreenFactory implements ListScreenFactoryInterface {
 						'meta_type' => $meta_type,
 					];
 
-				$column = $this->column_factory->create( $data );
+				$column = $this->column_factory->create( new ColumnData( $data ) );
 
 				if ( null === $column ) {
 					continue;

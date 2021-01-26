@@ -24,6 +24,7 @@ use AC\ListScreen;
 use AC\ListScreenFactory;
 use AC\ListScreenRepository\Storage;
 use AC\Message;
+use AC\Type\ColumnData;
 use AC\Type\ListScreenId;
 use AC\View;
 
@@ -351,11 +352,11 @@ class Columns extends Page implements Enqueueables, Helpable, Admin\ScreenOption
 		/** @var ColumnType $column_type */
 		$column_type = $column_types[0];
 
-		$column = $this->column_factory->create( [
+		$column = $this->column_factory->create( new ColumnData( [
 			ColumnFactory\ColumnFactory::TYPE     => $column_type->get_key(),
 			ColumnFactory\ColumnFactory::NAME     => uniqid(),
 			ColumnFactory\ColumnFactory::LIST_KEY => $list_key
-		] );
+		] ) );
 
 		$view = new View( [
 			'column'   => $column,

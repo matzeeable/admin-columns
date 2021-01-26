@@ -8,23 +8,22 @@ use AC\View;
 class WordLimit extends Settings\Column
 	implements Settings\FormatValue {
 
+	const NAME = 'word_limit';
+	const OPTION_LIMIT = 'excerpt_length';
+
 	/**
 	 * @var int
 	 */
 	private $excerpt_length;
 
-	protected function set_name() {
-		$this->name = 'word_limit';
+	public function __construct( $excerpt_length ) {
+		parent::__construct( self::NAME );
+
+		$this->excerpt_length = $excerpt_length;
 	}
 
-	protected function define_options() {
-		return [
-			'excerpt_length' => 20,
-		];
-	}
-
-	public function create_view() {
-		$setting = $this->create_element( 'number' )
+	public function create_view( $column_name ) {
+		$setting = $this->create_element( 'number', $column_name )
 		                ->set_attributes( [
 			                'min'  => 0,
 			                'step' => 1,
@@ -44,17 +43,6 @@ class WordLimit extends Settings\Column
 	 */
 	public function get_excerpt_length() {
 		return $this->excerpt_length;
-	}
-
-	/**
-	 * @param int $excerpt_length
-	 *
-	 * @return bool
-	 */
-	public function set_excerpt_length( $excerpt_length ) {
-		$this->excerpt_length = $excerpt_length;
-
-		return true;
 	}
 
 	public function format( $value, $original_value ) {

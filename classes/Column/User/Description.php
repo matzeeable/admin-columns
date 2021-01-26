@@ -10,8 +10,8 @@ class Description extends Column\Meta {
 
 	const TYPE = 'column-user_description';
 
-	public function __construct( $name, array $data = [] ) {
-		parent::__construct( self::TYPE, $name, __( 'Description', 'codepress-admin-columns' ), new MetaType( MetaType::USER ), $data );
+	public function __construct( $name, Settings\ColumnSettingsCollection $data = null ) {
+		parent::__construct( self::TYPE, $name, new MetaType( MetaType::USER ), $data );
 	}
 
 	// TODO: remove?
@@ -23,9 +23,10 @@ class Description extends Column\Meta {
 		return get_the_author_meta( 'user_description', $user_id );
 	}
 
-	public function register_settings() {
-		$this->add_setting( new Settings\Column\WordLimit( $this ) );
-		$this->add_setting( new Settings\Column\BeforeAfter( $this ) );
-	}
+	// TODO remove
+//	public function register_settings() {
+//		$this->add_setting( new Settings\Column\WordLimit( $this ) );
+//		$this->add_setting( new Settings\Column\BeforeAfter( $this ) );
+//	}
 
 }

@@ -4,8 +4,9 @@ namespace AC\Column;
 
 use AC\Column;
 use AC\MetaType;
+use AC\Settings\ColumnSettingsCollection;
 
-// TODO
+// TODO interface?
 abstract class Meta extends Column {
 
 	/**
@@ -13,8 +14,8 @@ abstract class Meta extends Column {
 	 */
 	protected $meta_type;
 
-	public function __construct( $type, $name, $label, MetaType $meta_type, array $data = [] ) {
-		parent::__construct( $type, $name, $label, $data );
+	public function __construct( $type, $name, MetaType $meta_type, ColumnSettingsCollection $data = null ) {
+		parent::__construct( $type, $name, $data );
 
 		$this->meta_type = $meta_type;
 	}
