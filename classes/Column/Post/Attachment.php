@@ -18,7 +18,7 @@ class Attachment extends Column {
 	}
 
 	/**
-	 * @param $post_id
+	 * @param int $post_id
 	 *
 	 * @return int[] Attachment ID's
 	 */
@@ -37,10 +37,5 @@ class Attachment extends Column {
 
 		return $attachment_ids;
 	}
-
-	// TODO
-//	public function register_settings() {
-//		$this->add_setting( new Settings\Column\AttachmentDisplay() );
-//	}
 
 }

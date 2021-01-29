@@ -12,9 +12,17 @@ class AttachmentDisplay extends Settings\Column
 	const OPTION_THUMBNAIL = 'thumbnail';
 	const OPTION_COUNT = 'count';
 
+	/**
+	 * @var string
+	 */
 	private $attachment_display;
 
-	public function __construct( $display = null ) {
+	/**
+	 * @var Settings\ColumnSettingsCollection|null
+	 */
+	private $settings;
+
+	public function __construct( $display = null, Settings\ColumnSettingsCollection $settings = null ) {
 		parent::__construct( self::NAME );
 
 		if ( null === $display ) {
@@ -22,22 +30,32 @@ class AttachmentDisplay extends Settings\Column
 		}
 
 		$this->attachment_display = $display;
+		$this->settings = $settings;
 	}
 
-	public function get_dependent_settings() {
-		$settings = [];
-
-		switch ( $this->attachment_display ) {
-			case self::OPTION_THUMBNAIL :
-
-				// TODO
-				$settings[] = new Settings\Column\Images();
-
-				break;
-		}
-
-		return $settings;
+	/**
+	 * @return Settings\ColumnSettingsCollection|null
+	 */
+	public function get_settings() {
+		return $this->settings;
 	}
+
+
+
+//	public function get_dependent_settings() {
+//		$settings = [];
+//
+//		switch ( $this->attachment_display ) {
+//			case self::OPTION_THUMBNAIL :
+//
+//				// TODO how to handle dependent settings
+//				$settings[] = new Settings\Column\Images();
+//
+//				break;
+//		}
+//
+//		return $settings;
+//	}
 
 	public function create_view( $column_name ) {
 
@@ -56,26 +74,16 @@ class AttachmentDisplay extends Settings\Column
 	}
 
 	/**
-	 * @return int
+	 * @return string
 	 */
 	public function get_attachment_display() {
 		return $this->attachment_display;
 	}
 
-	/**
-	 * @param int $attachment_display
-	 *
-	 * @return bool
-	 */
-	public function set_attachment_display( $attachment_display ) {
-		$this->attachment_display = $attachment_display;
-
-		return true;
-	}
-
+	// TODO inject formatter
 	public function format( $value, $original_value ) {
 		switch ( $this->get_attachment_display() ) {
-			case 'count':
+			case self::OPTION_COUNT:
 				$value = count( $value );
 				break;
 		}

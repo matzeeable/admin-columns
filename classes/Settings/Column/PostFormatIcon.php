@@ -15,15 +15,11 @@ class PostFormatIcon extends Settings\Column
 	 */
 	private $use_icon;
 
-	public function __construct( $use_icon = false ) {
+	public function __construct( $use_icon = true ) {
 		parent::__construct( self::NAME );
 
 		$this->use_icon = (bool) $use_icon;
 	}
-
-//	protected function define_options() {
-//		return [ self::NAME => '1' ];
-//	}
 
 	public function create_view( $column_name ) {
 
@@ -33,31 +29,18 @@ class PostFormatIcon extends Settings\Column
 			                ''  => __( 'No' ),
 		                ] )->set_value( $this->use_icon );
 
-		$view = new View( [
+		return new View( [
 			'label'   => __( 'Use an icon?', 'codepress-admin-columns' ),
 			'tooltip' => __( 'Use an icon instead of text for displaying.', 'codepress-admin-columns' ),
 			'setting' => $setting,
 		] );
-
-		return $view;
 	}
 
 	/**
-	 * @return int
+	 * @return bool
 	 */
 	public function get_use_icon() {
 		return $this->use_icon;
-	}
-
-	/**
-	 * @param $use_icon
-	 *
-	 * @return bool
-	 */
-	public function set_use_icon( $use_icon ) {
-		$this->use_icon = $use_icon;
-
-		return true;
 	}
 
 	private function use_icon() {

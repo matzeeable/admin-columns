@@ -8,25 +8,32 @@ use AC\Settings;
 class Images extends Settings\Column\Image {
 
 	const NAME = 'images';
+	const OPTION_LIMIT = 'number_of_items';
+
+	/**
+	 * @var int
+	 */
+	private $limit;
+
 
 	// TODO: image_limit
-	public function __construct() {
+	public function __construct( $limit = null ) {
 		parent::__construct( self::NAME );
-	}
 
-	protected function set_name() {
-		return $this->name = 'images';
+		if ( null === $limit ) {
+			$limit = 10;
+		}
+
+		$this->limit = $limit;
 	}
 
 	public function get_dependent_settings() {
+		// TODO inject in constructor
 		return [ new Settings\Column\NumberOfItems() ];
 	}
 
 	private function get_image_limit() {
-		return 10;
-
-		// TODO
-//		$this->column->get_setting( 'number_of_items' )->get_value();
+		return $this->limit;
 	}
 
 	public function format( $value, $original_value ) {

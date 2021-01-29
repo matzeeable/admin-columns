@@ -49,13 +49,10 @@ abstract class ListScreenPost extends ListScreen {
 			: null;
 	}
 
-	/**
-	 * Register post specific columns
-	 */
-	// TODO: deprecated
 	protected function register_column_types() {
 		_deprecated_function( __METHOD__, 'NEWVERSION' );
 
+		// TODO
 //		$this->register_column_type( new Column\CustomField );
 //		$this->register_column_type( new Column\Actions );
 	}

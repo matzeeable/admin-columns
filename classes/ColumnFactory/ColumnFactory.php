@@ -9,6 +9,7 @@ use AC\Column\User;
 use AC\ColumnFactoryInterface;
 use AC\ColumnSettingFactory;
 use AC\ListScreen;
+use AC\Settings\Column\AttachmentDisplay;
 use AC\Settings\Column\BeforeAfter;
 use AC\Settings\Column\Label;
 use AC\Settings\Column\Width;
@@ -75,21 +76,23 @@ class ColumnFactory implements ColumnFactoryInterface {
 			// TODO all columns
 
 			case Post\Attachment::TYPE :
+
+				// TODO when selecting 'thumbnails' within AttachmentDisplay we need to add AC\Settings\Column\Images
+
 				return new Post\Attachment(
 					$data->get( self::NAME ),
-					new ColumnSettingsCollection(
-						[
-							// TODO Settings\Column\AttachmentDisplay
-						]
-					) );
+					new ColumnSettingsCollection( [
+						$this->columnSettingFactory->create( Label::NAME, $data ),
+						$this->columnSettingFactory->create( AttachmentDisplay::NAME, $data )
+					] )
+				);
 			case Post\Formats::TYPE :
 				return new Post\Formats(
 					$data->get( self::NAME ),
-					new ColumnSettingsCollection(
-						[
-							// TODO Settings\Column\PostFormatIcon
-						]
-					) );
+					new ColumnSettingsCollection( [
+						// TODO Settings\Column\PostFormatIcon
+					] )
+				);
 			case Post\ID::TYPE :
 				return new Post\ID(
 					$data->get( self::NAME ),
