@@ -2,45 +2,69 @@
 
 namespace AC\Plugin;
 
-use AC;
+class Installer {
 
-class Installer implements AC\Installer {
+	/**
+	 * @var string
+	 */
+	private $current_version;
 
-	const TABLE = 'admin_columns';
+	/**
+	 * @var StoredVersion
+	 */
+	private $stored_version;
+
+	/**
+	 * @var Install[]
+	 */
+	private $installers = [];
+
+	public function __construct( $current_version, StoredVersion $stored_version ) {
+		$this->current_version = (string) $current_version;
+		$this->stored_version = $stored_version;
+	}
+
+	public function add_install( Install $install ) {
+		$this->installers[] = $install;
+
+		return $this;
+	}
 
 	public function install() {
-		$this->create_database();
+		if ( ! $this->can_install() ) {
+			return;
+		}
+
+		foreach ( $this->installers as $installer ) {
+			$installer->install();
+		}
 	}
 
-	private function create_database() {
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-		dbDelta( $this->get_schema() );
+	private function is_version_equal( $version ) {
+		return 0 === version_compare( $this->current_version, $version );
 	}
 
-	private function get_schema() {
-		global $wpdb;
+	/**
+	 * @return bool
+	 */
+	private function can_install() {
 
-		$collate = $wpdb->get_charset_collate();
+		// Run installer manually
+		if ( '1' === filter_input( INPUT_GET, 'ac-force-install' ) ) {
+			return true;
+		}
 
-		$table_name = $wpdb->prefix . self::TABLE;
+		// Run installer when the current version is not equal to its stored version
+		if ( ! $this->is_version_equal( $this->stored_version->get() ) ) {
+			return true;
+		}
 
-		$table = "
-		CREATE TABLE {$table_name} (
-			id bigint(20) unsigned NOT NULL auto_increment,
-			list_id varchar(20) NOT NULL default '',
-			list_key varchar(100) NOT NULL default '',
-			title varchar(255) NOT NULL default '',
-			columns mediumtext,
-			settings mediumtext,
-			date_created datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-			date_modified datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
-			PRIMARY KEY (id),
-			UNIQUE KEY `list_id` (`list_id`)
-		) $collate;
-		";
+		// Run installer when the current version can not be read from the plugin's header file
+		if ( ! $this->current_version && ! $this->stored_version->get() ) {
+			return true;
+		}
 
-		return $table;
+		return false;
 	}
 
 }

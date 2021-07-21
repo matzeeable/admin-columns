@@ -2,12 +2,29 @@
 
 namespace AC\Plugin;
 
-abstract class Updater {
+use AC\Capabilities;
+
+class Updater {
 
 	/**
 	 * @var Update[]
 	 */
 	protected $updates;
+
+	/**
+	 * @var string
+	 */
+	private $current_version;
+
+	/**
+	 * @var StoredVersion
+	 */
+	private $stored_version;
+
+	public function __construct( $current_version, StoredVersion $stored_version ) {
+		$this->current_version = (string) $current_version;
+		$this->stored_version = $stored_version;
+	}
 
 	/**
 	 * @param Update $update
@@ -21,8 +38,13 @@ abstract class Updater {
 	}
 
 	public function parse_updates() {
-		if ( $this->is_new_install() ) {
-			$this->update_stored_version();
+		// TODO check necessary?
+		if ( ! current_user_can( Capabilities::MANAGE ) ) {
+			return;
+		}
+
+		if ( ! $this->stored_version->exists() ) {
+			$this->stored_version->update( $this->current_version );
 
 			return;
 		}
@@ -35,25 +57,14 @@ abstract class Updater {
 		uksort( $this->updates, 'version_compare' );
 
 		foreach ( $this->updates as $update ) {
-			if ( $update->needs_update() ) {
+			if ( $update->needs_update( $this->stored_version->get() ) ) {
 				$update->apply_update();
-				$this->update_stored_version( $update->get_version() );
+
+				$this->stored_version->update( $update->get_version() );
 			}
 		}
 
-		$this->update_stored_version();
+		$this->stored_version->update( $this->current_version );
 	}
-
-	/**
-	 * @param null $version
-	 *
-	 * @return bool
-	 */
-	abstract protected function update_stored_version( $version = null );
-
-	/**
-	 * @return bool
-	 */
-	abstract protected function is_new_install();
 
 }

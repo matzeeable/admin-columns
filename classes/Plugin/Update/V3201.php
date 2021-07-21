@@ -11,14 +11,14 @@ use RecursiveIteratorIterator;
 
 class V3201 extends Update {
 
+	public function __construct() {
+		parent::__construct( '3.2.1' );
+	}
+
 	public function apply_update() {
 		$this->uppercase_class_files( AC()->get_dir() . '/classes' );
 		$this->update_notice_preference_review();
 		$this->update_notice_preference_addons();
-	}
-
-	protected function set_version() {
-		$this->version = '3.2.1';
 	}
 
 	/**

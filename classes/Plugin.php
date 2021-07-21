@@ -2,15 +2,8 @@
 
 namespace AC;
 
-use ReflectionObject;
-use WP_Roles;
 
 abstract class Plugin {
-
-	/**
-	 * @var Installer|null
-	 */
-	private $installer;
 
 	/**
 	 * @var array
@@ -42,10 +35,6 @@ abstract class Plugin {
 	 */
 	public function get_url() {
 		return plugin_dir_url( $this->get_file() );
-	}
-
-	public function set_installer( Installer $installer ) {
-		$this->installer = $installer;
 	}
 
 	/**
@@ -98,64 +87,6 @@ abstract class Plugin {
 	/**
 	 * @return bool
 	 */
-	private function can_install() {
-
-		// Run installer manually
-		if ( '1' === filter_input( INPUT_GET, 'ac-force-install' ) ) {
-			return true;
-		}
-
-		// Run installer when the current version is not equal to its stored version
-		if ( ! $this->is_version_equal( $this->get_stored_version() ) ) {
-			return true;
-		}
-
-		// Run installer when the current version can not be read from the plugin's header file
-		if ( ! $this->get_version() && ! $this->get_stored_version() ) {
-			return true;
-		}
-
-		return false;
-	}
-
-	public function install() {
-		if ( ! $this->can_install() ) {
-			return;
-		}
-
-		global $wp_roles;
-
-		if ( ! $wp_roles ) {
-			$wp_roles = new WP_Roles();
-		}
-
-		do_action( 'ac/capabilities/init', $wp_roles );
-
-		if ( $this->installer instanceof Installer ) {
-			$this->installer->install();
-		}
-
-		if ( current_user_can( Capabilities::MANAGE ) && ! is_network_admin() ) {
-			$this->run_updater();
-		}
-	}
-
-	private function run_updater() {
-		$updater = new Plugin\Updater\Site( $this );
-
-		$reflection = new ReflectionObject( $this );
-		$classes = Autoloader::instance()->get_class_names_from_dir( $reflection->getNamespaceName() . '\Plugin\Update' );
-
-		foreach ( $classes as $class ) {
-			$updater->add_update( new $class( $this->get_stored_version() ) );
-		}
-
-		$updater->parse_updates();
-	}
-
-	/**
-	 * @return bool
-	 */
 	public function is_beta() {
 		return false !== strpos( $this->get_version(), 'beta' );
 	}
@@ -181,21 +112,84 @@ abstract class Plugin {
 		return version_compare( $this->get_version(), $version, '>=' );
 	}
 
+	// TODO remove
+	//	public function set_installer( Installer $installer ) {
+	//		$this->installer = $installer;
+	//	}
+
+	/**
+	 * @return bool
+	 */
+	//	private function can_install() {
+	//
+	//		// Run installer manually
+	//		if ( '1' === filter_input( INPUT_GET, 'ac-force-install' ) ) {
+	//			return true;
+	//		}
+	//
+	//		// Run installer when the current version is not equal to its stored version
+	//		if ( ! $this->is_version_equal( $this->get_stored_version() ) ) {
+	//			return true;
+	//		}
+	//
+	//		// Run installer when the current version can not be read from the plugin's header file
+	//		if ( ! $this->get_version() && ! $this->get_stored_version() ) {
+	//			return true;
+	//		}
+	//
+	//		return false;
+	//	}
+
+	//	public function install() {
+	//		if ( ! $this->can_install() ) {
+	//			return;
+	//		}
+	//
+	//		global $wp_roles;
+	//
+	//		if ( ! $wp_roles ) {
+	//			$wp_roles = new WP_Roles();
+	//		}
+	//
+	//		do_action( 'ac/capabilities/init', $wp_roles );
+	//
+	//		if ( $this->installer instanceof Installer ) {
+	//			$this->installer->install();
+	//		}
+	//
+	//		if ( current_user_can( Capabilities::MANAGE ) && ! is_network_admin() ) {
+	//			$this->run_updater();
+	//		}
+	//	}
+
+	//	private function run_updater() {
+	//		$updater = new Plugin\Updater\Site( $this );
+	//
+	//		$reflection = new ReflectionObject( $this );
+	//		$classes = Autoloader::instance()->get_class_names_from_dir( $reflection->getNamespaceName() . '\Plugin\Update' );
+	//
+	//		foreach ( $classes as $class ) {
+	//			$updater->add_update( new $class( $this->get_stored_version() ) );
+	//		}
+	//
+	//		$updater->parse_updates();
+	//	}
+
 	/**
 	 * @param string $version
 	 *
 	 * @return bool
 	 */
-	private function is_version_equal( $version ) {
-		return 0 === version_compare( $this->get_version(), $version );
-	}
+//	private function is_version_equal( $version ) {
+//		return 0 === version_compare( $this->get_version(), $version );
+//	}
 
 	/**
 	 * @return string
 	 */
-	public function get_stored_version() {
-		return (string) get_option( $this->get_version_key() );
-	}
+//	public function get_stored_version() {
+//		return (string) get_option( $this->get_version_key() );
+//	}
 
 	/**
 	 * Update the stored version to match the (current) version
@@ -204,28 +198,28 @@ abstract class Plugin {
 	 *
 	 * @return bool
 	 */
-	public function update_stored_version( $version = null ) {
-		if ( null === $version ) {
-			$version = $this->get_version();
-		}
-
-		return update_option( $this->get_version_key(), $version, false );
-	}
+//	public function update_stored_version( $version = null ) {
+//		if ( null === $version ) {
+//			$version = $this->get_version();
+//		}
+//
+//		return update_option( $this->get_version_key(), $version, false );
+//	}
 
 	/**
 	 * Check if the plugin was updated or is a new install
 	 */
-	public function is_new_install() {
-		global $wpdb;
-
-		if ( $this->get_stored_version() ) {
-			return false;
-		}
-
-		// Before version 3.0.5
-		$results = $wpdb->get_results( "SELECT option_id FROM $wpdb->options WHERE option_name LIKE 'cpac_options_%' LIMIT 1" );
-
-		return empty( $results );
-	}
+//	public function is_new_install() {
+//		global $wpdb;
+//
+//		if ( $this->get_stored_version() ) {
+//			return false;
+//		}
+//
+//		// Before version 3.0.5
+//		$results = $wpdb->get_results( "SELECT option_id FROM $wpdb->options WHERE option_name LIKE 'cpac_options_%' LIMIT 1" );
+//
+//		return empty( $results );
+//	}
 
 }

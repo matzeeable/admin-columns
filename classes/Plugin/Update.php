@@ -5,37 +5,25 @@ namespace AC\Plugin;
 abstract class Update {
 
 	/**
-	 * @var string
-	 */
-	protected $stored_version;
-
-	/**
 	 * @var string Assumes this regex for versions: ^[1-9]\.[0-9]\.[1-9][0-9]?$
 	 */
 	protected $version;
 
-	public function __construct( $stored_version ) {
-		$this->stored_version = $stored_version;
-		$this->set_version();
+	public function __construct( $version ) {
+		$this->version = (string) $version;
+
+		// TODO validate?
 	}
 
 	/**
 	 * Check if this update needs to be applied
 	 * @return bool
 	 */
-	public function needs_update() {
-		return $this->is_less_or_equal_stored_version();
+	public function needs_update( $stored_version ) {
+		return version_compare( $this->version, $stored_version, '>' );
 	}
 
 	/**
-	 * @return bool
-	 */
-	protected function is_less_or_equal_stored_version() {
-		return version_compare( $this->version, $this->stored_version, '>' );
-	}
-
-	/**
-	 * Apply this update
 	 * @return void
 	 */
 	abstract public function apply_update();
@@ -46,11 +34,5 @@ abstract class Update {
 	public function get_version() {
 		return $this->version;
 	}
-
-	/**
-	 * Set the version this update applies to
-	 * @return void
-	 */
-	abstract protected function set_version();
 
 }

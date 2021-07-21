@@ -6,14 +6,14 @@ use AC\Plugin\Update;
 
 class V3005 extends Update {
 
+	public function __construct() {
+		parent::__construct( '3.0.5' );
+	}
+
 	public function apply_update() {
 		$this->migrate_user_specific_settings();
 		$this->delete_deprecated_settings();
 		$this->delete_deprecated_options();
-	}
-
-	protected function set_version() {
-		$this->version = '3.0.5';
 	}
 
 	/**
@@ -51,9 +51,9 @@ class V3005 extends Update {
 
 		$sql = $wpdb->prepare( "
 			SELECT *
-			FROM {$wpdb->usermeta}
+			FROM $wpdb->usermeta
 			WHERE meta_key LIKE %s
-			ORDER BY user_id ASC
+			ORDER BY user_id
 		", $key );
 
 		$results = $wpdb->get_results( $sql );
@@ -115,7 +115,7 @@ class V3005 extends Update {
 
 		$sql = $wpdb->prepare( "
 				DELETE
-				FROM {$wpdb->usermeta}
+				FROM $wpdb->usermeta
 				WHERE meta_key LIKE %s
 			", $wpdb->esc_like( $key ) . '%' );
 

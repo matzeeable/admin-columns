@@ -17,6 +17,8 @@ use AC\Controller;
 use AC\Deprecated;
 use AC\ListScreenRepository\Database;
 use AC\ListScreenRepository\Storage;
+use AC\Plugin\Setup;
+use AC\Plugin\StoredVersion;
 use AC\Screen\QuickEdit;
 use AC\Settings\GeneralOption;
 use AC\Table;
@@ -89,6 +91,9 @@ class AdminColumns extends Plugin {
 			new PluginActionLinks( $this->get_basename() ),
 			new NoticeChecks(),
 			new Controller\TableListScreenSetter( $this->storage, new PermissionChecker(), $location, new Table\Preference() ),
+
+			// TODO test
+			new Setup\Site( $this->get_version(), new StoredVersion\Site( $this->get_version_key() ) ),
 		];
 
 		foreach ( $services as $service ) {
@@ -97,9 +102,8 @@ class AdminColumns extends Plugin {
 			}
 		}
 
-		$this->set_installer( new Plugin\Installer() );
-
-		add_action( 'init', [ $this, 'install' ], 1000 );
+		// TODO remove
+		//		add_action( 'init', [ $this, 'install' ], 1000 );
 		add_action( 'init', [ $this, 'register_global_scripts' ] );
 	}
 
