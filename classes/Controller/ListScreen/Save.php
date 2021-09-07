@@ -27,8 +27,8 @@ class Save {
 	public function request( Request $request ) {
 		$data = json_decode( $request->get( 'data' ), true );
 
-		if ( ! isset( $data['columns'] ) ) {
-			wp_send_json_error( [ 'message' => __( 'You need at least one column', 'codepress-admin-columns' ) ] );
+		if ( ! isset( $data['columns'] ) || empty( $data['columns']) ) {
+			//wp_send_json_error( [ 'message' => __( 'You need at least one column', 'codepress-admin-columns' ) ] );
 		}
 
 		$list_screen = ListScreenTypes::instance()->get_list_screen_by_key( $data['list_screen'] );

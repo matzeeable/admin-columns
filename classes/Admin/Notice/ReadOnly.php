@@ -10,7 +10,6 @@ class ReadOnly implements Registrable {
 
 	public function register() {
 		add_action( 'ac/settings/notice', [ $this, 'render_notice' ] );
-
 	}
 
 	public function render_notice( ListScreen $list_screen ) {

@@ -12,6 +12,7 @@ import {initUninitializedListScreens} from "./admin/columns/listscreen-initializ
 import Modals from "./modules/modals";
 import {Column} from "./admin/columns/column";
 import {LocalizedAcColumnSettings} from "./types/admin-columns";
+import RemoveColumns from "./admin/columns/remove-columns";
 
 declare let AC: LocalizedAcColumnSettings
 
@@ -69,6 +70,20 @@ AcServices.addListener(EventConstants.SETTINGS.FORM.LOADED, (form: Form) => {
 AcServices.addListener(EventConstants.SETTINGS.FORM.SAVING, () => {
     document.querySelector('#cpac .ac-admin').classList.add('saving');
 });
+
+AcServices.addListener(EventConstants.SETTINGS.FORM.READY, (form: Form) => {
+    let removeColumns = new RemoveColumns(AcServices);
+    form.getElement().querySelector('.column-footer').prepend(removeColumns.getElement());
+
+    document.querySelectorAll('[data-clear-columns]').forEach(el => {
+        el.addEventListener('click', e => {
+            e.preventDefault();
+            form.resetColumns();
+        });
+    });
+
+});
+
 
 AcServices.addListener(EventConstants.SETTINGS.FORM.SAVED, () => {
     document.querySelector('#cpac .ac-admin').classList.remove('saving');

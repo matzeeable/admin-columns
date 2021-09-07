@@ -53,9 +53,10 @@ class Columns extends Script {
 			'original_columns'           => [],
 			'uninitialized_list_screens' => [],
 			'i18n'                       => [
-				'clone'  => __( '%s column is already present and can not be duplicated.', 'codepress-admin-columns' ),
-				'error'  => __( 'Invalid response.', 'codepress-admin-columns' ),
-				'errors' => [
+				'clear_columns' => __( 'Remove all columns', 'codepress-admin-columns' ),
+				'clone'         => __( '%s column is already present and can not be duplicated.', 'codepress-admin-columns' ),
+				'error'         => __( 'Invalid response.', 'codepress-admin-columns' ),
+				'errors'        => [
 					'save_settings'  => __( 'There was an error during saving the column settings.', 'codepress-admin-columns' ),
 					'loading_column' => __( 'The column could not be loaded because of an unknown error', 'codepress-admin-columns' ),
 				],
@@ -75,7 +76,7 @@ class Columns extends Script {
 			];
 		}
 
-		wp_localize_script( 'ac-admin-page-columns', 'AC', $params );
+		$this->add_inline_variable( 'AC', $params );
 	}
 
 }

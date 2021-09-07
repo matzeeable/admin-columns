@@ -19,6 +19,11 @@ export default class AcHtmlElement {
         return this;
     }
 
+    setAttribute( attribute: string, value: string ){
+        this.element.setAttribute( attribute, value );
+        return this;
+    }
+
     addClasses(...classNames: string[]) {
         classNames.forEach(className => this.addClass(className));
         return this;
